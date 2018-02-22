@@ -15,12 +15,12 @@ public:
 	SegmentTreeImpl(const vector<_Ty>& Vec, Func func, _Ty Identity_Element)
 		: _root(nullptr), _Func(func), _Identity_Element(Identity_Element), _checked(false)
 	{
-		//Òì³£¼ì²é
+		//å¼‚å¸¸æ£€æŸ¥
 		if (Vec.empty())
 			throw SegmentTreeException<_Ty>("The Segment is empty!!");
 
 
-		//³õÊ¼»¯Ïß¶ÎÊ÷£¬¿Õ¼ä¸´ÔÓ¶ÈO(n)£¬Ê±¼ä¸´ÔÓ¶ÈO(n)
+		//åˆå§‹åŒ–çº¿æ®µæ ‘ï¼Œç©ºé—´å¤æ‚åº¦O(n)ï¼Œæ—¶é—´å¤æ‚åº¦O(n)
 		_root = build(0, Vec.size() - 1, Vec);
 		_checked = true;
 
@@ -74,10 +74,10 @@ protected:
 
 	SegmentTreeNode_ptr _root;
 
-	//_FuncÊÇÒ»¸ö_TyÉÏµÄ¶şÔª´úÊıÔËËã·û£¬Âú×ã½áºÏÂÉ£¬ÓĞçÛÔª£¬_Ty¶Ô_Func¹¹³ÉÒ»¸öçÛ°ëÈº
+	//_Funcæ˜¯ä¸€ä¸ª_Tyä¸Šçš„äºŒå…ƒä»£æ•°è¿ç®—ç¬¦ï¼Œæ»¡è¶³ç»“åˆå¾‹ï¼Œæœ‰å¹ºå…ƒï¼Œ_Tyå¯¹_Funcæ„æˆä¸€ä¸ªå¹ºåŠç¾¤
 	Func _Func;
 
-	//çÛÔª
+	//å¹ºå…ƒ
 	const _Ty _Identity_Element;
 
 	//check out if SegmentTree exists

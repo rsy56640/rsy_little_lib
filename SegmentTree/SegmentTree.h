@@ -14,14 +14,14 @@ public:
 		:_pImpl(make_shared<SegmentTreeImpl<_Ty> >(Vec, func, Identity_Element)) {}
 
 
-	//查询操作，时间复杂度O(logn)
+	//鏌ヨ鎿嶄綔锛屾椂闂村鏉傚害O(logn)
 	_Ty query(int start, int end) const
 	{
 		return _pImpl->query(start, end);
 	}
 
 
-	//修改操作，时间复杂度O(logn)
+	//淇敼鎿嶄綔锛屾椂闂村鏉傚害O(logn)
 	void modify(int index, _Ty&& value)
 	{
 		_pImpl->modify(index, _STD forward<_Ty>(value));

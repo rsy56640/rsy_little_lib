@@ -67,7 +67,18 @@ public:
 	void modify(int index, modify_func func)
 	{
 
-		modify(index, func(query(index, index)));
+		if (!_checked)
+			throw SegmentTreeException<_Ty>("The Segment is empty!!");
+
+
+		if (index < ST[0]->start() || index > ST[0]->end())
+			throw SegmentTreeException<_Ty>("The Index is invalid!!");
+
+
+		doModify(0, index,
+			_STD forward<_Ty>
+			(func(query(index, index)))
+		);
 
 	}
 

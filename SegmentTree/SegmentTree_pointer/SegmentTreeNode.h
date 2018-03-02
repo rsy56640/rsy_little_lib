@@ -70,7 +70,9 @@ public:
 private:
 
 	int _start, _end;
+
 	_Ty _val;
+
 	SegmentTreeNode_ptr _left, _right;
 
 };

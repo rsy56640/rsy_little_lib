@@ -5,7 +5,7 @@ using namespace std;
 
 int foo(int a, int b)
 {
-	return (a > b) ? a : b;
+	return a + b;
 }
 
 
@@ -24,7 +24,7 @@ int main()
 
 		int b = h.query(0, 1);
 
-		h.modify(2, 11);
+		h.modify(2, [](int x)->int {return x + 4; });
 
 		int c = h.query(2, 3);
 

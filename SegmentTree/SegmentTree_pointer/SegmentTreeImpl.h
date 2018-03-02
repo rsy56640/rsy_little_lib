@@ -59,6 +59,15 @@ public:
 	}
 
 
+	void modify(int index, modify_func func)
+	{
+
+		modify(index, func(query(index, index)));
+
+	}
+
+
+
 	SegmentTreeImpl(const SegmentTreeImpl&) = delete;
 
 	SegmentTreeImpl& operator=(const SegmentTreeImpl&) = delete;
@@ -82,6 +91,7 @@ protected:
 
 	//check out if SegmentTree exists
 	bool _checked;
+
 
 private:
 

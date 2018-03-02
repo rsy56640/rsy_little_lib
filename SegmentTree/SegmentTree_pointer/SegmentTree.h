@@ -28,6 +28,12 @@ public:
 	}
 
 
+	void modify(int index, modify_func func)
+	{
+		_pImpl->modify(index, func);
+	}
+
+
 private:
 
 	PImpl _pImpl;

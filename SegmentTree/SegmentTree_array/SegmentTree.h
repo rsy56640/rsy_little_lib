@@ -28,6 +28,13 @@ public:
 	}
 
 
+	void modify(int index, modify_func func)
+	{
+		_pImpl->modify(index, func);
+	}
+
+
+
 	SegmentTree(const SegmentTree&) = delete;
 
 	SegmentTree& operator=(const SegmentTree&) = delete;

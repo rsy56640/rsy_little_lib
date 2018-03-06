@@ -1,5 +1,6 @@
 #pragma once
 #ifndef _SEGMENTTREEIMPL_H
+#define _SEGMENTTREEIMPL_H
 #include "SegmentTreeNode.h"
 #include "SegmentTreeException.h"
 #include <vector>

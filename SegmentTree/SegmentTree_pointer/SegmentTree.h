@@ -1,5 +1,6 @@
 #pragma once
 #ifndef _SEGMENTTREE_H
+#define _SEGMENTTREE_H
 #include "SegmentTreeImpl.h"
 
 //SegmentTree Template

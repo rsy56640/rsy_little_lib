@@ -1,5 +1,6 @@
 #pragma once
 #ifndef _SEGMENTTREEEXCEPTION_H
+#define _SEGMENTTREEEXCEPTION_H
 #include <exception>
 #include <string>
 

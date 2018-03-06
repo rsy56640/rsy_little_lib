@@ -1,5 +1,6 @@
 #pragma once
 #ifndef _SEGMENTTREETYPE_H
+#define _SEGMENTTREETYPE_H
 #include <functional>
 #include <memory>
 #include <type_traits>

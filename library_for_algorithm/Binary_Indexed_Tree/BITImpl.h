@@ -58,13 +58,13 @@ public:
 	//@ Parameter List:
 	//@ index:	the position to be modified.
 	//@ val:	the modifying value.
-	void modify(int index, _Ty val)
+	void modify(int index, _Ty&& val)
 	{
 
 		if (index < 0 || index >= static_cast<int>(_Vec.size()))
 			throw BIT_Exception("The modify index is invalid!!");
 
-		doModify(index, val);
+		doModify(index, _STD forward<_Ty>(val));
 
 	}
 
@@ -140,11 +140,13 @@ private:
 	//@ Parameter List:
 	//@ index:	the position to be modified.
 	//@ val:	the modifying value.
-	void doModify(int index, _Ty val)
+	void doModify(int index, _Ty&& val)
 	{
 		int size = _Vec.size();
+		//2018-3-10
+		//改成高效做法
 		const _Ty _pos_val = _Func(doQuery(index + 1), _Inverse_Func(doQuery(index)));
-		const _Ty diff = _Func(_Inverse_Func(_pos_val), val);
+		const _Ty diff = _Func(_Inverse_Func(_pos_val), _STD forward<_Ty>(val));
 		auto func = [this, &diff](_Ty& other)
 		{other = _STD forward<_Ty>(_Func(other, diff)); };
 		while (index < size)
@@ -162,9 +164,14 @@ private:
 	void doModify(int index, modify_func func)
 	{
 		int size = _Vec.size();
+
+		/////////允许通用函数
+		auto _func = func;
+		/////////
+
 		while (index < size)
 		{
-			func(_Vec[index]);
+			_func(_Vec[index]);
 			index += low_bit(index + 1);
 		}
 	}

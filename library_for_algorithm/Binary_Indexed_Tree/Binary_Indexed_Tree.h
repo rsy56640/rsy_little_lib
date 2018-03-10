@@ -24,12 +24,13 @@ public:
 	}
 
 
-	void modify(int index, _Ty val)
+	void modify(int index, _Ty&& val)
 	{
-		_pImpl->modify(index, val);
+		_pImpl->modify(index, _STD forward<_Ty>(val));
 	}
 
 
+	//目前只能是 Func类型的操作2018-3-10，过后改一下
 	void modify(int index, modify_func func)
 	{
 		_pImpl->modify(index, func);

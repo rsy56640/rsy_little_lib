@@ -10,6 +10,12 @@ public:
 
 	Integer(const Integer& other) :val(other.val) {}
 
+	Integer(Integer&& other) :val(other.val) {}
+
+	Integer& operator=(const Integer& other)& = default;
+
+	Integer& operator=(Integer&& other)& = default;
+
 	Integer& operator+=(const Integer& other)
 	{
 		this->val += other.val;

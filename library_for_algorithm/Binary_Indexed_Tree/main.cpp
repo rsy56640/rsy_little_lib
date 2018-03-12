@@ -1,7 +1,6 @@
 #include "Binary_Indexed_Tree.h"
 using namespace std;
 
-
 class Integer
 {
 public:
@@ -28,6 +27,17 @@ public:
 		return *this;
 	}
 
+	bool operator==(const Integer& other)
+	{
+		return this->val == other.val;
+	}
+
+	friend ostream& operator<<(ostream& os, const Integer& other)
+	{
+		os << other.val;
+		return os;
+	}
+
 private:
 
 	int val;
@@ -43,16 +53,19 @@ const Integer operator-(const Integer& lhs, const Integer& rhs)
 }
 
 
+
 int main()
 {
 
-	vector<Integer> v = { Integer(1),Integer(2),Integer(7),Integer(5),Integer(8) };
+	vector<Integer> v = { 1,2,7,5,8 };
 
 	Binary_Indexed_Tree<Integer> bit
 	(v, [](const Integer& a, const Integer& b)->Integer { return a + b; },
-		0, [](const Integer& a) {return Integer(0) - a; });
+		0, [](const Integer& a)->Integer {return Integer(0) - a; });
 
 	Integer x, y, z;
+
+	_STD vector<_STD pair<int, int> > errnum;
 
 	try
 	{
@@ -63,7 +76,7 @@ int main()
 
 		y = bit.query(0, 3);
 
-		bit.modify(3, [](Integer& a) {a += 14; });
+		bit.modify(3, [](const Integer& a)->Integer {return Integer(a + 14); });
 
 		z = bit.query(0, 4);
 

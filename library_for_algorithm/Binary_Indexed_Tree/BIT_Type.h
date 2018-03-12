@@ -11,7 +11,7 @@ template<typename _Ty> struct BIT_type
 
 	using Inverse_Funciton = typename std::tr1::function<_Ty(const _Ty&)>;
 
-	using modify_func = typename std::tr1::function<void(_Ty&)>;
+	using modify_func = typename std::tr1::function<_Ty(const _Ty&)>;
 
 };
 #endif // !_BIT_TYPE_H

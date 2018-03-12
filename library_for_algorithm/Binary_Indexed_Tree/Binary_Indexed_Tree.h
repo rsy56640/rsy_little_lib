@@ -11,27 +11,33 @@ template<typename _Ty> class Binary_Indexed_Tree :public BIT_type<_Ty>
 
 public:
 
-	Binary_Indexed_Tree(const _STD vector<_Ty>& Vec, Func func,
-		_Ty identity_element, Inverse_Funciton inverse_function)
+
+	//支持连续区间查询，及修改，复杂度均为O(log_n)
+	//@ Parameter List:
+	//@		Vec: 要操作的数组
+	//@		func: 对类型 _Ty 构成Abel群
+	//@		identity_element: 幺元
+	//@		inverse_function: 求逆运算
+	Binary_Indexed_Tree(const _STD vector<_Ty>& Vec, const Func& func,
+		const _Ty& identity_element, const Inverse_Funciton& inverse_function)
 		:_pImpl
 		(_STD make_shared<BITImpl<_Ty> >(Vec, func, identity_element, inverse_function))
 	{}
 
 
-	const _Ty query(int start, int end) const
+	const _Ty query(const int start, const int end) const
 	{
 		return _pImpl->query(start, end);
 	}
 
 
-	void modify(int index, _Ty&& val)
+	void modify(const int index, _Ty&& val)
 	{
 		_pImpl->modify(index, _STD forward<_Ty>(val));
 	}
 
 
-	//目前只能是 Func类型的操作2018-3-10，过后改一下
-	void modify(int index, modify_func func)
+	void modify(const int index, const modify_func& func)
 	{
 		_pImpl->modify(index, func);
 	}

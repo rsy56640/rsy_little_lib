@@ -1,6 +1,9 @@
 #pragma once
 #ifndef _BIT_TYPE_H
 #define _BIT_TYPE_H
+#ifndef _STD 
+#define _STD ::std::
+#endif
 #include <functional>
 #include <type_traits>
 

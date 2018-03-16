@@ -1,6 +1,9 @@
 #pragma once
 #ifndef _BIT_EXCEPTION_H
 #define _BIT_EXCEPTION_H
+#ifndef _STD 
+#define _STD ::std::
+#endif
 #include <exception>
 #include <string>
 #include <iostream>

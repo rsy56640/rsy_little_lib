@@ -1,6 +1,9 @@
 #pragma once
 #ifndef _SEGMENTTREEEXCEPTION_H
 #define _SEGMENTTREEEXCEPTION_H
+#ifndef _STD
+#define _STD ::std::
+#endif // !_STD
 #include <exception>
 #include <string>
 

@@ -1,6 +1,9 @@
 #pragma once
 #ifndef _SEGMENTTREETYPE_H
 #define _SEGMENTTREETYPE_H
+#ifndef _STD
+#define _STD ::std::
+#endif // !_STD
 #include <functional>
 #include <memory>
 #include <type_traits>

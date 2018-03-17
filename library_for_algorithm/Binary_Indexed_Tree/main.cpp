@@ -1,71 +1,78 @@
 #include "Binary_Indexed_Tree.h"
 using namespace std;
 
-class Integer
+namespace myInteger
 {
-public:
 
-	Integer(int x = 0) :val(x) {}
-
-	Integer(const Integer& other) :val(other.val) {}
-
-	Integer(Integer&& other) :val(other.val) {}
-
-	Integer& operator=(const Integer& other)& = default;
-
-	Integer& operator=(Integer&& other)& = default;
-
-	Integer& operator+=(const Integer& other)
+	class Integer
 	{
-		this->val += other.val;
-		return *this;
+	public:
+
+		Integer(int x = 0) :val(x) {}
+
+		Integer(const Integer& other) :val(other.val) {}
+
+		Integer(Integer&& other) :val(other.val) {}
+
+		Integer& operator=(const Integer& other)& = default;
+
+		Integer& operator=(Integer&& other)& = default;
+
+		Integer& operator+=(const Integer& other)
+		{
+			this->val += other.val;
+			return *this;
+		}
+
+		Integer& operator-=(const Integer& other)
+		{
+			this->val -= other.val;
+			return *this;
+		}
+
+		bool operator==(const Integer& other)
+		{
+			return this->val == other.val;
+		}
+
+		friend ostream& operator<<(ostream& os, const Integer& other)
+		{
+			os << other.val;
+			return os;
+		}
+
+	private:
+
+		int val;
+	};
+
+
+	const Integer operator+(const Integer& lhs, const Integer& rhs)
+	{
+		return Integer(lhs) += rhs;
+	}
+	const Integer operator-(const Integer& lhs, const Integer& rhs)
+	{
+		return Integer(lhs) -= rhs;
 	}
 
-	Integer& operator-=(const Integer& other)
-	{
-		this->val -= other.val;
-		return *this;
-	}
-
-	bool operator==(const Integer& other)
-	{
-		return this->val == other.val;
-	}
-
-	friend ostream& operator<<(ostream& os, const Integer& other)
-	{
-		os << other.val;
-		return os;
-	}
-
-private:
-
-	int val;
-};
-
-const Integer operator+(const Integer& lhs, const Integer& rhs)
-{
-	return Integer(lhs) += rhs;
-}
-const Integer operator-(const Integer& lhs, const Integer& rhs)
-{
-	return Integer(lhs) -= rhs;
-}
-
+}//end namespace myInteger
 
 
 int main()
 {
 
+	using myInteger::Integer;
+
 	vector<Integer> v = { 1,2,7,5,8 };
 
 	Binary_Indexed_Tree<Integer> bit
-	(v, [](const Integer& a, const Integer& b)->Integer { return a + b; },
-		0, [](const Integer& a)->Integer {return Integer(0) - a; });
+	(v, std::bind(myInteger::operator+, std::placeholders::_1, std::placeholders::_2),
+		0, std::bind(myInteger::operator-, Integer{ 0 }, std::placeholders::_1));
 
 	Integer x, y, z;
 
-	_STD vector<_STD pair<int, int> > errnum;
+	[[maybe_unused]]_STD vector<_STD pair<int, int> > errnum;
 
 	try
 	{

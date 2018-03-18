@@ -67,7 +67,7 @@ int main()
 	vector<Integer> v = { 1,2,7,5,8 };
 
 	Binary_Indexed_Tree<Integer> bit
-	{ v, myInteger::operator+,Integer{ 0 },
+	{ v, myInteger::operator+, Integer{ 0 },
 		std::bind(myInteger::operator-, Integer{ 0 }, std::placeholders::_1) };
 
 	Integer x, y, z;

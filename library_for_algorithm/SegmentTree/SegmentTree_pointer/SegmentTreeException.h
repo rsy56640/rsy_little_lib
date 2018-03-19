@@ -11,7 +11,7 @@ template<class _Ty> class SegmentTreeException :public exception
 {
 
 public:
-	SegmentTreeException(std::string msg)
+	SegmentTreeException(const std::string& msg)
 		:_msg(msg) {}
 
 	const char* what() const noexcept

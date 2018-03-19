@@ -25,7 +25,7 @@ public:
 	//修改操作，时间复杂度O(logn)
 	void modify(int index, _Ty&& value)
 	{
-		_pImpl->modify(index, _STD forward<_Ty>(value));
+		_pImpl->modify(index, _STD move(value));
 	}
 
 

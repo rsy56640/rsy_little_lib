@@ -74,7 +74,7 @@ public:
 				.append(" is invalid!!")
 			);
 
-		doModify(index, _STD forward<_Ty>(val));
+		doModify(index, _STD move(val));
 
 	}
 

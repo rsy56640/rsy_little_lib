@@ -60,7 +60,7 @@ public:
 			throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
 
-		doModify(0, index, _STD forward<_Ty>(value));
+		doModify(0, index, _STD move(value));
 
 	}
 
@@ -76,10 +76,7 @@ public:
 			throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
 
-		doModify(0, index,
-			_STD forward<_Ty>
-			(func(query(index, index)))
-		);
+		doModify(0, index, _STD move(func(query(index, index))));
 
 	}
 
@@ -151,7 +148,7 @@ private:
 
 		//set value
 		ST[index]->setValue(
-			_STD forward<_Ty>
+			_STD move
 			(_Func(ST[(index << 1) + 1]->value(), ST[(index << 1) + 2]->value())));
 
 	}
@@ -185,7 +182,7 @@ private:
 		//leaf node found
 		if (ST[index]->start() == ST[index]->end() && ST[index]->start() == _index)
 		{
-			ST[index]->setValue(_STD forward<_Ty>(value));
+			ST[index]->setValue(_STD move(value));
 			return;
 		}
 
@@ -195,18 +192,18 @@ private:
 		//left subTree
 		if (_index <= mid)
 		{
-			doModify((index << 1) + 1, _index, _STD forward<_Ty>(value));
+			doModify((index << 1) + 1, _index, _STD move(value));
 			ST[index]->setValue(
-				_STD forward<_Ty>
+				_STD move
 				(_Func(ST[(index << 1) + 1]->value(), ST[(index << 1) + 2]->value())));
 		}
 
 		//right subTree
 		else
 		{
-			doModify((index << 1) + 2, _index, _STD forward<_Ty>(value));
+			doModify((index << 1) + 2, _index, _STD move(value));
 			ST[index]->setValue(
-				_STD forward<_Ty>
+				_STD move
 				(_Func(ST[(index << 1) + 1]->value(), ST[(index << 1) + 2]->value())));
 		}
 

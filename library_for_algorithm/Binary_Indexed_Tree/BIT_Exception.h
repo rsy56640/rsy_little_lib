@@ -13,7 +13,7 @@ class BIT_Exception
 
 public:
 
-	BIT_Exception(std::string msg)
+	BIT_Exception(const std::string& msg)
 		:_msg(msg) {}
 
 

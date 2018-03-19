@@ -55,7 +55,7 @@ public:
 			throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
 
-		doModify(_root, index, _STD forward<_Ty>(value));
+		doModify(_root, index, _STD move(value));
 
 	}
 
@@ -71,10 +71,7 @@ public:
 			throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
 
-		doModify(_root, index,
-			_STD forward<_Ty>
-			(func(query(index, index)))
-		);
+		doModify(_root, index, _STD move(func(query(index, index))));
 
 	}
 
@@ -133,7 +130,7 @@ private:
 
 		//set value
 		node->setValue(
-			_STD forward<_Ty>
+			_STD move
 			(_Func(node->left()->value(), node->right()->value())));
 
 		return node;
@@ -168,7 +165,7 @@ private:
 		//leaf node found
 		if (root->start() == root->end() && root->start() == index)
 		{
-			root->setValue(_STD forward<_Ty>(value));
+			root->setValue(_STD move(value));
 			return;
 		}
 
@@ -180,7 +177,7 @@ private:
 		{
 			doModify(root->left(), index, _STD forward<_Ty>(value));
 			root->setValue(
-				_STD forward<_Ty>
+				_STD move
 				(_Func(root->left()->value(), root->right()->value())));
 		}
 
@@ -189,7 +186,7 @@ private:
 		{
 			doModify(root->right(), index, _STD forward<_Ty>(value));
 			root->setValue(
-				_STD forward<_Ty>
+				_STD move
 				(_Func(root->left()->value(), root->right()->value())));
 		}
 

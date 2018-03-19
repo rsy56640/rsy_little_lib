@@ -33,7 +33,7 @@ public:
 
 	void modify(const int index, _Ty&& val)
 	{
-		_pImpl->modify(index, _STD forward<_Ty>(val));
+		_pImpl->modify(index, _STD move(val));
 	}
 
 

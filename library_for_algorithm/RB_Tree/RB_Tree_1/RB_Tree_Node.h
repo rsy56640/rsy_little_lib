@@ -20,7 +20,7 @@ namespace MY_RB_Tree
 		base_ptr left;
 		base_ptr right;
 
-		static base_ptr minmimum(base_ptr root)
+		static base_ptr minimum(base_ptr root)
 		{
 			while (root->left != nullptr)
 				root = root->left;
@@ -43,7 +43,6 @@ namespace MY_RB_Tree
 		using link_type = typename RB_Tree_Node<Value>*;
 		Value value_field;			//node value
 	};
-
 
 
 }

@@ -1,6 +1,10 @@
 #pragma once
 #ifndef _RB_TREE_ITERATOR_H
 #define _RB_TREE_ITERATOR_H
+#ifndef _My_STL
+#define _My_STL ::std::
+#endif // !_My_STL
+
 #include "RB_Tree_Node.h"
 #include <iterator>
 #include <iostream>
@@ -16,7 +20,7 @@ namespace MY_RB_Tree
 	{
 		using base_ptr = typename RB_Tree_Node_Base::base_ptr;
 		using difference_type = long long;
-		using  iterator_category = typename  std::bidirectional_iterator_tag;
+		using iterator_category = typename  _My_STL bidirectional_iterator_tag;
 
 		base_ptr node;
 

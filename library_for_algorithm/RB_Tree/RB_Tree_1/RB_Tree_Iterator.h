@@ -7,10 +7,10 @@
 
 #include "RB_Tree_Node.h"
 #include <iterator>
-#include <iostream>
-#include <type_traits>
-#include <memory>
-#include <functional>
+//#include <iostream>
+//#include <type_traits>
+//#include <memory>
+//#include <functional>
 
 
 namespace MY_RB_Tree
@@ -26,7 +26,28 @@ namespace MY_RB_Tree
 
 		void increment()
 		{
-
+			//right child exits
+			if (node->right != nullptr)
+			{
+				node = node->right;
+				while (node->left != nullptr)
+					node = node->left;
+			}
+			//no right child
+			else {
+				base_ptr temp = node->parent;
+				//trace back until node is not a right child
+				while (node == temp->right)
+				{
+					node = temp;
+					temp = temp->parent;
+				}
+				//@special case:
+				//	if we gonna find the next node of root,
+				//	and root has no right child.
+				if (node->right != temp)
+					node = temp;
+			}
 		}
 
 		void decrement()

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef _RB_TREE_ITERATOR_H
 #define _RB_TREE_ITERATOR_H
-#ifndef _My_STL
+#ifndef _My_STL			//suppose I will implement the Iterator class in the future
 #define _My_STL ::std::
 #endif // !_My_STL
 

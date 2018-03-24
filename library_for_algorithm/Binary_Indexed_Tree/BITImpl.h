@@ -1,7 +1,6 @@
 #pragma once
 #ifndef _BITIMPL_H
 #define _BITIMPL_H
-#include <iostream> 
 #include <vector>
 #include "BIT_Type.h"
 #include "BIT_Exception.h"
@@ -154,7 +153,7 @@ private:
 	}
 
 
-	//find the previous 
+	//find the "1" stream from high-bit to low-bit
 	//ex:	n = 11 1011, m = 11 0110;	n = 11 1011, m = 01 0110;
 	//then return 11 0000;					0;
 	//@ Parameter List:

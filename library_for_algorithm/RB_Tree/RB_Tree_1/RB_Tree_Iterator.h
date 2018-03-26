@@ -1,12 +1,12 @@
 /*******************************************************************************************\
-*@					explainations about _RB_Tree in sgi-stl-2.91.57							*
-*@	an implementation trick is showed here:													*
-* 		It uses a "header" node, both of which and root are mutually parent to each other,	*
-* 		and its left node is T.beign()--(most)left, and its right node is T.(most)right.	*
-*		The "header" is T.end(), the color of which is RED!!!								*
-*																							*
-*																							*
-*@ RSY 2018-3-26																							*
+*@             explainations about _RB_Tree in sgi-stl-2.91.57                              *
+*@  an implementation trick is showed here:                                                 *
+*       It uses a "header" node, both of which and root are mutually parent to each other,  *
+*       and its left node is T.beign()--(most)left, and its right node is T.(most)right.    *
+*       The "header" is T.end(), the color of which is RED!!!                               *
+*                                                                                           *
+*                                                                                           *
+*@ RSY 2018-3-26                                                                            *
 \********************************************************************************************/
 
 

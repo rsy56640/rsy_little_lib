@@ -1,3 +1,15 @@
+/*******************************************************************************************\
+*@					explainations about _RB_Tree in sgi-stl-2.91.57							*
+*@	an implementation trick is showed here:													*
+* 		It uses a "header" node, both of which and root are mutually parent to each other,	*
+* 		and its left node is T.beign()--(most)left, and its right node is T.(most)right.	*
+*		The "header" is T.end(), the color of which is RED!!!								*
+*																							*
+*																							*
+*@ RSY 2018-3-26																							*
+\********************************************************************************************/
+
+
 #pragma once
 #ifndef _RB_TREE_ITERATOR_H
 #define _RB_TREE_ITERATOR_H
@@ -51,16 +63,35 @@ namespace MY_RB_Tree
 
 		void decrement()
 		{
+
+			//case 1: when node is header, which is RED!!!!
 			if (node->color == _RB_Tree_red && node->parent->parent == node)
-				node = node->right;
+			{
+				node = node->right;	//node==header, the right of which is most-right
+				return;
+			}
 
 
+			//case 2: when node has left child
+			if (node->left != nullptr)
+			{
+				base_ptr temp = node->left;
+				while (temp->right != nullptr)	//find the predecessor in the inorder-sequence
+					temp = temp->right;
+				node = temp;
+				return;
+			}
 
 
-
-
-
-
+			//case 3: not the root, and no left child
+			base_ptr temp = node->parent;	//check out the parent node
+			while (node == temp->left)			//if the current is left child
+			{									//continue to go up
+				node = temp;					//until current is not left child
+				temp = temp->parent;
+			}
+			node = temp;
+			//NOTA BENE: if node is most-left, then the it turns to header(T.end())
 		}
 
 	};

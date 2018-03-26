@@ -93,7 +93,7 @@ protected:
 	SegmentTreeNode_ptr _root;
 
 	//_Func是一个_Ty上的二元代数运算符，满足结合律，有幺元，_Ty对_Func构成一个幺半群
-	Func _Func;
+	const Func _Func;
 
 	//幺元
 	const _Ty _Identity_Element;

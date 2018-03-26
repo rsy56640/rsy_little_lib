@@ -7,7 +7,7 @@ namespace MY_RB_Tree
 
 	using _RB_Tree_color_type = bool;
 	const _RB_Tree_color_type _RB_Tree_red = false;
-	const _RB_Tree_color_type black = true;
+	const _RB_Tree_color_type _RB_Tree_black = true;
 
 
 	struct RB_Tree_Node_Base

@@ -1,12 +1,11 @@
 #pragma once
 #ifndef _RB_TREE_ITERATOR_H
 #define _RB_TREE_ITERATOR_H
+#include "RB_Tree_Node.h"
+#include <iterator>
 #ifndef _My_ITERATOR			//suppose I will implement the Iterator class in the future
 #define _My_ITERATOR ::std::
 #endif // !_My_ITERATOR
-
-#include "RB_Tree_Node.h"
-#include <iterator>
 //#include <iostream>
 //#include <type_traits>
 //#include <memory>
@@ -42,7 +41,7 @@ namespace MY_RB_Tree
 					node = temp;
 					temp = temp->parent;
 				}
-				//@special case:
+				//@special case: no next node, so increment() does nothing.
 				//	if we gonna find the next node of root,
 				//	and root has no right child.
 				if (node->right != temp)
@@ -52,6 +51,15 @@ namespace MY_RB_Tree
 
 		void decrement()
 		{
+			if (node->color == _RB_Tree_red && node->parent->parent == node)
+				node = node->right;
+
+
+
+
+
+
+
 
 		}
 

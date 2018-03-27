@@ -35,7 +35,7 @@ public:
 	}
 
 
-	_Ty query(const int start, const int end)
+	const _Ty query(const int start, const int end)
 	{
 
 		if (start > end)
@@ -54,19 +54,19 @@ public:
 			throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
 
-		doModify(0, index, _STD move(value));
+		modify(index, index, _STD move(value));
 
 	}
 
 
-	void modify(const int index, modify_func func)
+	void modify(const int index, const modify_func& func)
 	{
 
 		if (index < ST[0]->start() || index > ST[0]->end())
 			throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
 
-		doModify(0, index, _STD move(func(query(index, index))));
+		modify(index, index, func);
 
 	}
 
@@ -75,7 +75,7 @@ public:
 	void modify(const int start, const int end, const _Ty& value)
 	{
 
-		if (start<ST[0]->start() || end>ST[0]->end() || start > end)
+		if (start < ST[0]->start() || end > ST[0]->end() || start > end)
 			throw SegmentTreeException<_Ty>("The modified range is invalid!!");
 
 
@@ -88,7 +88,7 @@ public:
 	void modify(const int start, const int end, const modify_func& func)
 	{
 
-		if (start<ST[0]->start() || end>ST->end() || start > end)
+		if (start < ST[0]->start() || end > ST[0]->end() || start > end)
 			throw SegmentTreeException<_Ty>("The modified range is invalid!!");
 
 
@@ -174,11 +174,10 @@ private:
 
 
 	//querying the total value interval [start, end] applied by _Func
-	//index: current node
 	//@	Parameter list:
-	//@		int index:	
-	//@		int start:	
-	//@		int end:	
+	//@		int index:	current node
+	//@		int start:	start of querying rang
+	//@		int end:	end of querying range
 	_Ty doQuery(int index, int start, int end)
 	{
 
@@ -203,40 +202,6 @@ private:
 
 	}
 
-
-	//index: cur_node		//_index: modified_node
-	void doModify(int index, int _index, _Ty&& value)
-	{
-
-		//leaf node found
-		if (ST[index]->start() == ST[index]->end() && ST[index]->start() == _index)
-		{
-			ST[index]->setValue(_STD move(value));
-			return;
-		}
-
-		//not found
-		int mid = (ST[index]->start() + ST[index]->end()) / 2;
-
-		//left subTree
-		if (_index <= mid)
-		{
-			doModify((index << 1) + 1, _index, _STD move(value));
-			ST[index]->setValue(
-				_STD move
-				(_Func(ST[(index << 1) + 1]->value(), ST[(index << 1) + 2]->value())));
-		}
-
-		//right subTree
-		else
-		{
-			doModify((index << 1) + 2, _index, _STD move(value));
-			ST[index]->setValue(
-				_STD move
-				(_Func(ST[(index << 1) + 1]->value(), ST[(index << 1) + 2]->value())));
-		}
-
-	}
 
 
 	//suppose that the upper level is satisfied. (including this level)
@@ -336,6 +301,7 @@ private:
 
 
 	}
+
 
 
 };

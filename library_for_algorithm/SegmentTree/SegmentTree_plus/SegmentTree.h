@@ -37,9 +37,9 @@ public:
 
 
 	//区间修改，lazy方式
-	void modify(int start, int end, const _Ty& value)
+	void modify(int start, int end, const _Ty& aug_value)
 	{
-		_pImpl;	//////////////////////////////////////////////////////////
+		_pImpl->modify(start, end, aug_value);
 	}
 
 

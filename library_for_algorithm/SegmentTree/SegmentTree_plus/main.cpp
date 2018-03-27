@@ -6,7 +6,7 @@ using namespace std;
 
 int foo(int a, int b)
 {
-	return a > b ? a : b;
+	return a + b;
 }
 
 
@@ -14,21 +14,42 @@ int foo(int a, int b)
 int main()
 {
 
-	vector<int> v = { 1,2,7,8,5 };
+	//auto f = std::bind(&foo, std::placeholders::_1);
+
+	const int size = 20;
+	vector<int> v(size);
+	for (int i = 0; i < size; ++i)v[i] = 1;
+	vector<std::pair<int, int> > errnum;
 
 	try
 	{
-		SegmentTree<int> h(v, foo, 0);
+		SegmentTree<int> ST(v, foo, 0);
+		ST.modify(0, 11, 1);
+		for (int i = 0; i < size; ++i)
+			for (int j = 0; j <= i; ++j)
+			{
+				int ans = ST.query(j, i);
+				int correct_ans = i - j + 1;
+				if (i <= 11)correct_ans *= 2;
+				else if (j <= 11)correct_ans += 12 - j;
+				if (ans != correct_ans)
+				{
+					cout << j << "\t" << i << "\t" << ans << endl;
+					errnum.push_back(std::make_pair(j, i));
+				}
+			}
 
-		int a = h.query(0, 2);
+		/*
+		int a = ST.query(0, 2);
 
-		h.modify(0, 4);
+		ST.modify(0, 4);
 
-		int b = h.query(0, 1);
+		int b = ST.query(0, 1);
 
-		h.modify(2, [](int x)->int {return x + 4; });
+		ST.modify(2, [](int x)->int {return x + 4; });
 
-		int c = h.query(2, 3);
+		int c = ST.query(2, 3);
+		*/
 
 	}
 	catch (SegmentTreeException<int>& e)

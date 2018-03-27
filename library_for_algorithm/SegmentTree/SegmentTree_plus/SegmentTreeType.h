@@ -23,7 +23,10 @@ struct SegmentTreeType
 
 	using Func = typename std::tr1::function<_Ty(const _Ty&, const _Ty&)>;
 
+	////////////////////////////////////////////////////////////
 	using modify_func = typename std::tr1::function<_Ty(const _Ty&)>;
+	//std::bind(&Func(), std::placeholders::_1);
+//
 
 };
 

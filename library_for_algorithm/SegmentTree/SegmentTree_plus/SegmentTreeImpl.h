@@ -11,6 +11,9 @@ using std::vector;
 template<class _Ty> class SegmentTreeImpl :public SegmentTreeType<_Ty>
 {
 
+	typedef struct {} Commutive;
+	typedef struct {} NoCommutive;
+
 public:
 
 	//customized function constructor
@@ -47,7 +50,7 @@ public:
 	}
 
 
-	void modify(const int index, _Ty&& value)
+	void modify(const int index, _Ty&& aug_value)
 	{
 
 		if (index < ST[0]->start() || index > ST[0]->end())
@@ -72,14 +75,14 @@ public:
 
 
 	//lazy evaluation with modify value
-	void modify(const int start, const int end, const _Ty& value)
+	void modify(const int start, const int end, const _Ty& aug_value)
 	{
 
 		if (start < ST[0]->start() || end > ST[0]->end() || start > end)
 			throw SegmentTreeException<_Ty>("The modified range is invalid!!");
 
 
-		//doModify();
+		doModify(0, start, end, aug_value);
 
 	}
 
@@ -92,7 +95,12 @@ public:
 			throw SegmentTreeException<_Ty>("The modified range is invalid!!");
 
 
-		//doModify();
+		/*
+		doModify(0,start,end,
+			_STD move
+			(func(doQuery()))
+			);
+			*/
 
 	}
 
@@ -257,14 +265,14 @@ private:
 	}
 
 
-	//ranging updating
+	//ranging updating with a customized value
 	//@ Parameter list:
 	//@		const int index:	the index of the interval
 	//@		const int start:	start of modifing intereval
 	//@		const int end:		end of modifying interval
 	//@		const _Ty& value:	modifying value
 	//@ Promise:
-	void doModify(const int index, const int start, const int end, const _Ty& value)
+	void doModify(const int index, const int start, const int end, const _Ty& aug_value)
 	{
 
 		int left = ST[index]->start();
@@ -279,21 +287,23 @@ private:
 			//find the corresponding interval and update
 			//and stop to update
 			const int _length = right - left + 1;
-			_Ty& temp = ST[index]->value();
+			_Ty temp = ST[index]->value();
 			for (int i = 0; i < _length; ++i)
-				temp = _STD move(_Func(temp, value));
+				temp = _STD move(_Func(temp, aug_value));
 			ST[index]->setValue(_STD move(temp));
 
 			//set the augmentation field
-			aug[index] = _STD move(_Func(aug[index], value));
+			aug[index] = _STD move(_Func(aug[index], aug_value));
+
 		}
+
 
 		//some intersecton
 		//so update to the next level
 		else {
 			pushDown(index);
-			doModify((index << 1) + 1, start, end, value);
-			doModify((index << 1) + 2, start, end, value);
+			doModify((index << 1) + 1, start, end, aug_value);
+			doModify((index << 1) + 2, start, end, aug_value);
 			ST[index]->setValue(
 				_STD move
 				(_Func(ST[(index << 1) + 1]->value(), ST[(index << 1) + 2]->value())));
@@ -302,6 +312,60 @@ private:
 
 	}
 
+	/****************************************************************************/
+	//2018-3-27
+	//specialization for different type of function
+	/******************************************************************************/
+	/*************************************************************************\
+	*@ Promise: func type should be commutive semi-group against the type _Ty *
+	\*************************************************************************/
+	//ranging updating with modifying function
+	//@ Parameter list:
+	//@
+	//@
+	//@
+	//@		modify_func:
+	void doModify(const int index, const int start, const int end, const modify_func& func)
+	{
+
+		int left = ST[index]->start();
+		int right = ST[index]->end();
+
+		//no intersection
+		if (start > right || end < left)return;
+
+
+		//the current range is covered within the modifying range. 
+		if (start <= left && end >= right)
+		{
+			const int _length = right - left + 1;
+			_Ty temp = _Identity_Element;
+			for (int i = 0; i < _length; ++i)
+			{
+				temp = _STD move(func(temp));
+			}
+			ST[index]->setValue(_STD move(_Func(ST[index]->value(), temp)));
+
+			//update augmentation field
+		//	aug[index] = 
+				//_STD move(_Func(aug[index],));
+
+			return;
+		}
+
+		auto _func = [](_Ty& value)->decltype(auto)
+		{
+
+		};
+
+		//some intersecton
+		//so update to the next level
+		else {
+
+
+		}
+
+	}
 
 
 };

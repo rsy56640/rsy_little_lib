@@ -24,22 +24,24 @@ public:
 
 
 	//修改操作，时间复杂度O(logn)
+	/*
 	void modify(int index, _Ty&& value)
 	{
 		_pImpl->modify(index, _STD move(value));
 	}
+	*/
 
-
+	/*
 	void modify(int index, modify_func func)
 	{
 		_pImpl->modify(index, func);
 	}
-
+	*/
 
 	//区间修改，lazy方式
-	void modify(int start, int end, const _Ty& aug_value)
+	void modify_augment(int start, int end, const _Ty& aug_value)
 	{
-		_pImpl->modify(start, end, aug_value);
+		_pImpl->modify_augment(start, end, aug_value);
 	}
 
 

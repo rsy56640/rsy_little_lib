@@ -34,6 +34,9 @@ public:
 		aug.resize(_size - 1);
 		std::for_each(aug.begin(), aug.end(),
 			[&Identity_Element](_Ty& val) {val = Identity_Element; });
+		value_cache.resize(_size - 1);
+		std::for_each(value_cache.begin(), value_cache.end(),
+			[&Identity_Element](_Ty& val) {val = Identity_Element; });
 
 	}
 
@@ -75,7 +78,7 @@ public:
 
 
 	//lazy evaluation with modify value
-	void modify(const int start, const int end, const _Ty& aug_value)
+	void modify_augment(const int start, const int end, const _Ty& aug_value)
 	{
 
 		if (start < ST[0]->start() || end > ST[0]->end() || start > end)
@@ -127,6 +130,11 @@ protected:
 	//aug[index] represents the value that should be later
 	//	applied to the any of the values below.
 	vector<_Ty> aug;
+
+	//value cache:
+	//store the value that represents the any element in the range
+	//it should be updated when necessary
+	vector<_Ty> value_cache;
 
 	//_Func是一个_Ty上的二元代数运算符，满足结合律、交换律，有幺元。
 	//_Ty对_Func构成一个 可交换幺半群
@@ -181,6 +189,85 @@ private:
 	}
 
 
+	//suppose that the upper level is satisfied. (including this level)!!!
+	//push down the accumulation to the next level.
+	//
+	//@ Parameter list:
+	//@		const int index: the interval num
+	void pushDown(const int index)
+	{
+
+		if (index >= _size - 1)return;
+
+		const int sub_interval_length = (ST[index]->end() - ST[index]->start() + 1) / 2;
+
+		//if the value_cache store the value of the range,
+		//then set the next 2 child appropriate.
+		if (!(value_cache[index] == _Identity_Element))
+		{
+			const _Ty& value = value_cache[index];
+			_Ty temp = _Identity_Element;
+			for (int i = 0; i < sub_interval_length; ++i)
+				temp = _STD move(_Func(temp, value));
+			_Ty temp2{ temp };
+			ST[(index << 1) + 1]->setValue(_STD move(temp));
+			ST[(index << 1) + 2]->setValue(_STD move(temp2));
+			if ((index << 1) + 1 < _size - 1)
+			{
+				value_cache[(index << 1) + 1] = value;
+				value_cache[(index << 1) + 2] = value;
+				aug[(index << 1) + 1] = _Identity_Element;
+				aug[(index << 1) + 2] = _Identity_Element;
+			}
+			return;
+		}
+
+
+		//something to do
+		if (!(aug[index] == _Identity_Element))
+		{
+
+			const _Ty& _value = aug[index];
+
+
+			//accumulate funciton to update the the interval value of the next level.
+			std::tr1::function<void(SegmentTreeNode_ptr&)> _func_accumulate =
+				[this, sub_interval_length, &_value](SegmentTreeNode_ptr& STNode_ptr)->void
+			{
+				_Ty& value = const_cast<_Ty&>(STNode_ptr->value());
+				for (int i = 0; i < sub_interval_length; ++i)
+				{
+					value = _STD move(_Func(value, _value));
+				}
+				STNode_ptr->setValue(_STD move(value));
+			};
+
+			_func_accumulate(ST[(index << 1) + 1]);		//value update
+			_func_accumulate(ST[(index << 1) + 2]);		//value update
+
+			aug[index] = _Identity_Element;				//augmentation update
+
+
+			//if index is not at the bottom level of the augmentation field,
+			//then update the augmentation field of the next level.
+			if ((index << 1) + 1 < _size - 1)
+			{
+				auto _func = [this, &_value](_Ty& aug_value)->void
+				{
+					aug_value = _STD move(_Func(aug_value, _value));
+				};
+
+				//update the next level's augmentation field.
+				_func(aug[(index << 1) + 1]);
+				_func(aug[(index << 1) + 2]);
+			}
+
+		}//no augmentation
+
+	}
+
+
+
 	//querying the total value interval [start, end] applied by _Func
 	//@	Parameter list:
 	//@		int index:	current node
@@ -212,67 +299,30 @@ private:
 
 
 
-	//suppose that the upper level is satisfied. (including this level)
-	//push down the accumulation to the next level.
+	/**********************************************************\
+	* modify the range with substitution of the specific value *
+	\**********************************************************/
 	//@ Parameter list:
-	//@		const int index: the interval num		
-	void pushDown(const int index)
+	//@		index:
+	//@		start:
+	//@		end:
+	//@		value
+	void doModify(const int index, const int start, const int end, const _Ty& value)
 	{
 
-		if (index >= _size - 1)return;
-
-		//something to do
-		if (!(aug[index] == _Identity_Element))
-		{
-
-			const _Ty& _value = aug[index];
-
-			//accumulate funciton to update the the interval value of the next level.
-			const int interval_length = (ST[index]->end() - ST[index]->start() + 1) / 2;
-			std::function<void(SegmentTreeNode_ptr&)> _func_accumulate =
-				[this, interval_length, &_value](SegmentTreeNode_ptr& STNode_ptr)->void
-			{
-				_Ty& value = const_cast<_Ty&>(STNode_ptr->value());
-				for (int i = 0; i < interval_length; ++i)
-				{
-					value = _STD move(_Func(value, _value));
-				}
-				STNode_ptr->setValue(_STD move(value));
-			};
-
-			_func_accumulate(ST[(index << 1) + 1]);		//value update
-			_func_accumulate(ST[(index << 1) + 2]);		//value update
-
-			aug[index] = _Identity_Element;				//augmentation update
-
-
-			//if index is not at the bottom level of the augmentation field,
-			//then update the augmentation field of the next level.
-			if (index * 2 + 1 < _size - 1)
-			{
-				auto _func = [this, &_value](_Ty& aug_value)->void
-				{
-					aug_value = _STD move(_Func(aug_value, _value));
-				};
-
-				//update the next level's augmentation field.
-				_func(aug[(index << 1) + 1]);
-				_func(aug[(index << 1) + 2]);
-			}
-
-		}//no augmentation
 
 	}
 
 
-	//ranging updating with a customized value
+	//range updating with a augment value
 	//@ Parameter list:
 	//@		const int index:	the index of the interval
 	//@		const int start:	start of modifing intereval
 	//@		const int end:		end of modifying interval
 	//@		const _Ty& value:	modifying value
 	//@ Promise:
-	void doModify(const int index, const int start, const int end, const _Ty& aug_value)
+	void doModify_augment
+	(const int index, const int start, const int end, const _Ty& aug_value)
 	{
 
 		int left = ST[index]->start();
@@ -284,9 +334,26 @@ private:
 		//the current range is covered within the modifying range. 
 		if (start <= left && end >= right)
 		{
+
+			const int _length = right - left + 1;
+
+			//if the value of the range is not set appropriate,
+			//reset the value_cache with the augment value.
+			if (!(value_cache[index] == _Identity_Element))
+			{
+				aug[index] = _Identity_Element;
+				value_cache[index] = _STD move(_Func(value_cache[index], aug_value));
+				const _Ty& value = value_cache[index];
+				_Ty temp = _Identity_Element;
+				for (int i = 0; i < _length; ++i)
+					temp = _STD move(_Func(temp, value));
+				ST[index]->setValue(_STD move(temp));
+				return;
+			}
+
+
 			//find the corresponding interval and update
 			//and stop to update
-			const int _length = right - left + 1;
 			_Ty temp = ST[index]->value();
 			for (int i = 0; i < _length; ++i)
 				temp = _STD move(_Func(temp, aug_value));
@@ -311,6 +378,8 @@ private:
 
 
 	}
+
+
 
 	/****************************************************************************/
 	//2018-3-27

@@ -1,5 +1,7 @@
 #include "SegmentTree.h"
 #include <iostream>
+#include <math.h>
+#include <time.h>
 
 using namespace std;
 
@@ -9,22 +11,32 @@ int foo(int a, int b)
 	return a + b;
 }
 
+//∂‘≈ƒ≤‚ ‘
+class A {
+public:
+	A(const vector<int>& v) :value(v) {}
+
+
+
+private:
+	vector<int> value;
+};
 
 
 int main()
 {
 
-	//auto f = std::bind(&foo, std::placeholders::_1);
-
-	const int size = 20;
+	srand(time(NULL));
+	const int size = 50;
 	vector<int> v(size);
 	for (int i = 0; i < size; ++i)v[i] = 1;
+	//rand() % 100;
 	vector<std::pair<int, int> > errnum;
 
 	try
 	{
 		SegmentTree<int> ST(v, foo, 0);
-		ST.modify(0, 11, 1);
+		ST.modify_augment(0, 11, 1);
 		for (int i = 0; i < size; ++i)
 			for (int j = 0; j <= i; ++j)
 			{

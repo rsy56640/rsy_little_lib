@@ -8,28 +8,34 @@
 #include <memory>
 #include <type_traits>
 
-template<class _Ty>
-class SegmentTreeNode;
 
-template<class _Ty>
-struct SegmentTreeType
+namespace MySegmentTree
 {
 
-	//using BOOL = int;
+	template<class _Ty>
+	class SegmentTreeNode;
 
-	using value_type = typename std::remove_reference<_Ty>::type;
+	template<class _Ty>
+	struct SegmentTreeType
+	{
 
-	using reference_type = typename value_type&;
+		//using BOOL = int;
 
-	using SegmentTreeNode_ptr = typename std::tr1::shared_ptr<SegmentTreeNode<_Ty> >;
+		using value_type = typename std::remove_reference<_Ty>::type;
 
-	using Func = typename std::tr1::function<_Ty(const _Ty&, const _Ty&)>;
+		using reference_type = typename value_type&;
 
-	////////////////////////////////////////////////////////////
-	using modify_func = typename std::tr1::function<_Ty(const _Ty&)>;
-	//std::bind(&Func(), std::placeholders::_1);
-//
+		using SegmentTreeNode_ptr = typename std::tr1::shared_ptr<SegmentTreeNode<_Ty> >;
 
-};
+		using Func = typename std::tr1::function<_Ty(const _Ty&, const _Ty&)>;
+
+		////////////////////////////////////////////////////////////
+		using modify_func = typename std::tr1::function<_Ty(const _Ty&)>;
+		//std::bind(&Func(), std::placeholders::_1);
+
+	};
+
+}
+
 
 #endif // !_SEGMENTTREETYPE_H

@@ -4,7 +4,7 @@
 #include <time.h>
 
 using namespace std;
-
+using namespace MySegmentTree;
 
 int foo(int a, int b)
 {
@@ -23,6 +23,10 @@ private:
 };
 
 
+void fff(int = {})
+{
+
+}
 
 int main()
 {
@@ -33,10 +37,10 @@ int main()
 	for (int i = 0; i < size; ++i)v[i] = 1;
 	//rand() % 100;
 	vector<std::pair<int, int> > errnum;
+	SegmentTree<int> ST(v, foo, 0);
 
 	try
 	{
-		SegmentTree<int> ST(v, foo, 0);
 		ST.modify_augment(0, 11, 1);
 		for (int i = 0; i < size; ++i)
 			for (int j = 0; j <= i; ++j)

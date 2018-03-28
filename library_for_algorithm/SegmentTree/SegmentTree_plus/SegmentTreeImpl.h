@@ -62,31 +62,18 @@ namespace MySegmentTree
 		}
 
 
-		void modify(const int index, const _Ty& value)
+		void modify(const int start, const int end, const _Ty& value)
 		{
 
-			if (index < ST[0]->start() || index > ST[0]->end())
+			if (start < ST[0]->start() || end > ST[0]->end())
 				throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
 
-			doModify(0, index, index, value);
+			doModify(0, start, end, value);
 
 		}
 
 
-		void modify(const int index, const modify_func& func)
-		{
-
-			if (index < ST[0]->start() || index > ST[0]->end())
-				throw SegmentTreeException<_Ty>("The Index is invalid!!");
-
-
-			doModify(0, index, index, func);
-
-		}
-
-
-		//lazy evaluation with modify value
 		void modify_augment(const int start, const int end, const _Ty& aug_value)
 		{
 
@@ -99,17 +86,33 @@ namespace MySegmentTree
 		}
 
 
-		//lazy evaluation with modify_function
-		void modify(const int start, const int end, const modify_func& func)
+		//NoCommutive
+		void modify(const int start, const int end,
+			const modify_func& func, NoCommutive = {})
 		{
 
-			if (start < ST[0]->start() || end > ST[0]->end() || start > end)
-				throw SegmentTreeException<_Ty>("The modified range is invalid!!");
+			if (start < ST[0]->start() || end > ST[0]->end())
+				throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
 
 			doModify(0, start, end, func);
 
 		}
+
+
+		//Commutive
+		void modify(const int start, const int end,
+			const modify_func& func, Commutive)
+		{
+
+			if (start < ST[0]->start() || end > ST[0]->end())
+				throw SegmentTreeException<_Ty>("The Index is invalid!!");
+
+
+			doModify(0, start, end, func, Commutive{});
+
+		}
+
 
 
 		SegmentTreeImpl(const SegmentTreeImpl&) = delete;
@@ -311,14 +314,16 @@ namespace MySegmentTree
 				//eliminate augment_value
 				aug[index] = _Identity_Element;
 
+				const int _length = ST[index]->end() - ST[index]->start() + 1;
 
 				//adjust the cache
-				const int _length = ST[index]->end() - ST[index]->start() + 1;
 				value_cache[index] = _STD move(_Func(value_cache[index], aug_value));
 				const _Ty& value = value_cache[index];
+
 				_Ty temp = _Identity_Element;
 				for (int i = 0; i < _length; ++i)
 					temp = _STD move(_Func(temp, value));
+
 				ST[index]->setValue(_STD move(temp));
 
 				return;
@@ -495,42 +500,10 @@ namespace MySegmentTree
 			const modify_func& func, NoCommutive = {})
 		{
 
-			int left = ST[index]->start();
-			int right = ST[index]->end();
-
-			//no intersection
-			if (start > right || end < left)return;
-
-
-			//the current range is covered within the modifying range. 
-			if (start <= left && end >= right)
-			{
-				const int _length = right - left + 1;
-				_Ty temp = _Identity_Element;
-				for (int i = 0; i < _length; ++i)
-				{
-					temp = _STD move(func(temp));
-				}
-				ST[index]->setValue(_STD move(_Func(ST[index]->value(), temp)));
-
-				//update augmentation field
-			//	aug[index] = 
-					//_STD move(_Func(aug[index],));
-
-				return;
-			}
-
-			auto _func = [](_Ty& value)->decltype(auto)
-			{
-
-			};
-
-			//some intersecton
-			//so update to the next level
-			else {
-
-
-			}
+			//since the function is NoCommutive,
+			//so we have to modify each element respectively
+			for (int i = start; i <= end; ++i)
+				doModify(0, i, i, func(doQuery(0, i, i)));
 
 		}
 

@@ -29,30 +29,61 @@ namespace MySegmentTree
 
 
 		//修改操作，时间复杂度O(logn)
-		/*
-		void modify(int index, _Ty&& value)
-		{
-			_pImpl->modify(index, _STD move(value));
-		}
-		*/
 
-		/*
-		void modify(int index, modify_func func)
+		//单点修改
+		void modify(int index, const _Ty& value)
 		{
-			_pImpl->modify(index, func);
+			_pImpl->modify(index, index, value);
 		}
-		*/
 
-		//区间修改，lazy方式
+
+		void modify_augment(int index, const _Ty& aug_value)
+		{
+			_pImpl->modify_augment(index, index, aug_value);
+		}
+
+
+		//NoCommutive
+		void modify(int index, modify_func func, NoCommutive = {})
+		{
+			_pImpl->modify(index, index, func);
+		}
+
+
+		//Commutive
+		void modify(int index, modify_func func, Commutive)
+		{
+			_pImpl->modify(index, index, func, Commutive{});
+		}
+
+
+
+		//区间修改
+
+		void modify(int start, int end, const _Ty& value)
+		{
+			_pImpl->modify(start, end, value);
+		}
+
+
 		void modify_augment(int start, int end, const _Ty& aug_value)
 		{
 			_pImpl->modify_augment(start, end, aug_value);
 		}
 
 
-		void modify(int start, int end, const modify_func& func)
+		//NoCommutive
+		void modify(int start, int end, const modify_func& func, NoCommutive = {})
 		{
-			_pImpl;///////////////////////////////////////////////////////////
+			_pImpl->modify(start, end, func);
+		}
+
+
+		//Optimization for Commutive Function
+		//Commutive
+		void modify(int start, int end, const modify_func& func, Commutive)
+		{
+			_pImpl->modify(start, end, func, Commutive{});
 		}
 
 

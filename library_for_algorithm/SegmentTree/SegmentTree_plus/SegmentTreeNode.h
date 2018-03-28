@@ -13,13 +13,13 @@ public:
 		:_start(start), _end(end), _val(val) {}
 
 
-	int start() const noexcept
+	const int start() const noexcept
 	{
 		return _start;
 	}
 
 
-	int end() const noexcept
+	const int end() const noexcept
 	{
 		return _end;
 	}
@@ -59,7 +59,7 @@ public:
 
 private:
 
-	int _start, _end;
+	const int _start, _end;
 
 	_Ty _val;
 

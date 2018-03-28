@@ -15,6 +15,8 @@ template<class _Ty>
 struct SegmentTreeType
 {
 
+	//using BOOL = int;
+
 	using value_type = typename std::remove_reference<_Ty>::type;
 
 	using reference_type = typename value_type&;

@@ -53,7 +53,7 @@ namespace RSY_TOOL
 
 
 			//NoCaucy
-			void modify(int index, modify_func func, NoCaucy = {})
+			void modify(int index, modify_func func, NoCauchy = {})
 			{
 				_pImpl->modify(index, index, func);
 			}
@@ -64,9 +64,9 @@ namespace RSY_TOOL
 			\**************************************/
 			//Cauchy
 			/*
-			void modify(int index, modify_func func, Caucy)
+			void modify(int index, modify_func func, Cauchy)
 			{
-				_pImpl->modify(index, index, func, __CAUCY_FUNC_);
+				_pImpl->modify(index, index, func, __CAUCHY_FUNC_);
 			}
 			*/
 
@@ -86,23 +86,23 @@ namespace RSY_TOOL
 			}
 
 
-			//NoCaucy
-			void modify(int start, int end, const modify_func& func, NoCaucy = {})
+			//NoCauchy
+			void modify(int start, int end, const modify_func& func, NoCauchy = {})
 			{
 				_pImpl->modify(start, end, func);
 			}
 
 
 
-			//Optimization for Caucy Function
-			//Caucy
+			//Optimization for Cauchy Function
+			//Cauchy
 			/**************************************\
 			* Cauchy function not supported so far *
 			\**************************************/
 			/*
-			void modify(int start, int end, const modify_func& func, Caucy)
+			void modify(int start, int end, const modify_func& func, Cauchy)
 			{
-				_pImpl->modify(start, end, func, __CAUCY_FUNC_);
+				_pImpl->modify(start, end, func, __CAUCHY_FUNC_);
 			}
 			*/
 

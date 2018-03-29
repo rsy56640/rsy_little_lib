@@ -14,10 +14,10 @@ namespace RSY_TOOL
 	{
 
 		typedef struct {} Function;
-		typedef struct :public Function {} Caucy;
-		typedef struct :public Function {} NoCaucy;
+		typedef struct :public Function {} Cauchy;
+		typedef struct :public Function {} NoCauchy;
 
-#define __CAUCY_FUNC_ Caucy{} 
+#define __CAUCHY_FUNC_ Cauchy{} 
 
 
 		//SegmentTreeImpl Template
@@ -50,7 +50,8 @@ namespace RSY_TOOL
 
 				value_cache.resize(_size - 1);
 				std::for_each(value_cache.begin(), value_cache.end(),
-					[&Identity_Element](_Ty& val) {val = Identity_Element; });
+					[&Identity_Element](_STD pair<_Ty, cache>& val)
+				{val = _STD make_pair(Identity_Element, false); });
 
 			}
 
@@ -110,7 +111,7 @@ namespace RSY_TOOL
 
 			//NoCauchy
 			void modify(const int start, const int end,
-				const modify_func& func, NoCaucy = {})
+				const modify_func& func, NoCauchy = {})
 			{
 
 				if (start < ST[0]->start() || end > ST[0]->end())
@@ -124,14 +125,14 @@ namespace RSY_TOOL
 
 			//Cauchy
 			void modify(const int start, const int end,
-				const modify_func& func, Caucy)
+				const modify_func& func, Cauchy)
 			{
 
 				if (start < ST[0]->start() || end > ST[0]->end())
 					throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
 
-				doModify(0, start, end, func, __CAUCY_FUNC_);
+				doModify(0, start, end, func, __CAUCHY_FUNC_);
 
 			}
 
@@ -168,7 +169,7 @@ namespace RSY_TOOL
 			//value cache:
 			//store the value that represents the any element in the range
 			//it should be updated when necessary
-			vector<_Ty> value_cache;
+			vector<_STD pair<_Ty, cache> > value_cache;
 
 
 			//_Func是一个_Ty上的二元代数运算符，满足结合律、交换律，有幺元。
@@ -243,7 +244,7 @@ namespace RSY_TOOL
 
 				//if the value_cache store the value of the range,
 				//then set the next 2 child appropriate.
-				if (!(value_cache[index] == _Identity_Element))
+				if (value_cache[index].second)
 				{
 
 					//eliminate augment value
@@ -251,10 +252,10 @@ namespace RSY_TOOL
 
 
 					//adjust the cache
-					const _Ty& value = value_cache[index];
+					const _Ty& value = value_cache[index].first;
 
 					//update the cache
-					value_cache[index] = _Identity_Element;
+					value_cache[index] = _STD make_pair(_Identity_Element, false);
 
 					_Ty temp = _Identity_Element;
 					for (int i = 0; i < sub_interval_length; ++i)
@@ -266,8 +267,8 @@ namespace RSY_TOOL
 					//update the next level if necessary
 					if ((index << 1) + 1 < _size - 1)
 					{
-						value_cache[(index << 1) + 1] = value;
-						value_cache[(index << 1) + 2] = value;
+						value_cache[(index << 1) + 1] = _STD make_pair(value, true);
+						value_cache[(index << 1) + 2] = _STD make_pair(value, true);
 						aug[(index << 1) + 1] = _Identity_Element;
 						aug[(index << 1) + 2] = _Identity_Element;
 					}
@@ -306,33 +307,34 @@ namespace RSY_TOOL
 					//then update the augmentation field of the next level.
 					if ((index << 1) + 1 < _size - 1)
 					{
-						auto _func = [this, &_value](_Ty& aug_value)->void
-						{
-							aug_value = _STD move(_Func(aug_value, _value));
-						};
-
 
 						//if next level has cache value
 						//then update
-						if (!(value_cache[(index << 1) + 1] == _Identity_Element))
+						if (value_cache[(index << 1) + 1].second)
 						{
 							pushDown((index << 1) + 1);
 						}
 
 
-						if (!(value_cache[(index << 1) + 2] == _Identity_Element))
+						if (value_cache[(index << 1) + 2].second)
 						{
 							pushDown((index << 1) + 2);
 						}
 
 
+						auto _func = [this, &_value](_Ty& aug_value)->void
+						{
+							aug_value = _STD move(_Func(aug_value, _value));
+						};
+
 						//update the next level's augmentation field.
+						//NB: if(pushDownaug) the augment should _Identity_Element 
 						_func(aug[(index << 1) + 1]);
 						_func(aug[(index << 1) + 2]);
 
-
-
 					}
+
+
 
 				}//no augmentation
 
@@ -351,7 +353,7 @@ namespace RSY_TOOL
 
 				//if cache stores some value
 				if (index < _size - 1)
-					if (!(value_cache[index] == _Identity_Element))
+					if (value_cache[index].second)
 					{
 
 						//eliminate augment_value
@@ -360,8 +362,9 @@ namespace RSY_TOOL
 						const int _length = ST[index]->end() - ST[index]->start() + 1;
 
 						//adjust the cache
-						value_cache[index] = _STD move(_Func(value_cache[index], aug_value));
-						const _Ty& value = value_cache[index];
+						value_cache[index] = _STD make_pair
+						((_Func(value_cache[index].first, aug_value)), true);
+						const _Ty& value = value_cache[index].first;
 
 						_Ty temp = _Identity_Element;
 						for (int i = 0; i < _length; ++i)
@@ -395,7 +398,13 @@ namespace RSY_TOOL
 
 				//querying segment includes root segment
 				if (start <= left && right <= end)
+				{
+
+					adjust(index, _Identity_Element);
+
 					return ST[index]->value();
+
+				}
 
 
 				//update to the next level
@@ -457,7 +466,7 @@ namespace RSY_TOOL
 					//update cache and augment
 					if (index < _size - 1)
 					{
-						value_cache[index] = value;
+						value_cache[index] = _STD make_pair(value, true);
 						aug[index] = _Identity_Element;
 					}
 
@@ -568,7 +577,7 @@ namespace RSY_TOOL
 			//@
 			//@		modify_func:	NoCommutative !!!
 			void doModify(const int index, const int start, const int end,
-				const modify_func& func, NoCaucy = {})
+				const modify_func& func, NoCauchy = {})
 			{
 
 				//since the function is NoCommutive,
@@ -593,7 +602,7 @@ namespace RSY_TOOL
 			//@
 			//@		modify_func:	Commutative !!!!
 			void doModify(const int index, const int start, const int end,
-				const modify_func& func, Caucy)
+				const modify_func& func, Cauchy)
 			{
 
 				int left = ST[index]->start();

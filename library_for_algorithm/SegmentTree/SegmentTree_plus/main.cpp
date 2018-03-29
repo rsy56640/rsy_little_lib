@@ -44,13 +44,13 @@ int main()
 {
 	cout << time(NULL) << endl;
 	srand(static_cast<unsigned int>(time(NULL)));
-	const int size = 50;
+	const int size = 16;
 	vector<int> v(size);
 	for (int i = 0; i < size; ++i)v[i] = rand() % 100;
 
 	//record the error
-	[[maybe_unused]]
-	vector<std::pair<int, int> > errnum;
+	//[[maybe_unused]]
+	std::vector<std::pair<int, int> > errnum;
 
 	A _ST{ v };
 
@@ -62,8 +62,11 @@ int main()
 		for (int i = 0; i < size; ++i)
 		{
 
-			ST.modify(3, 14, 5);
-			_ST.modify(3, 14, 5);
+			ST.modify(3, 6, i + 1);
+			_ST.modify(3, 6, i + 1);
+
+			int _ans = _ST.query(0, 4);
+			int ans = ST.query(0, 4);
 
 			for (int j = 0; j <= i; ++j)
 			{

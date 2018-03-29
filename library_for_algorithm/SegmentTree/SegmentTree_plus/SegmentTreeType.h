@@ -21,6 +21,8 @@ namespace RSY_TOOL
 		struct SegmentTreeType
 		{
 
+			using cache = bool;
+
 			using value_type = typename std::remove_reference<_Ty>::type;
 
 			using reference_type = typename value_type&;

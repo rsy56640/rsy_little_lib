@@ -4,7 +4,7 @@
 #include <time.h>
 
 using namespace std;
-using namespace MySegmentTree;
+using namespace RSY_TOOL::MySegmentTree;
 
 int foo(int a, int b)
 {
@@ -15,46 +15,78 @@ int foo(int a, int b)
 class A {
 public:
 	A(const vector<int>& v) :value(v) {}
-
-
+	int query(int start, int end)
+	{
+		int sum = 0;
+		for (int i = start; i <= end; ++i)
+			sum += value[i];
+		return sum;
+	}
+	void modify(int start, int end, int _value)
+	{
+		for (int i = start; i <= end; ++i)
+			value[i] = _value;
+	}
+	void augment(int start, int end, int aug)
+	{
+		for (int i = start; i <= end; ++i)
+			value[i] += aug;
+	}
 
 private:
 	vector<int> value;
 };
 
 
-void fff(int = {})
-{
 
-}
 
 int main()
 {
-
-	srand(time(NULL));
+	cout << time(NULL) << endl;
+	srand(static_cast<unsigned int>(time(NULL)));
 	const int size = 50;
 	vector<int> v(size);
-	for (int i = 0; i < size; ++i)v[i] = 1;
-	//rand() % 100;
+	for (int i = 0; i < size; ++i)v[i] = rand() % 100;
+
+	//record the error
+	[[maybe_unused]]
 	vector<std::pair<int, int> > errnum;
-	SegmentTree<int> ST(v, foo, 0);
+
+	A _ST{ v };
 
 	try
 	{
-		ST.modify_augment(0, 11, 1);
+
+		SegmentTree<int> ST(v, foo, 0);
+
 		for (int i = 0; i < size; ++i)
+		{
+
+			ST.modify(3, 14, 5);
+			_ST.modify(3, 14, 5);
+
 			for (int j = 0; j <= i; ++j)
 			{
+
 				int ans = ST.query(j, i);
-				int correct_ans = i - j + 1;
-				if (i <= 11)correct_ans *= 2;
-				else if (j <= 11)correct_ans += 12 - j;
-				if (ans != correct_ans)
+				int _ans = _ST.query(j, i);
+				cout << j << "\t" << i;
+
+				if (ans != _ans)
 				{
-					cout << j << "\t" << i << "\t" << ans << endl;
+					cout << "\t" << ans << "\t" << _ans << endl;
 					errnum.push_back(std::make_pair(j, i));
 				}
+
+				else cout << endl;
+
 			}
+
+			//ST.augment(28, 44, 1);
+			//_ST.augment(28, 44, 1);
+
+		}
+
 
 		/*
 		int a = ST.query(0, 2);

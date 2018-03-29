@@ -7,36 +7,40 @@
 #include <exception>
 #include <string>
 
-namespace MySegmentTree
+namespace RSY_TOOL
 {
 
-	template<class _Ty> class SegmentTreeException :public exception
+	namespace MySegmentTree
 	{
 
-	public:
-		SegmentTreeException(const std::string& msg)
-			:_msg(msg) {}
-
-		const char* what() const noexcept
+		template<class _Ty> class SegmentTreeException :public exception
 		{
-			return "SegmentTree Exception";
-		}
 
-	private:
+		public:
+			SegmentTreeException(const std::string& msg)
+				:_msg(msg) {}
 
-		std::string _msg;
+			const char* what() const noexcept
+			{
+				return "SegmentTree Exception";
+			}
+
+		private:
+
+			std::string _msg;
 
 
-		friend
-			std::ostream& operator<<(std::ostream& os, const SegmentTreeException<_Ty>& e)
-		{
-			os << e._msg;
-			return os;
-		}
+			friend
+				std::ostream& operator<<(std::ostream& os, const SegmentTreeException<_Ty>& e)
+			{
+				os << e._msg;
+				return os;
+			}
 
-	};
+		};
+
+	}
 
 }
-
 
 #endif // !_SEGMENTTREEEXCEPTION_H

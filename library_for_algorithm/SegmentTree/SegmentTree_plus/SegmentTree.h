@@ -4,105 +4,128 @@
 #include "SegmentTreeImpl.h"
 
 
-namespace MySegmentTree
+namespace RSY_TOOL
 {
 
-
-	//SegmentTree Template
-	template<class _Ty> class SegmentTree :public SegmentTreeType<_Ty>
+	namespace MySegmentTree
 	{
 
-		using PImpl = typename std::tr1::shared_ptr<SegmentTreeImpl<_Ty> >;
 
-	public:
-
-		//由于lazy evaluation，要求运算对该类型构成 可交换幺半群
-		SegmentTree(const vector<_Ty>& Vec, const Func& func, const _Ty& Identity_Element)
-			:_pImpl(make_shared<SegmentTreeImpl<_Ty> >(Vec, func, Identity_Element)) {}
-
-
-		//查询操作，时间复杂度O(logn)
-		_Ty query(int start, int end)
+		//SegmentTree Template
+		template<class _Ty> class SegmentTree :public SegmentTreeType<_Ty>
 		{
-			return _pImpl->query(start, end);
-		}
+
+			using PImpl = typename std::tr1::shared_ptr<SegmentTreeImpl<_Ty> >;
+
+		public:
+
+			//由于lazy evaluation，要求运算对该类型构成 可交换幺半群
+			SegmentTree(const vector<_Ty>& Vec, const Func& func, const _Ty& Identity_Element)
+				:_pImpl(make_shared<SegmentTreeImpl<_Ty> >(Vec, func, Identity_Element)) {}
 
 
-		//修改操作，时间复杂度O(logn)
-
-		//单点修改
-		void modify(int index, const _Ty& value)
-		{
-			_pImpl->modify(index, index, value);
-		}
+			//查询操作，时间复杂度O(logn)
+			_Ty query(int start, int end)
+			{
+				return _pImpl->query(start, end);
+			}
 
 
-		void modify_augment(int index, const _Ty& aug_value)
-		{
-			_pImpl->modify_augment(index, index, aug_value);
-		}
+			_Ty query(int start, int end) const
+			{
+				return _pImpl->query(start, end);
+			}
 
 
-		//NoCommutive
-		void modify(int index, modify_func func, NoCommutive = {})
-		{
-			_pImpl->modify(index, index, func);
-		}
+			//修改操作，时间复杂度O(logn)
+
+			//单点修改
+			void modify(int index, const _Ty& value)
+			{
+				_pImpl->modify(index, index, value);
+			}
 
 
-		//Commutive
-		void modify(int index, modify_func func, Commutive)
-		{
-			_pImpl->modify(index, index, func, Commutive{});
-		}
+			void augment(int index, const _Ty& aug_value)
+			{
+				_pImpl->modify_augment(index, index, aug_value);
+			}
+
+
+			//NoCaucy
+			void modify(int index, modify_func func, NoCaucy = {})
+			{
+				_pImpl->modify(index, index, func);
+			}
+
+
+			/**************************************\
+			* Cauchy function not supported so far *
+			\**************************************/
+			//Cauchy
+			/*
+			void modify(int index, modify_func func, Caucy)
+			{
+				_pImpl->modify(index, index, func, __CAUCY_FUNC_);
+			}
+			*/
 
 
 
-		//区间修改
+			//区间修改
 
-		void modify(int start, int end, const _Ty& value)
-		{
-			_pImpl->modify(start, end, value);
-		}
-
-
-		void modify_augment(int start, int end, const _Ty& aug_value)
-		{
-			_pImpl->modify_augment(start, end, aug_value);
-		}
+			void modify(int start, int end, const _Ty& value)
+			{
+				_pImpl->modify(start, end, value);
+			}
 
 
-		//NoCommutive
-		void modify(int start, int end, const modify_func& func, NoCommutive = {})
-		{
-			_pImpl->modify(start, end, func);
-		}
+			void augment(int start, int end, const _Ty& aug_value)
+			{
+				_pImpl->modify_augment(start, end, aug_value);
+			}
 
 
-		//Optimization for Commutive Function
-		//Commutive
-		void modify(int start, int end, const modify_func& func, Commutive)
-		{
-			_pImpl->modify(start, end, func, Commutive{});
-		}
+			//NoCaucy
+			void modify(int start, int end, const modify_func& func, NoCaucy = {})
+			{
+				_pImpl->modify(start, end, func);
+			}
 
 
-		SegmentTree(const SegmentTree&) = delete;
 
-		SegmentTree& operator=(const SegmentTree&) = delete;
+			//Optimization for Caucy Function
+			//Caucy
+			/**************************************\
+			* Cauchy function not supported so far *
+			\**************************************/
+			/*
+			void modify(int start, int end, const modify_func& func, Caucy)
+			{
+				_pImpl->modify(start, end, func, __CAUCY_FUNC_);
+			}
+			*/
 
-		SegmentTree(SegmentTree&&) = delete;
-
-		SegmentTree& operator=(SegmentTree&&) = delete;
-
-		~SegmentTree() = default;
 
 
-	private:
+			SegmentTree(const SegmentTree&) = delete;
 
-		PImpl _pImpl;
+			SegmentTree& operator=(const SegmentTree&) = delete;
 
-	};
+			SegmentTree(SegmentTree&&) = delete;
+
+			SegmentTree& operator=(SegmentTree&&) = delete;
+
+			~SegmentTree() = default;
+
+
+		private:
+
+			PImpl _pImpl;
+
+		};
+
+	}
 
 }
 

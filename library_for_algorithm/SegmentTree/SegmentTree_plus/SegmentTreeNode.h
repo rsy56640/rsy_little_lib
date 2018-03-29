@@ -3,72 +3,76 @@
 #define _SEGMENTTREENODE_H
 #include "SegmentTreeType.h"
 
-
-namespace MySegmentTree
+namespace RSY_TOOL
 {
 
-	//SegmentTreeNode Template
-	template<class _Ty> class SegmentTreeNode :public SegmentTreeType<_Ty>
+	namespace MySegmentTree
 	{
 
-	public:
-
-		SegmentTreeNode(int start, int end, _Ty val)
-			:_start(start), _end(end), _val(val) {}
-
-
-		const int start() const noexcept
+		//SegmentTreeNode Template
+		template<class _Ty> class SegmentTreeNode :public SegmentTreeType<_Ty>
 		{
-			return _start;
-		}
+
+		public:
+
+			SegmentTreeNode(int start, int end, _Ty val)
+				:_start(start), _end(end), _val(val) {}
 
 
-		const int end() const noexcept
-		{
-			return _end;
-		}
+			const int start() const noexcept
+			{
+				return _start;
+			}
 
 
-		//value_type
-		_Ty val() const noexcept
-		{
-			return _val;
-		}
+			const int end() const noexcept
+			{
+				return _end;
+			}
 
 
-		//const reference_type
-		const _Ty& value() const noexcept
-		{
-			return _val;
-		}
+			//value_type
+			_Ty val() const noexcept
+			{
+				return _val;
+			}
 
 
-		void setValue(_Ty&& value)
-		{
-			_val = _STD forward<_Ty>(value);
-		}
+			//const reference_type
+			const _Ty& value() const noexcept
+			{
+				return _val;
+			}
+
+
+			void setValue(_Ty&& value)
+			{
+				_val = _STD forward<_Ty>(value);
+			}
 
 
 
-		SegmentTreeNode(const SegmentTreeNode&) = delete;
+			SegmentTreeNode(const SegmentTreeNode&) = delete;
 
-		SegmentTreeNode& operator=(const SegmentTreeNode&) = delete;
+			SegmentTreeNode& operator=(const SegmentTreeNode&) = delete;
 
-		SegmentTreeNode(SegmentTreeNode&&) = delete;
+			SegmentTreeNode(SegmentTreeNode&&) = delete;
 
-		SegmentTreeNode& operator=(SegmentTreeNode&&) = delete;
+			SegmentTreeNode& operator=(SegmentTreeNode&&) = delete;
 
-		~SegmentTreeNode() = default;
+			~SegmentTreeNode() = default;
 
 
-	private:
+		private:
 
-		const int _start, _end;
+			const int _start, _end;
 
-		_Ty _val;
+			_Ty _val;
 
-	};
+		};
 
-}//end namespace
+	}
+
+}
 
 #endif // !_SEGMENTTREENODE_H

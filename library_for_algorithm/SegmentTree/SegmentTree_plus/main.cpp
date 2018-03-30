@@ -6,7 +6,7 @@
 using namespace std;
 using namespace RSY_TOOL::MySegmentTree;
 
-int foo(int a, int b)
+int foo(const int a, const int b)
 {
 	return a + b;
 }
@@ -42,6 +42,10 @@ const int times = 1;
 static int _errno__ = 0;
 const int _size = 100;
 
+
+
+//
+//cache 是向下标记的
 int main()
 {
 	for (int k = 0; k < times; ++k)

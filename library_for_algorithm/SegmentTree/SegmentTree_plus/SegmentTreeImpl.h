@@ -62,6 +62,7 @@ namespace RSY_TOOL
 				if (start > end)
 					throw SegmentTreeException<_Ty>("The querying range is invalid!!");
 
+				adjust(0, _Identity_Element);
 
 				return doQuery(0, start, end);
 
@@ -91,6 +92,7 @@ namespace RSY_TOOL
 				if (start < ST[0]->start() || end > ST[0]->end())
 					throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
+				adjust(0, _Identity_Element);
 
 				doModify(0, start, end, value);
 
@@ -103,6 +105,7 @@ namespace RSY_TOOL
 				if (start < ST[0]->start() || end > ST[0]->end() || start > end)
 					throw SegmentTreeException<_Ty>("The modified range is invalid!!");
 
+				adjust(0, _Identity_Element);
 
 				doModify_augment(0, start, end, aug_value);
 
@@ -117,6 +120,7 @@ namespace RSY_TOOL
 				if (start < ST[0]->start() || end > ST[0]->end())
 					throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
+				adjust(0, _Identity_Element);
 
 				doModify(0, start, end, func);
 
@@ -131,6 +135,7 @@ namespace RSY_TOOL
 				if (start < ST[0]->start() || end > ST[0]->end())
 					throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
+				adjust(0, _Identity_Element);
 
 				doModify(0, start, end, func, __HOMEOMORPHISM_FUNC_);
 
@@ -254,7 +259,7 @@ namespace RSY_TOOL
 
 
 					//adjust the cache
-					const _Ty& value = value_cache[index].first;
+					const _Ty value = value_cache[index].first;
 
 					//update the cache
 					value_cache[index] = _STD make_pair(_Identity_Element, false);
@@ -284,7 +289,7 @@ namespace RSY_TOOL
 				if (!(aug[index] == _Identity_Element))
 				{
 
-					const _Ty& _value = aug[index];
+					const _Ty _value = aug[index];
 
 					aug[index] = _Identity_Element;				//augmentation update
 
@@ -367,15 +372,13 @@ namespace RSY_TOOL
 						//adjust the cache
 						value_cache[index] = _STD make_pair
 						((_Func(value_cache[index].first, aug_value)), true);
-						const _Ty& value = value_cache[index].first;
+						const _Ty value = value_cache[index].first;
 
 						_Ty temp = _Identity_Element;
 						for (int i = 0; i < _length; ++i)
 							temp = _STD move(_Func(temp, value));
 
 						ST[index]->setValue(_STD move(temp));
-
-						return;
 
 					}
 
@@ -486,12 +489,12 @@ namespace RSY_TOOL
 				//so update to the next level
 				else {
 
+					//adjust(index, _Identity_Element);
 					pushDown(index);
 
 					if ((index << 1) + 1 < (_size << 1))
 					{
 						doModify((index << 1) + 1, start, end, value);
-						//cout << ++counter << endl;
 						doModify((index << 1) + 2, start, end, value);
 
 						ST[index]->setValue(
@@ -533,7 +536,7 @@ namespace RSY_TOOL
 					//if the value of the range is not set appropriate,
 					//reset the value_cache with the augment value.
 					adjust(index, aug_value);
-
+					//pushDown(index);
 
 					//find the corresponding interval and update the value,
 					const int _length = right - left + 1;

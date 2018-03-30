@@ -38,77 +38,105 @@ private:
 };
 
 
-
+const int times = 1;
+static int _errno__ = 0;
+const int _size = 100;
 
 int main()
 {
-	cout << time(NULL) << endl;
-	srand(static_cast<unsigned int>(time(NULL)));
-	const int size = 16;
-	vector<int> v(size);
-	for (int i = 0; i < size; ++i)v[i] = rand() % 100;
-
-	//record the error
-	//[[maybe_unused]]
-	std::vector<std::pair<int, int> > errnum;
-
-	A a{ v };
-
-	try
+	for (int k = 0; k < times; ++k)
 	{
 
-		SegmentTree<int> ST(v, foo, 0);
 
-		for (int i = 0; i < size; ++i)
+		srand(static_cast<unsigned int>(time(NULL)));
+
+		vector<int> v(_size);
+		for (int i = 0; i < _size; ++i)v[i] = rand() % (2 * _size);
+
+		[[maybe_unused]]
+		std::vector<std::pair<int, int> > errnum;	//record the error
+
+		A a{ v };
+
+		try
 		{
 
-			//ST.modify(3, 6, i + 1);
-			//a.modify(3, 6, i + 1);
+			SegmentTree<int> ST(v, foo, 0);
 
-			int _ans = a.query(0, 4);
-			int ans = ST.query(0, 4);
-
-			for (int j = 0; j <= i; ++j)
+			for (int i = 0; i < _size; ++i)
 			{
 
-				int ans = ST.query(j, i);
-				int _ans = a.query(j, i);
-				cout << j << "\t" << i;
+				int left = rand() % _size;
+				int right = rand() % _size;
+				int value = rand() % (2 * _size);
+				if (left > right)swap(left, right);
 
-				if (ans != _ans)
+				///*
+				a.modify(left, right, value);
+				ST.modify(left, right, value);
+				cout << "modify: [" << left << ", " << right << "] as " << value << endl;
+				//*/
+
+				for (int j = 0; j <= i; ++j)
 				{
-					cout << "\t" << ans << "\t" << _ans << endl;
-					errnum.push_back(std::make_pair(j, i));
+
+					int ans = ST.query(j, i);
+					int _ans = a.query(j, i);
+					//cout << j << "\t" << i;
+
+					if (ans != _ans)
+					{
+						cout << j << "\t" << i << "\t" << ans << "\t" << _ans
+							<< "\t" << ans - _ans << "\t" << "\t" << ++_errno__ << endl;
+						errnum.push_back(std::make_pair(j, i));
+					}
+
+					//else cout << endl;
 				}
 
-				else cout << endl;
+				left = rand() % _size;
+				right = rand() % _size;
+				int augment = rand() % 30;
+				if (left > right)swap(left, right);
+
+				///*
+				ST.augment(left, right, augment);
+				a.augment(left, right, augment);
+				cout << "augment [" << left << ", " << right << "]" << " by " << augment << endl;
+				//*/
 
 			}
 
-			ST.augment(3, 7, 1);
-			a.augment(3, 7, 1);
+
+			/*
+			int a = ST.query(0, 2);
+
+			ST.modify(0, 4);
+
+			int b = ST.query(0, 1);
+
+			ST.modify(2, [](int x)->int {return x + 4; });
+
+			int c = ST.query(2, 3);
+			*/
 
 		}
+		catch (SegmentTreeException<int>& e)
+		{
+			cout << e << endl;
+		}
 
-
-		/*
-		int a = ST.query(0, 2);
-
-		ST.modify(0, 4);
-
-		int b = ST.query(0, 1);
-
-		ST.modify(2, [](int x)->int {return x + 4; });
-
-		int c = ST.query(2, 3);
-		*/
+		cout << "errno: " << _errno__ << endl;
 
 	}
-	catch (SegmentTreeException<int>& e)
-	{
-		cout << e << endl;
-	}
 
+
+	cout << "\n\n\n";
+
+	const int total = (_size - 1) * _size / 2;
+	cout << _errno__ << endl;
+	cout << (total * times) << endl;
+	cout << _errno__ * 1.0 / (1.0 * total * times) << endl;
 
 
 	system("pause");

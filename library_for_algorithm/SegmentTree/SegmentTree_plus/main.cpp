@@ -52,7 +52,7 @@ int main()
 	//[[maybe_unused]]
 	std::vector<std::pair<int, int> > errnum;
 
-	A _ST{ v };
+	A a{ v };
 
 	try
 	{
@@ -62,17 +62,17 @@ int main()
 		for (int i = 0; i < size; ++i)
 		{
 
-			ST.modify(3, 6, i + 1);
-			_ST.modify(3, 6, i + 1);
+			//ST.modify(3, 6, i + 1);
+			//a.modify(3, 6, i + 1);
 
-			int _ans = _ST.query(0, 4);
+			int _ans = a.query(0, 4);
 			int ans = ST.query(0, 4);
 
 			for (int j = 0; j <= i; ++j)
 			{
 
 				int ans = ST.query(j, i);
-				int _ans = _ST.query(j, i);
+				int _ans = a.query(j, i);
 				cout << j << "\t" << i;
 
 				if (ans != _ans)
@@ -85,8 +85,8 @@ int main()
 
 			}
 
-			//ST.augment(28, 44, 1);
-			//_ST.augment(28, 44, 1);
+			ST.augment(3, 7, 1);
+			a.augment(3, 7, 1);
 
 		}
 

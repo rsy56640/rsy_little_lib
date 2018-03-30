@@ -53,20 +53,20 @@ namespace RSY_TOOL
 
 
 			//NoCaucy
-			void modify(int index, modify_func func, NoCauchy = {})
+			void modify(int index, modify_func func, NoHomeomorphism = {})
 			{
 				_pImpl->modify(index, index, func);
 			}
 
 
-			/**************************************\
-			* Cauchy function not supported so far *
-			\**************************************/
-			//Cauchy
+			/*********************************************\
+			* Homeomorphism function not supported so far *
+			\*********************************************/
+			//Homeomorphism
 			/*
-			void modify(int index, modify_func func, Cauchy)
+			void modify(int index, modify_func func, Homeomorphism)
 			{
-				_pImpl->modify(index, index, func, __CAUCHY_FUNC_);
+				_pImpl->modify(index, index, func, __HOMEOMORPHISM_FUNC_);
 			}
 			*/
 
@@ -86,23 +86,23 @@ namespace RSY_TOOL
 			}
 
 
-			//NoCauchy
-			void modify(int start, int end, const modify_func& func, NoCauchy = {})
+			//NoHomeomorphism
+			void modify(int start, int end, const modify_func& func, NoHomeomorphism = {})
 			{
 				_pImpl->modify(start, end, func);
 			}
 
 
 
-			//Optimization for Cauchy Function
-			//Cauchy
-			/**************************************\
-			* Cauchy function not supported so far *
-			\**************************************/
+			//Optimization for Homeomorphism Function
+			//Homeomorphism
+			/*********************************************\
+			* Homeomorphism function not supported so far *
+			\*********************************************/
 			/*
-			void modify(int start, int end, const modify_func& func, Cauchy)
+			void modify(int start, int end, const modify_func& func, Homeomorphism)
 			{
-				_pImpl->modify(start, end, func, __CAUCHY_FUNC_);
+				_pImpl->modify(start, end, func, __HOMEOMORPHISM_FUNC_);
 			}
 			*/
 

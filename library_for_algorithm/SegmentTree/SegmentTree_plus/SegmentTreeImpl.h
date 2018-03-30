@@ -14,10 +14,10 @@ namespace RSY_TOOL
 	{
 
 		typedef struct {} Function;
-		typedef struct :public Function {} Cauchy;
-		typedef struct :public Function {} NoCauchy;
+		typedef struct :public Function {} Homeomorphism;
+		typedef struct :public Function {} NoHomeomorphism;
 
-#define __CAUCHY_FUNC_ Cauchy{} 
+#define __HOMEOMORPHISM_FUNC_ Homeomorphism{} 
 
 
 		//SegmentTreeImpl Template
@@ -109,9 +109,9 @@ namespace RSY_TOOL
 			}
 
 
-			//NoCauchy
+			//NoHomeomorphism
 			void modify(const int start, const int end,
-				const modify_func& func, NoCauchy = {})
+				const modify_func& func, NoHomeomorphism = {})
 			{
 
 				if (start < ST[0]->start() || end > ST[0]->end())
@@ -123,16 +123,16 @@ namespace RSY_TOOL
 			}
 
 
-			//Cauchy
+			//Homeomorphism
 			void modify(const int start, const int end,
-				const modify_func& func, Cauchy)
+				const modify_func& func, Homeomorphism)
 			{
 
 				if (start < ST[0]->start() || end > ST[0]->end())
 					throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
 
-				doModify(0, start, end, func, __CAUCHY_FUNC_);
+				doModify(0, start, end, func, __HOMEOMORPHISM_FUNC_);
 
 			}
 
@@ -227,7 +227,7 @@ namespace RSY_TOOL
 			}
 
 
-			//suppose that the upper level is satisfied. (including this level)!!!
+			//suppose that the upper level is satisfied("value"). (including this level)!!!
 			//push down the accumulation to the next level.
 			//
 			//@ Parameter list:
@@ -235,7 +235,9 @@ namespace RSY_TOOL
 			void pushDown(const int index)
 			{
 
+				//for safety
 				if (index >= _size - 1)return;
+
 
 				//length of the sub-interval
 				const int sub_interval_length =
@@ -289,13 +291,15 @@ namespace RSY_TOOL
 
 					//accumulate funciton to update the the interval value of the next level.
 					std::tr1::function<void(SegmentTreeNode_ptr&)> _func_accumulate =
-						[this, sub_interval_length, &_value](SegmentTreeNode_ptr& STNode_ptr)->void
+						[this, sub_interval_length, &_value](SegmentTreeNode_ptr& STNode_ptr)
 					{
 						_Ty value = STNode_ptr->val();
+
 						for (int i = 0; i < sub_interval_length; ++i)
 						{
 							value = _STD move(_Func(value, _value));
 						}
+
 						STNode_ptr->setValue(_STD move(value));
 					};
 
@@ -333,7 +337,6 @@ namespace RSY_TOOL
 						_func(aug[(index << 1) + 2]);
 
 					}
-
 
 
 				}//no augmentation
@@ -534,9 +537,11 @@ namespace RSY_TOOL
 
 					//find the corresponding interval and update the value,
 					const int _length = right - left + 1;
+
 					_Ty temp = ST[index]->value();
 					for (int i = 0; i < _length; ++i)
 						temp = _STD move(_Func(temp, aug_value));
+
 					ST[index]->setValue(_STD move(temp));
 
 					return;
@@ -577,7 +582,7 @@ namespace RSY_TOOL
 			//@
 			//@		modify_func:	NoCommutative !!!
 			void doModify(const int index, const int start, const int end,
-				const modify_func& func, NoCauchy = {})
+				const modify_func& func, NoHomeomorphism = {})
 			{
 
 				//since the function is NoCommutive,
@@ -602,7 +607,7 @@ namespace RSY_TOOL
 			//@
 			//@		modify_func:	Commutative !!!!
 			void doModify(const int index, const int start, const int end,
-				const modify_func& func, Cauchy)
+				const modify_func& func, Homeomorphism)
 			{
 
 				int left = ST[index]->start();

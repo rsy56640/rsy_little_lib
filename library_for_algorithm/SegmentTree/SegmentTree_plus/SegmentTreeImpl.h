@@ -468,13 +468,7 @@ namespace RSY_TOOL
 
 				//querying segment includes root segment
 				if (start <= left && right <= end)
-				{
-
-					//adjust(index, _Identity_Element);
-
 					return ST[index]->value();
-
-				}
 
 
 				//update to the next level
@@ -590,7 +584,6 @@ namespace RSY_TOOL
 					//set the augmentation field
 					if (index < _size - 1)
 						adjust(index, aug_value);
-					//aug[index] = _STD move(_Func(aug[index], aug_value));
 
 
 					else

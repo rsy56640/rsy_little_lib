@@ -6,12 +6,8 @@
 using namespace std;
 using namespace RSY_TOOL::MySegmentTree;
 
-int foo(const int a, const int b)
-{
-	return a + b;
-}
 
-//对拍测试
+//class for test
 class A {
 public:
 	A(const vector<int>& v) :value(v) {}
@@ -43,9 +39,6 @@ static int _errno__ = 0;
 const int _size = 120;
 
 
-
-//
-//cache 是向下标记的
 int main()
 {
 	for (int k = 0; k < times; ++k)
@@ -65,7 +58,7 @@ int main()
 		try
 		{
 
-			SegmentTree<int> ST(v, foo, 0);
+			SegmentTree<int> ST(v, [](int a, int b)->int {return a + b; }, 0);
 
 			for (int i = 0; i < _size; ++i)
 			{

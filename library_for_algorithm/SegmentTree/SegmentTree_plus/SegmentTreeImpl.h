@@ -122,7 +122,7 @@ namespace RSY_TOOL
 				if (start < ST[0]->start() || end > ST[0]->end())
 					throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
-				adjust(0, _Identity_Element);
+				//adjust(0, _Identity_Element);
 
 				doModify(0, start, end, func);
 
@@ -137,7 +137,7 @@ namespace RSY_TOOL
 				if (start < ST[0]->start() || end > ST[0]->end())
 					throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
-				adjust(0, _Identity_Element);
+				//adjust(0, _Identity_Element);
 
 				doModify(0, start, end, func, __HOMEOMORPHISM_FUNC_);
 
@@ -446,7 +446,7 @@ namespace RSY_TOOL
 
 				}//at bottom
 
-			}
+			}//end function adjust(int, const _Ty)
 
 
 			//querying the total value interval [start, end] applied by _Func

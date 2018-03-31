@@ -9,3 +9,6 @@
     
     
 以后如果有机会可能还会写 可持久化线段树(persistent SegmentTree)
+   
+      
+一点感想：https://blog.csdn.net/rsy56640/article/details/79771219

@@ -6,3 +6,6 @@
 此版本系引入了lazy模式的线段树。     
 支持修改为某个给定值或提供一个增量。   
 用法见main.cpp      
+    
+    
+以后如果有机会可能还会写 可持久化线段树(persistent SegmentTree)

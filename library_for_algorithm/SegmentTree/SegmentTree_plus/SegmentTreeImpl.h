@@ -92,7 +92,7 @@ namespace RSY_TOOL
 				if (start < ST[0]->start() || end > ST[0]->end())
 					throw SegmentTreeException<_Ty>("The Index is invalid!!");
 
-				adjust(0, _Identity_Element);
+				//adjust(0, _Identity_Element);
 
 				doModify(0, start, end, value);
 
@@ -105,7 +105,9 @@ namespace RSY_TOOL
 				if (start < ST[0]->start() || end > ST[0]->end() || start > end)
 					throw SegmentTreeException<_Ty>("The modified range is invalid!!");
 
-				adjust(0, _Identity_Element);
+				//adjust(0, _Identity_Element);
+
+				if (aug_value == _Identity_Element)return;
 
 				doModify_augment(0, start, end, aug_value);
 
@@ -232,16 +234,15 @@ namespace RSY_TOOL
 			}
 
 
-			//suppose that the upper level is satisfied("value"). (including this level)!!!
-			//push down the accumulation to the next level.
-			//
+			//suppose that this level's value is satisfied, and cache\aug is set appropriate.
+			//then push down the aug/cache to the next level.
+			//such that the next level's value is satisfied, and cache\aug is set appropriate. 
+			//after pushDown, the current level's cache & augment has been null.
 			//@ Parameter list:
-			//@		const int index: the interval num
+			//@		const int index: the current node num
+			//@ Promise: set the next level appropriately.(including value/cache/aug)
 			void pushDown(const int index)
 			{
-
-				//for safety
-				if (index >= _size - 1)return;
 
 
 				//length of the sub-interval
@@ -285,13 +286,15 @@ namespace RSY_TOOL
 				}
 
 
+
+				//no cache value in this level
 				//adjust the augment
 				if (!(aug[index] == _Identity_Element))
 				{
 
 					const _Ty _value = aug[index];
 
-					aug[index] = _Identity_Element;				//augmentation update
+					aug[index] = _Identity_Element;			//augmentation update
 
 
 					//accumulate funciton to update the the interval value of the next level.
@@ -308,70 +311,114 @@ namespace RSY_TOOL
 						STNode_ptr->setValue(_STD move(value));
 					};
 
-					_func_accumulate(ST[(index << 1) + 1]);		//value update
-					_func_accumulate(ST[(index << 1) + 2]);		//value update
-
 
 					//if index is not at the bottom level of the augmentation field,
 					//then update the augmentation field of the next level.
 					if ((index << 1) + 1 < _size - 1)
 					{
 
-						//if next level has cache value
-						//then update
-						if (value_cache[(index << 1) + 1].second)
+						auto _func = [this, &_value](_Ty& value)->void
 						{
-							pushDown((index << 1) + 1);
-						}
-
-
-						if (value_cache[(index << 1) + 2].second)
-						{
-							pushDown((index << 1) + 2);
-						}
-
-
-						auto _func = [this, &_value](_Ty& aug_value)->void
-						{
-							aug_value = _STD move(_Func(aug_value, _value));
+							value = _STD move(_Func(value, _value));
 						};
 
-						//update the next level's augmentation field.
-						//NB: if(pushDownaug) the augment should _Identity_Element 
-						_func(aug[(index << 1) + 1]);
-						_func(aug[(index << 1) + 2]);
+
+						auto _func_cache =
+							[this, sub_interval_length]
+						(SegmentTreeNode_ptr& STNode_ptr, const _Ty& cache_value)
+						{
+							_Ty temp = _Identity_Element;
+
+							for (int i = 0; i < sub_interval_length; ++i)
+								temp = _STD move(_Func(cache_value, temp));
+
+							STNode_ptr->setValue(_STD move(temp));
+						};
+
+
+						bool left_child_has_cache = value_cache[(index << 1) + 1].second;
+						bool right_child_has_cache = value_cache[(index << 1) + 2].second;
+
+						//if next level has cache value,
+						//	then update the cache by augment.
+						//if not has cache,
+						//	then update the augment.
+						//finally update next level's value.
+
+						if (left_child_has_cache)
+						{
+							_func(value_cache[(index << 1) + 1].first);
+							aug[(index << 1) + 1] = _Identity_Element;
+							_func_cache(ST[(index << 1) + 1], value_cache[(index << 1) + 1].first);
+						}
+						else
+						{
+							_func(aug[(index << 1) + 1]);
+							_func_accumulate(ST[(index << 1) + 1]);
+						}
+
+
+						if (right_child_has_cache)
+						{
+							_func(value_cache[(index << 1) + 2].first);
+							aug[(index << 1) + 2] = _Identity_Element;
+							_func_cache(ST[(index << 1) + 2], value_cache[(index << 1) + 2].first);
+						}
+						else
+						{
+							_func(aug[(index << 1) + 2]);
+							_func_accumulate(ST[(index << 1) + 2]);
+						}
+
+						return;
 
 					}
 
 
-				}//no augmentation
+					//has augment, and at the bottom in the augmentaiton field
+					else
+					{
+						_func_accumulate(ST[(index << 1) + 1]);		//value update
+						_func_accumulate(ST[(index << 1) + 2]);		//value update
+					}
 
-			}
+
+				}
 
 
-			//adjust the index node. (adjust this level)!!!
+			}//end function	pushDown(int)
+
+
+			//adjust the index node.
 			/****************************************************************\
 			* usage: when you modify one level with augment, call adjust().  *
 			\****************************************************************/
 			//@ Parameter list:
 			//@		const int index: the interval num
 			//@		const _Ty& aug_value: augment
+			//@ Promise: adjust current node with augment
 			void adjust(const int index, const _Ty& aug_value)
 			{
 
 				//if cache stores some value
 				if (index < _size - 1)
+				{
+
+					const int _length = ST[index]->end() - ST[index]->start() + 1;
+
 					if (value_cache[index].second)
 					{
 
 						//eliminate augment_value
 						aug[index] = _Identity_Element;
 
-						const int _length = ST[index]->end() - ST[index]->start() + 1;
 
 						//adjust the cache
 						value_cache[index] = _STD make_pair
 						((_Func(value_cache[index].first, aug_value)), true);
+
+
+						//set the value
 						const _Ty value = value_cache[index].first;
 
 						_Ty temp = _Identity_Element;
@@ -381,6 +428,23 @@ namespace RSY_TOOL
 						ST[index]->setValue(_STD move(temp));
 
 					}
+
+
+					//no cache
+					//update aug[] and ST[]value.
+					else {
+
+						aug[index] = _STD move(_Func(aug[index], aug_value));
+
+						_Ty temp = ST[index]->value();
+						for (int i = 0; i < _length; ++i)
+							temp = _STD move(_Func(temp, aug_value));
+
+						ST[index]->setValue(_STD move(temp));
+
+					}
+
+				}//at bottom
 
 			}
 
@@ -406,7 +470,7 @@ namespace RSY_TOOL
 				if (start <= left && right <= end)
 				{
 
-					adjust(index, _Identity_Element);
+					//adjust(index, _Identity_Element);
 
 					return ST[index]->value();
 
@@ -450,10 +514,10 @@ namespace RSY_TOOL
 			* modify the range with substitution of the specific value *
 			\**********************************************************/
 			//@ Parameter list:
-			//@		index:
-			//@		start:
-			//@		end:
-			//@		value:
+			//@		index: current node
+			//@		start: start of the modifying rang
+			//@		end:   end of the modifying range
+			//@		value: the value to which the range wanted to be changed
 			void doModify(const int index, const int start, const int end, const _Ty& value)
 			{
 
@@ -489,22 +553,18 @@ namespace RSY_TOOL
 				//so update to the next level
 				else {
 
-					//adjust(index, _Identity_Element);
 					pushDown(index);
 
-					if ((index << 1) + 1 < (_size << 1))
-					{
-						doModify((index << 1) + 1, start, end, value);
-						doModify((index << 1) + 2, start, end, value);
+					doModify((index << 1) + 1, start, end, value);
+					doModify((index << 1) + 2, start, end, value);
 
-						ST[index]->setValue(
-							_STD move
-							(_Func(ST[(index << 1) + 1]->value(), ST[(index << 1) + 2]->value())));
-					}
+					ST[index]->setValue(
+						_STD move
+						(_Func(ST[(index << 1) + 1]->value(), ST[(index << 1) + 2]->value())));
 
 				}
 
-			}
+			}//end function doModify
 
 
 			//range updating with a augment value
@@ -513,7 +573,6 @@ namespace RSY_TOOL
 			//@		const int start:	start of modifing intereval
 			//@		const int end:		end of modifying interval
 			//@		const _Ty& value:	modifying value
-			//@ Promise:
 			void doModify_augment
 			(const int index, const int start, const int end, const _Ty& aug_value)
 			{
@@ -530,24 +589,15 @@ namespace RSY_TOOL
 
 					//set the augmentation field
 					if (index < _size - 1)
-						aug[index] = _STD move(_Func(aug[index], aug_value));
+						adjust(index, aug_value);
+					//aug[index] = _STD move(_Func(aug[index], aug_value));
 
 
-					//if the value of the range is not set appropriate,
-					//reset the value_cache with the augment value.
-					adjust(index, aug_value);
-					//pushDown(index);
+					else
+						ST[index]->setValue(
+							_STD move
+							(_Func(ST[index]->value(), aug_value)));
 
-					//find the corresponding interval and update the value,
-					const int _length = right - left + 1;
-
-					_Ty temp = ST[index]->value();
-					for (int i = 0; i < _length; ++i)
-						temp = _STD move(_Func(temp, aug_value));
-
-					ST[index]->setValue(_STD move(temp));
-
-					return;
 
 				}
 
@@ -575,23 +625,29 @@ namespace RSY_TOOL
 			/*************************************************\
 			*@ specialization for different type of function  *
 			\*************************************************/
-			/*****************************************************************************\
-			*@ Promise: func type should be NoCommutative semi-group against the type _Ty *
-			\*****************************************************************************/
+			/********************************************************************\
+			*@ Promise: func type should be NoHomeomorphism against the type _Ty *
+			\********************************************************************/
 			//ranging updating with modifying function
 			//@ Parameter list:
 			//@
 			//@
 			//@
-			//@		modify_func:	NoCommutative !!!
+			//@		modify_func:	NoHomeomorphism !!!
 			void doModify(const int index, const int start, const int end,
 				const modify_func& func, NoHomeomorphism = {})
 			{
 
 				//since the function is NoCommutive,
 				//so we have to modify each element respectively
+
+
+				/********************\
+				* such stupid method *
+				\********************/
 				for (int i = start; i <= end; ++i)
 					doModify(0, i, i, func(doQuery(0, i, i)));
+
 
 			}
 
@@ -600,15 +656,15 @@ namespace RSY_TOOL
 			/*************************************************\
 			*@ specialization for different type of function  *
 			\*************************************************/
-			/***************************************************************************\
-			*@ Promise: func type should be Commutative semi-group against the type _Ty *
-			\***************************************************************************/
+			/******************************************************************\
+			*@ Promise: func type should be Homeomorphism against the type _Ty *
+			\******************************************************************/
 			//ranging updating with modifying function
 			//@ Parameter list:
 			//@
 			//@
 			//@
-			//@		modify_func:	Commutative !!!!
+			//@		modify_func:	Homeomorphism !!!!
 			void doModify(const int index, const int start, const int end,
 				const modify_func& func, Homeomorphism)
 			{

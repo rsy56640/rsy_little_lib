@@ -38,9 +38,9 @@ private:
 };
 
 
-const int times = 1;
+const int times = 10;
 static int _errno__ = 0;
-const int _size = 100;
+const int _size = 120;
 
 
 
@@ -75,11 +75,11 @@ int main()
 				int value = rand() % (2 * _size);
 				if (left > right)swap(left, right);
 
-				///*
+
 				a.modify(left, right, value);
 				ST.modify(left, right, value);
 				cout << "modify: [" << left << ", " << right << "] as " << value << endl;
-				//*/
+
 
 				for (int j = 0; j <= i; ++j)
 				{
@@ -103,28 +103,15 @@ int main()
 				int augment = rand() % 30;
 				if (left > right)swap(left, right);
 
-				///*
+
 				ST.augment(left, right, augment);
 				a.augment(left, right, augment);
 				cout << "augment [" << left << ", " << right << "]" << " by " << augment << endl;
-				//*/
-
-			}
 
 
-			/*
-			int a = ST.query(0, 2);
+			}//end for-loop tests
 
-			ST.modify(0, 4);
-
-			int b = ST.query(0, 1);
-
-			ST.modify(2, [](int x)->int {return x + 4; });
-
-			int c = ST.query(2, 3);
-			*/
-
-		}
+		}//try
 		catch (SegmentTreeException<int>& e)
 		{
 			cout << e << endl;
@@ -137,10 +124,10 @@ int main()
 
 	cout << "\n\n\n";
 
-	const int total = (_size - 1) * _size / 2;
-	cout << _errno__ << endl;
-	cout << (total * times) << endl;
-	cout << _errno__ * 1.0 / (1.0 * total * times) << endl;
+	const int total = (_size + 1) * _size / 2;
+	cout << "error num:  " << _errno__ << endl;
+	cout << "total test: " << (total * times) << endl;
+	cout << "error rate: " << _errno__ * 1.0 / (1.0 * total * times) << endl;
 
 
 	system("pause");

@@ -40,11 +40,11 @@ namespace RSY_TOOL
 		};//struct RB_Tree_Node_Base
 
 
-		template<typename Value>
+		template<typename _Ty>
 		struct RB_Tree_Node : public RB_Tree_Node_Base
 		{
-			using link_type = typename RB_Tree_Node<Value>*;
-			Value value_field;			//node value
+			using link_type = typename RB_Tree_Node<_Ty>*;
+			_Ty value_field;			//node value
 		};
 
 

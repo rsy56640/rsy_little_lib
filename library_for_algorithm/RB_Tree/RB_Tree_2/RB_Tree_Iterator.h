@@ -6,10 +6,7 @@
 #ifndef _My_ITERATOR			//suppose I will implement the Iterator class in the future
 #define _My_ITERATOR ::std::
 #endif // !_My_ITERATOR
-//#include <iostream>
-//#include <type_traits>
-//#include <memory>
-//#include <functional>
+
 
 namespace RSY_TOOL
 {
@@ -68,14 +65,14 @@ namespace RSY_TOOL
 
 		};
 
-		template<typename Value, typename Ref, typename Ptr>
+		template<typename _Ty, typename Ref, typename Ptr>
 		struct RB_Tree_Iterator :public RB_Tree_Iterator_Base
 		{
-			using value_type = Value;
+			using value_type = _Ty;
 			using reference_type = Ref;
 			using pointer_type = Ptr;
-			using iterator_type = typename RB_Tree_Iterator<Value, Value&, Value*>;
-			using self_type = typename RB_Tree_Iterator<Value, Ref, Ptr>;
+			using iterator_type = typename RB_Tree_Iterator<_Ty, _Ty&, _Ty*>;
+			using self_type = typename RB_Tree_Iterator<_Ty, Ref, Ptr>;
 			using link_type = typename RB_Tree_Node<value_type>::link_type;
 
 			RB_Tree_Iterator() = default;

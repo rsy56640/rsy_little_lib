@@ -1,16 +1,29 @@
 #pragma once
 #ifndef _RB_TREEIMPL_H
 #define _RB_TREEIMPL_H
-#include <functional>
 #include "RB_Tree_Node.h"
-//#include "RB_Tree_Iterator.h"		//	[[deprecated]]
 #include "RB_Tree_Exception.h"
+//#include "RB_Tree_Iterator.h"		//	[[deprecated]]
+#include <functional>
+#include <typeinfo>
 
 namespace RSY_TOOL
 {
 
 	namespace MY_RB_Tree
 	{
+
+		namespace
+		{
+			struct INSERT_ARG { virtual ~INSERT_ARG() = default; };
+			typedef struct :public INSERT_ARG {}  Assignment;	//if key collides, replace value
+			typedef struct :public INSERT_ARG {}  NoAssignment;	//no replace
+		}
+
+#define _INSERT_ASSIGNMENT Assignment{}
+#define _INSERT_NOASSIGNMENT NoAssignment{}
+
+
 
 		//template class for RB_Tree
 		template<class _Ty> class RB_TreeImpl
@@ -53,11 +66,11 @@ namespace RSY_TOOL
 			{
 				NIL = std::make_shared<RB_Tree_Node_Base>();
 				NIL->color = _RB_Tree_black;
-				NIL->parent = NIL;
+				NIL->parent = nullptr;
 				NIL->left = nullptr;
 				NIL->right = nullptr;
 				Proot.reset(static_cast<link_type>(NIL.operator->()));
-				Proot->parent.reset(static_cast<link_type>(NIL.operator->()));
+				//Proot->parent.reset(static_cast<link_type>(NIL.operator->()));
 				_rb_Key_comp = [&comp](const base_ptr& lhs, const base_ptr& rhs)->bool
 				{
 					return comp(static_cast<link_type>(lhs.operator->())->value_field,
@@ -82,7 +95,8 @@ namespace RSY_TOOL
 				right_child->parent = Pnode->parent;
 
 				//mutually
-				if (Pnode->parent == NIL)Proot = right_child;
+				if (Pnode->parent == NIL)
+					Proot.reset(static_cast<link_type>(right_child.operator->()));
 				else if (Pnode = Pnode->parent->left)Pnode->parent->left = right_child;
 				else Pnode->parent->right = right_child;
 
@@ -109,7 +123,8 @@ namespace RSY_TOOL
 				left_child->parent = Pnode->parent;
 
 				//mutually
-				if (Pnode->parent == NIL)Proot = left_child;
+				if (Pnode->parent == NIL)
+					Proot.reset(static_cast<link_type>(left_child.operator->()));
 				else if (Pnode = Pnode->parent->left)Pnode->parent->left = left_child;
 				else Pnode->parent->right = left_child;
 
@@ -121,12 +136,63 @@ namespace RSY_TOOL
 
 
 			//Pnode has color RED
-			void doRB_Insert(base_ptr Pnode)
+			void doRB_Insert(base_ptr Pnode, INSERT_ARG _arg)
 			{
+
+				node_count++;
+
 				base_ptr y = NIL;
 				base_ptr x = static_cast<base_ptr>(Proot.operator->());
+				bool left = true;
+
+				//find the position to insert,
+				//according to the property of BST.
+				while (x != NIL)
+				{
+					y = x;
+					if (_rb_Key_comp(Pnode, x))			//Pnode.key < x.key
+					{
+						x = x->left;
+						left = true;
+					}
+					else if (_rb_Key_comp(x, Pnode))	//x.key < Pnode.key
+					{
+						x = x->right;
+						left = false;
+					}
+					else								//key collision
+					{
+						node_count--;
+
+						//if the argument indicates the replacement.
+						if (typeid(_arg) == typeid(Assignment))
+						{
+							(static_cast<link_type>(x.operator->()))->value_field
+								= (static_cast<link_type>(x.operator->()))->value_field;
+						}
+						return;
+					}
+				}
+
+				//now y is the parent of Pnode
+				Pnode->parent = y;
 
 
+				//judge whether the tree is empty
+				if (y == NIL)
+					Proot.reset(static_cast<link_type>(Pnode.operator->()));
+				//not empty, then set the relation between y and Pnod
+				else if (left)
+					y->left = Pnode;
+				else y->right = Pnode;
+
+
+				//set Pnode appropriately, color has already been set RED.
+				Pnode->left = NIL;
+				Pnode->right = NIL;
+
+				//fixup to maintain the RB_Tree property
+				RB_Insert_Fixup(Pnode);
 
 			}
 
@@ -134,8 +200,92 @@ namespace RSY_TOOL
 			/******************************\
 			* fixup to satisfy the RB_Tree *
 			\******************************/
-			void RB_Insert_Fixup(base_ptr Pnode)
+			void RB_Insert_Fixup(base_ptr z)
 			{
+
+				while (z->parent->color == _RB_Tree_red)
+				{
+
+					//z.p is left child
+					if (z->parent = z->parent->parent->left)
+					{
+
+						//y is z's uncle node
+						base_ptr y = z->parent->parent->right;
+
+						//case 1: z's uncle y is RED
+						if (y->color == _RB_Tree_red)
+						{
+							z->parent->color = _RB_Tree_black;
+							y->color = _RB_Tree_black;
+							z->parent->parent->color = _RB_Tree_red;
+							z = z->parent->parent;
+						}//then continue while-loop
+
+
+						else	//make 2 rotations and stop
+						{
+
+							//case 2: z's uncle y is BLACK, and z is a right child.
+							if (z == z->parent->right)
+							{
+								z = z->parent;
+								left_rotate(z);
+							}
+
+							//Nota Bene: case 2 leads to case 3.
+							//case 3: z's uncle y is BLACK, and z is a left child.
+							z->parent->color = _RB_Tree_black;
+							z->parent->parent->color = _RB_Tree_red;
+							right_rotate(z->parent->parent);
+
+						}//case 2 -> case 3 -> End of while-loop.
+
+					}//then continue while-loop
+
+
+					//z.p is right child
+					else
+					{
+
+						//y is z's uncle node
+						base_ptr y = z->parent->parent->left;
+
+						//case 1: z's uncle y is RED
+						if (y->color == _RB_Tree_red)
+						{
+							z->parent->color = _RB_Tree_black;
+							y->color = _RB_Tree_black;
+							z->parent->parent->color = _RB_Tree_red;
+							z = z->parent->parent;
+						}//then continue while-loop
+
+
+						else	//make 2 rotations and stop
+						{
+
+							//case 2: z's uncle y is BLACK, and z is a left child.
+							if (z == z->parent->left)
+							{
+								z = z->parent;
+								right_rotate(z);
+							}
+
+							//Nota Bene: case 2 leads to case 3.
+							//case 3: z's uncle y is BLACK, and z is a right child.
+							z->parent->color = _RB_Tree_black;
+							z->parent->parent->color = _RB_Tree_red;
+							left_rotate(z->parent->parent);
+
+						}//case 2 -> case 3 -> End of while-loop.
+
+					}//then continue while-loop
+
+				}//end while
+
+				//now z.p is BLACK
+				//for the safety, set root color as black
+				Proot->color = _RB_Tree_black;
 
 			}
 
@@ -148,7 +298,7 @@ namespace RSY_TOOL
 
 				//if Psrc is root
 				if (Psrc->parent == NIL)
-					Proot = Pdest;
+					Proot.reset(static_cast<link_type>(Pdest.operator->()));
 
 				//if Psrc is left child
 				else if (Psrc == Psrc->parent->left)
@@ -163,7 +313,7 @@ namespace RSY_TOOL
 			}
 
 
-			//
+			//TODO
 			void doRB_Delete(base_ptr Pnode)
 			{
 
@@ -172,7 +322,8 @@ namespace RSY_TOOL
 			}
 
 
-			//
+
+			//TODO
 			void RB_Delete_Fixup(base_ptr Pnode)
 			{
 
@@ -186,22 +337,22 @@ namespace RSY_TOOL
 		public:
 
 
-			RB_TreeImpl(const Comp& comp = less<_Ty>())
+			RB_TreeImpl(const Comp& comp)
 				:node_count(0), Proot(nullptr), NIL(nullptr)
 			{
 				init(comp);
 			}
 
 
-			//
-			void RB_Insert(const _Ty& value)
+			//insert value with argument 
+			void RB_Insert(const _Ty& value, INSERT_ARG _arg)
 			{
 				RBNode_ptr Pnode(std::make_shared<RB_Tree_Node<_Ty> >(value));
-				doRB_Insert(static_cast<base_ptr>(Pnode.operator->()));
+				doRB_Insert(static_cast<base_ptr>(Pnode.operator->()), _arg);
 			}
 
 
-			//
+			//TODO
 			void RB_Delete(const _Ty& value)
 			{
 

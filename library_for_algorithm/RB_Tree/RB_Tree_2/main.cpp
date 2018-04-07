@@ -19,6 +19,10 @@ int main()
 	RB_TreeImpl<string> rbtImpl1{ less<string>() };
 	rbtImpl1.RB_Insert("aaa");
 
+	std::shared_ptr<int> xx(make_shared<int>(2));
+	int *p = new int(7);
+	xx.reset(p);
+
 
 
 

@@ -2,7 +2,6 @@
 #ifndef _RB_TREEIMPL_H
 #define _RB_TREEIMPL_H
 #include <functional>
-#include <memory>
 #include "RB_Tree_Node.h"
 //#include "RB_Tree_Iterator.h"		//	[[deprecated]]
 #include "RB_Tree_Exception.h"
@@ -17,6 +16,7 @@ namespace RSY_TOOL
 		template<class _Ty> class RB_TreeImpl
 		{
 
+			using size_type = int;
 			using color_type = typename RB_Tree_Node_Base::color_type;
 			using base_ptr = typename RB_Tree_Node_Base::base_ptr;
 			using link_type = typename RB_Tree_Node<_Ty>::link_type;
@@ -24,12 +24,12 @@ namespace RSY_TOOL
 			using RBNode_ptr = RBTreeNode_ptr;
 			using Comp = typename std::function<bool(const _Ty&, const _Ty&)>;
 			using RB_Comp = typename std::function<bool(const base_ptr&, const base_ptr&)>;
-
-
-			using RB_Exception = typename RB_Tree_Exception;
+			using Exception = typename RB_Tree_Exception;
 
 
 		private:
+
+			size_type node_count;
 
 			//RB_Tree root
 			RBNode_ptr Proot;
@@ -42,7 +42,7 @@ namespace RSY_TOOL
 			*    if _rb_comp(p1, p2) > 0   *
 			*    it means that p1 < p2     *
 			\******************************/
-			RB_Comp _rb_comp;
+			RB_Comp _rb_Key_comp;
 
 
 		protected:
@@ -51,10 +51,17 @@ namespace RSY_TOOL
 			//initialize the Comparator with the customized comp function for _Ty type.
 			void init(const Comp& comp)
 			{
-				_rb_comp = [&comp](const base_ptr& lhs, const base_ptr& rhs)->bool
+				NIL = std::make_shared<RB_Tree_Node_Base>();
+				NIL->color = _RB_Tree_black;
+				NIL->parent = NIL;
+				NIL->left = nullptr;
+				NIL->right = nullptr;
+				Proot.reset(static_cast<link_type>(NIL.operator->()));
+				Proot->parent.reset(static_cast<link_type>(NIL.operator->()));
+				_rb_Key_comp = [&comp](const base_ptr& lhs, const base_ptr& rhs)->bool
 				{
-					return comp(static_cast<link_type>(lhs)->value_field,
-						static_cast<link_type>(rhs)->value_field);
+					return comp(static_cast<link_type>(lhs.operator->())->value_field,
+						static_cast<link_type>(rhs.operator->())->value_field);
 				};
 			}
 
@@ -116,6 +123,8 @@ namespace RSY_TOOL
 			//Pnode has color RED
 			void doRB_Insert(base_ptr Pnode)
 			{
+				base_ptr y = NIL;
+				base_ptr x = static_cast<base_ptr>(Proot.operator->());
 
 
 
@@ -178,7 +187,7 @@ namespace RSY_TOOL
 
 
 			RB_TreeImpl(const Comp& comp = less<_Ty>())
-				:Proot(nullptr), NIL(nullptr)
+				:node_count(0), Proot(nullptr), NIL(nullptr)
 			{
 				init(comp);
 			}
@@ -188,7 +197,7 @@ namespace RSY_TOOL
 			void RB_Insert(const _Ty& value)
 			{
 				RBNode_ptr Pnode(std::make_shared<RB_Tree_Node<_Ty> >(value));
-				doRB_Insert(Pnode.operator->());
+				doRB_Insert(static_cast<base_ptr>(Pnode.operator->()));
 			}
 
 

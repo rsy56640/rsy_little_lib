@@ -1,6 +1,7 @@
 #pragma once
 #ifndef _RB_TREE_NODE_H
 #define _RB_TREE_NODE_H
+#include <memory>
 
 namespace RSY_TOOL
 {
@@ -15,7 +16,7 @@ namespace RSY_TOOL
 
 		struct RB_Tree_Node_Base
 		{
-			using base_ptr = typename RB_Tree_Node_Base*;
+			using base_ptr = typename std::shared_ptr<RB_Tree_Node_Base>;
 			using color_type = typename _RB_Tree_color_type;
 
 			color_type color;
@@ -54,7 +55,6 @@ namespace RSY_TOOL
 				:RB_Tree_Node_Base(), value_field(value)
 			{}
 		};
-
 
 	}
 

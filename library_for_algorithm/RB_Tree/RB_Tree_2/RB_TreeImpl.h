@@ -2,7 +2,9 @@
 #ifndef _RB_TREEIMPL_H
 #define _RB_TREEIMPL_H
 #include <functional>
-#include "RB_Tree_Iterator.h"
+#include <memory>
+#include "RB_Tree_Node.h"
+//#include "RB_Tree_Iterator.h"		//	[[deprecated]]
 #include "RB_Tree_Exception.h"
 
 namespace RSY_TOOL
@@ -18,7 +20,11 @@ namespace RSY_TOOL
 			using color_type = typename RB_Tree_Node_Base::color_type;
 			using base_ptr = typename RB_Tree_Node_Base::base_ptr;
 			using link_type = typename RB_Tree_Node<_Ty>::link_type;
-			using Comp = typename std::function<bool(const base_ptr&, const base_ptr&)>;
+			using RBTreeNode_ptr = typename std::shared_ptr<RB_Tree_Node<_Ty> >;
+			using RBNode_ptr = RBTreeNode_ptr;
+			using Comp = typename std::function<bool(const _Ty&, const _Ty&)>;
+			using RB_Comp = typename std::function<bool(const base_ptr&, const base_ptr&)>;
+
 
 			using RB_Exception = typename RB_Tree_Exception;
 
@@ -26,13 +32,32 @@ namespace RSY_TOOL
 		private:
 
 			//RB_Tree root
-			link_type Proot;
+			RBNode_ptr Proot;
 
-
-			//
+			//NIL node
 			base_ptr NIL;
 
-			Comp _comp;
+			/******************************\
+			*  Comparator for two node     *
+			*    if _rb_comp(p1, p2) > 0   *
+			*    it means that p1 < p2     *
+			\******************************/
+			RB_Comp _rb_comp;
+
+
+		protected:
+
+
+			//initialize the Comparator with the customized comp function for _Ty type.
+			void init(const Comp& comp)
+			{
+				_rb_comp = [&comp](const base_ptr& lhs, const base_ptr& rhs)->bool
+				{
+					return comp(static_cast<link_type>(lhs)->value_field,
+						static_cast<link_type>(rhs)->value_field);
+				};
+			}
+
 
 			//left rotate
 			void left_rotate(base_ptr Pnode)
@@ -88,6 +113,15 @@ namespace RSY_TOOL
 			}
 
 
+			//Pnode has color RED
+			void doRB_Insert(base_ptr Pnode)
+			{
+
+
+
+			}
+
+
 			/******************************\
 			* fixup to satisfy the RB_Tree *
 			\******************************/
@@ -120,6 +154,16 @@ namespace RSY_TOOL
 			}
 
 
+			//
+			void doRB_Delete(base_ptr Pnode)
+			{
+
+
+
+			}
+
+
+			//
 			void RB_Delete_Fixup(base_ptr Pnode)
 			{
 
@@ -134,23 +178,22 @@ namespace RSY_TOOL
 
 
 			RB_TreeImpl(const Comp& comp = less<_Ty>())
-				:Proot(nullptr), _comp(comp)
+				:Proot(nullptr), NIL(nullptr)
 			{
-				//_comp(_Ty(), _Ty());
+				init(comp);
 			}
 
 
 			//
-			void RB_Insert(base_ptr Pnode)
+			void RB_Insert(const _Ty& value)
 			{
-
-
-
+				RBNode_ptr Pnode(std::make_shared<RB_Tree_Node<_Ty> >(value));
+				doRB_Insert(Pnode.operator->());
 			}
 
 
 			//
-			void RB_Delete(base_ptr Pnode)
+			void RB_Delete(const _Ty& value)
 			{
 
 

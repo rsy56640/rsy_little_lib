@@ -1,3 +1,6 @@
+/**************************************************\
+*                    deprecated                    *
+\**************************************************/
 #pragma once
 #ifndef _RB_TREE_ITERATOR_H
 #define _RB_TREE_ITERATOR_H

@@ -4,7 +4,10 @@ using namespace RSY_TOOL::MY_RB_Tree;
 
 
 
-class A {};
+class A {
+public:
+	std::function<bool(pair<int, int>, pair<int, int>)> foo;
+};
 
 int main()
 {
@@ -13,15 +16,9 @@ int main()
 	RB_Tree<string> rbt2;
 
 
-	RB_TreeImpl<string> rbtImpl(less<string>());
+	RB_TreeImpl<string> rbtImpl1{ less<string>() };
+	rbtImpl1.RB_Insert("aaa");
 
-	RB_TreeImpl<A> rbtImpl(less<A>());			//what the fuck ???
-
-
-
-	//A a1, a2;
-	//bool b = a1 < a2;
-	//foo(a1, a2);
 
 
 

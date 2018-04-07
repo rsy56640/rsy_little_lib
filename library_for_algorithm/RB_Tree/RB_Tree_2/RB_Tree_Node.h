@@ -23,6 +23,10 @@ namespace RSY_TOOL
 			base_ptr left;
 			base_ptr right;
 
+			RB_Tree_Node_Base()
+				:color(_RB_Tree_red), parent(nullptr), left(nullptr), right(nullptr)
+			{}
+
 			static base_ptr minimum(base_ptr root)
 			{
 				while (root->left != nullptr)
@@ -43,8 +47,12 @@ namespace RSY_TOOL
 		template<typename _Ty>
 		struct RB_Tree_Node : public RB_Tree_Node_Base
 		{
+			using RBTreeNode_ptr = typename std::shared_ptr<RB_Tree_Node<_Ty> >;
 			using link_type = typename RB_Tree_Node<_Ty>*;
 			_Ty value_field;			//node value
+			RB_Tree_Node(const _Ty& value)
+				:RB_Tree_Node_Base(), value_field(value)
+			{}
 		};
 
 

@@ -16,6 +16,8 @@ namespace RSY_TOOL
 
 		struct RB_Tree_Node_Base
 		{
+			using base_type = RB_Tree_Node_Base;
+			using base_type_ptr = RB_Tree_Node_Base*;
 			using base_ptr = typename std::shared_ptr<RB_Tree_Node_Base>;
 			using color_type = typename _RB_Tree_color_type;
 
@@ -48,8 +50,9 @@ namespace RSY_TOOL
 		template<typename _Ty>
 		struct RB_Tree_Node : public RB_Tree_Node_Base
 		{
-			using RBTreeNode_ptr = typename std::shared_ptr<RB_Tree_Node<_Ty> >;
+			using node_type = typename RB_Tree_Node<_Ty>;
 			using link_type = typename RB_Tree_Node<_Ty>*;
+			using RBTreeNode_ptr = typename std::shared_ptr<RB_Tree_Node<_Ty> >;
 			_Ty value_field;			//node value
 			RB_Tree_Node(const _Ty& value)
 				:RB_Tree_Node_Base(), value_field(value)

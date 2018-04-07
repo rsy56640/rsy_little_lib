@@ -30,10 +30,13 @@ namespace RSY_TOOL
 		{
 
 			using size_type = int;
+			using base_type = RB_Tree_Node_Base::base_type;
+			using node_type = typename RB_Tree_Node<_Ty>::node_type;
 			using color_type = typename RB_Tree_Node_Base::color_type;
+			using base_type_ptr = RB_Tree_Node_Base::base_type_ptr;
 			using base_ptr = typename RB_Tree_Node_Base::base_ptr;
 			using link_type = typename RB_Tree_Node<_Ty>::link_type;
-			using RBTreeNode_ptr = typename std::shared_ptr<RB_Tree_Node<_Ty> >;
+			using RBTreeNode_ptr = typename RB_Tree_Node<_Ty>::RBTreeNode_ptr;
 			using RBNode_ptr = RBTreeNode_ptr;
 			using Comp = typename std::function<bool(const _Ty&, const _Ty&)>;
 			using RB_Comp = typename std::function<bool(const base_ptr&, const base_ptr&)>;
@@ -49,6 +52,7 @@ namespace RSY_TOOL
 
 			//NIL node
 			base_ptr NIL;
+			//RBNode_ptr NIL;
 
 			/******************************\
 			*  Comparator for two node     *
@@ -70,7 +74,6 @@ namespace RSY_TOOL
 				NIL->left = nullptr;
 				NIL->right = nullptr;
 				Proot.reset(static_cast<link_type>(NIL.operator->()));
-				//Proot->parent.reset(static_cast<link_type>(NIL.operator->()));
 				_rb_Key_comp = [&comp](const base_ptr& lhs, const base_ptr& rhs)->bool
 				{
 					return comp(static_cast<link_type>(lhs.operator->())->value_field,
@@ -180,7 +183,18 @@ namespace RSY_TOOL
 
 				//judge whether the tree is empty
 				if (y == NIL)
-					Proot.reset(static_cast<link_type>(Pnode.operator->()));
+				{
+					Proot->value_field =
+						(static_cast<link_type>(Pnode.operator->()))->value_field;
+					//= std::make_shared<RB_Tree_Node<_Ty> >(
+					//(static_cast<link_type>(Pnode.operator->())->value_field));
+					//Proot->parent = NIL;
+					//Pnode.reset(static_cast<base_type_ptr>(Proot.operator->()));
+					Proot->parent = NIL;
+					Proot->left = Pnode->left;
+					Proot->right = Pnode->right;
+					Pnode = std::static_pointer_cast<node_type>(Proot);
+				}
 				//not empty, then set the relation between y and Pnod
 				else if (left)
 					y->left = Pnode;

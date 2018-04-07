@@ -50,6 +50,8 @@ namespace myInteger
 			return os;
 		}
 
+		const int value()const { return this->val; }
+
 	private:
 
 		int val;
@@ -65,22 +67,37 @@ namespace myInteger
 		return Integer(lhs) -= rhs;
 	}
 
+
 }//end namespace myInteger
 
+namespace std
+{
+	using myInteger::Integer;
+	template<>
+	struct less<Integer>
+	{
 
-
+		bool operator()(const Integer& lhs, const Integer& rhs)
+		{
+			return lhs.value() < rhs.value();
+		}
+	};
+}
 
 int main()
 {
 
 	using namespace myInteger;
-//	RB_Tree<string> rbt2;
+	//	RB_Tree<string> rbt2;
 
 
 	RB_Tree<string> rbtImpl1{ less<string>() };
 	rbtImpl1.RB_Insert("aaa");
-
-
+	rbtImpl1.RB_Insert("bbb");
+	rbtImpl1.RB_Insert("sss");
+	rbtImpl1.RB_Insert("bbf");
+	rbtImpl1.RB_Insert("aaf");
+	rbtImpl1.RB_Insert("sas");
 
 	map<int, int> sss;
 	sss.insert(make_pair(1, 2));

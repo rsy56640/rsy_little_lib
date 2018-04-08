@@ -12,7 +12,7 @@
     2018-4-8 然而这个方法是错的，智能指针的引用的表现根本不像raw reference那样，    
     这个方法失败了，但是这个我先保留，等以后找到什么更好的做法再说，说不定呢。    
     坚持这个base_ptr 和 node_ptr 分离的原因是：    
-      1. node_ptr 含有 value_field，而base_ptr 只蕴含了树的指针结构。
+      1. node_ptr 含有 value_field，而base_ptr 只蕴含了树的指针结构。     
       2. NIL 结点是不应该有value_field的，若统一使用node_ptr，会导致NIL有一个default value,     
          于是这要求用户自定义类型 拥有 default constructor。（这非常糟糕）     
            

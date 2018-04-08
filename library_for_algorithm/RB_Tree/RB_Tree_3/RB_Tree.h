@@ -41,9 +41,15 @@ namespace RSY_TOOL
 			}
 
 
-			void RB_Insert(const _Ty& value, INSERT_ARG _arg = _INSERT_NOASSIGNMENT)
+			void insert(const _Ty& value, INSERT_ARG _arg = _INSERT_NOASSIGNMENT)
 			{
 				_pImpl->RB_Insert(value, _arg);
+			}
+
+
+			void erase(const _Ty& value)
+			{
+				_pImpl->RB_Delete(value);
 			}
 
 

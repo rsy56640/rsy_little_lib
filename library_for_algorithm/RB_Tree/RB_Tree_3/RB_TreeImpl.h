@@ -37,7 +37,7 @@ namespace RSY_TOOL
 			using RBNode_ptr = RBTreeNode_ptr;
 			using Comp = typename std::function<bool(const _Ty&, const _Ty&)>;
 			using RB_Comp = typename std::function<bool(const RBNode_ptr&, const RBNode_ptr&)>;
-			using Exception = typename RB_Tree_Exception;
+			using RBTEx = typename RB_Tree_Exception;
 
 
 		private:
@@ -73,7 +73,27 @@ namespace RSY_TOOL
 			}
 
 
-			//left rotate
+			RBTreeNode_ptr minimum(RBTreeNode_ptr root)
+			{
+				while (root->left != NIL)
+					root = root->left;
+				return root;
+			}
+
+
+			RBTreeNode_ptr maximum(RBTreeNode_ptr root)
+			{
+				while (root->right != NIL)
+					root = root->right;
+				return root;
+			}
+
+
+			/***********************************\
+			*            Left Rotate            *
+			*  rotate Pnode and its right child *
+			*     without any color changed     *
+			\***********************************/
 			void left_rotate(RBNode_ptr Pnode)
 			{
 
@@ -102,7 +122,11 @@ namespace RSY_TOOL
 			}
 
 
-			//right rotate
+			/***********************************\
+			*           Right Rotate           *
+			*  rotate Pnode and its left child *
+			*     without any color changed    *
+			\***********************************/
 			void right_rotate(RBNode_ptr Pnode)
 			{
 
@@ -131,7 +155,13 @@ namespace RSY_TOOL
 			}
 
 
-			//Pnode has color RED
+			/*************************************\
+			*  Insert a node with specific value  *
+			\*************************************/
+			//Pnode always has color RED.
+			//@ Prameter list:
+			//@		Pnode: the node to be inserted.
+			//@		_arg : indicate whether or not to be substituted if key collides.
 			void doRB_Insert(RBNode_ptr Pnode, INSERT_ARG _arg)
 			{
 
@@ -231,7 +261,7 @@ namespace RSY_TOOL
 						//y is z's uncle node
 						RBNode_ptr y = z->parent->parent->right;
 
-						//case 1: z's uncle y is RED
+						//Case 1: z's uncle y is RED
 						if (y->color == _RB_Tree_red)
 						{
 							z->parent->color = _RB_Tree_black;
@@ -244,20 +274,20 @@ namespace RSY_TOOL
 						else	//make 2 rotations and stop
 						{
 
-							//case 2: z's uncle y is BLACK, and z is a right child.
+							//Case 2: z's uncle y is BLACK, and z is a right child.
 							if (z == z->parent->right)
 							{
 								z = z->parent;
 								left_rotate(z);
 							}
 
-							//Nota Bene: case 2 leads to case 3.
-							//case 3: z's uncle y is BLACK, and z is a left child.
+							//Nota Bene: Case 2 leads to Case 3.
+							//Case 3: z's uncle y is BLACK, and z is a left child.
 							z->parent->color = _RB_Tree_black;
 							z->parent->parent->color = _RB_Tree_red;
 							right_rotate(z->parent->parent);
 
-						}//case 2 -> case 3 -> End of while-loop.
+						}//Case 2 -> Case 3 -> End of while-loop.
 
 					}//then continue while-loop
 
@@ -269,7 +299,7 @@ namespace RSY_TOOL
 						//y is z's uncle node
 						RBNode_ptr y = z->parent->parent->left;
 
-						//case 1: z's uncle y is RED
+						//Case 1: z's uncle y is RED
 						if (y->color == _RB_Tree_red)
 						{
 							z->parent->color = _RB_Tree_black;
@@ -282,20 +312,20 @@ namespace RSY_TOOL
 						else	//make 2 rotations and stop
 						{
 
-							//case 2: z's uncle y is BLACK, and z is a left child.
+							//Case 2: z's uncle y is BLACK, and z is a left child.
 							if (z == z->parent->left)
 							{
 								z = z->parent;
 								right_rotate(z);
 							}
 
-							//Nota Bene: case 2 leads to case 3.
-							//case 3: z's uncle y is BLACK, and z is a right child.
+							//Nota Bene: Case 2 leads to Case 3.
+							//Case 3: z's uncle y is BLACK, and z is a right child.
 							z->parent->color = _RB_Tree_black;
 							z->parent->parent->color = _RB_Tree_red;
 							left_rotate(z->parent->parent);
 
-						}//case 2 -> case 3 -> End of while-loop.
+						}//Case 2 -> Case 3 -> End of while-loop.
 
 					}//then continue while-loop
 
@@ -308,9 +338,9 @@ namespace RSY_TOOL
 			}//end function RB_Insert_Fixup(RBNode_ptr)
 
 
-			/**************************************************\
-			* replace Psrc with Pdest, in terms of Psrc-parent *
-			\**************************************************/
+			/****************************************************\
+			*  replace Psrc with Pdest, in terms of Psrc-parent  *
+			\****************************************************/
 			void RB_Tranplant(RBNode_ptr Psrc, RBNode_ptr Pdest)
 			{
 
@@ -331,24 +361,288 @@ namespace RSY_TOOL
 			}
 
 
-			//TODO
+			/******************************\
+			*    Delete a specific node    *
+			\******************************/
 			void doRB_Delete(RBNode_ptr Pnode)
 			{
 
+				//the count minus by 1
+				node_count--;
 
+				RBNode_ptr y = Pnode;
+				RBNode_ptr x = nullptr;
+				color_type y_original_color = y->color;
+
+
+				//find the successor of Pnode
+
+				if (Pnode->left == NIL)					//left child is NIL
+				{
+					x = Pnode->right;
+					RB_Tranplant(Pnode, Pnode->right);
+				}
+
+				else if (Pnode->right == NIL)			//right child is NIL
+				{
+					x = Pnode->left;
+					RB_Tranplant(Pnode, Pnode->left);
+				}
+
+
+				//left and right isn't either NIL,
+				//find the successor of Pnode,
+				//then substitute Pnode with its successor.
+				else
+				{
+
+					//find successor
+					y = minimum(Pnode->right);
+
+					y_original_color = y->color;
+
+					//to fill in the y's position
+					x = y->right;
+
+					//if Pnode's successor is its right child
+					if (y->parent == Pnode)
+						x->parent = y;
+
+					else
+					{
+
+						//use x to substitute y
+						RB_Tranplant(y, y->right);
+
+						//steal Pnode's right subtree
+						y->right = Pnode->right;
+						y->right->parent = y;
+
+					}
+
+					//use y to substitute Pnode
+					RB_Tranplant(Pnode, y);
+
+					//steal Pnode's left subtree
+					y->left = Pnode->left;
+					y->left->parent = y;
+					y->color = Pnode->color;
+
+				}
+
+
+				//the position has been set appropriately,
+				//then fixup the color change
+
+
+				//if original color is BLACK,
+				//then push down to the x.
+				//so x has 2 level BLACK,
+				//fixup
+				if (y_original_color == _RB_Tree_black)
+					RB_Delete_Fixup(x);
 
 			}
 
 
 
-			//TODO
+			/********************************************\
+			* fixup "extra BLACK" to satisfy the RB_Tree *
+			\********************************************/
 			void RB_Delete_Fixup(RBNode_ptr Pnode)
 			{
 
+				//if Pnode is BLACK(BLACK) and non-root
+				while (Pnode != Proot && Pnode->color == _RB_Tree_black)
+				{
+
+					//Pnode is left child
+					if (Pnode == Pnode->parent->left)
+					{
+
+						//w is Pnode's brother
+						RBNode_ptr w = Pnode->parent->right;
 
 
+						//Case 1: brother w is RED
+						if (w->color == _RB_Tree_red)
+						{
 
-			}
+							//swap w and parent color,
+							//then left rotate
+							w->color = _RB_Tree_black;
+							Pnode->parent->color = _RB_Tree_red;
+							left_rotate(Pnode->parent);
+
+							//reset w as Pnode's brother
+							w = Pnode->parent->right;
+
+						}//Nota Bene: Case 1 leads to End
+						//1->2->End, 1->4->End, 1->3->4->End.
+
+
+						//Case 2: brother w is BLACK, and w's 2 childs are BLACK.
+						//remove BLACK of both Pnode and w,
+						//then compensate "a BLACK" to parent.
+						//tips: no check for w's color
+						//		because Case 1 check the color as RED
+						//		and end up with color as BLACK.
+						if (w->right->color == _RB_Tree_black
+							&&
+							w->left->color == _RB_Tree_black)
+						{
+
+							//remove w's BLACK
+							w->color = _RB_Tree_red;
+
+							//remove Pnode's BLACK, and compensate parent with "a BLACK".
+							//because "a BLACK" is with Pnode, so set Pnode is its parent.
+							Pnode = Pnode->parent;
+
+						}//2->(1|2|3|4|END)
+
+
+						//Case 3: brother w is RED,
+						//		  w's left child is RED, w's right child is BLACK
+						else
+						{
+
+							//Case 3
+							//tips: w's left child is definitely RED
+							//		because previous "if" indicates at least one child is RED.
+							if (w->right->color == _RB_Tree_black)
+							{
+
+								//swap two node's color
+								//and right rotate
+								w->left->color = _RB_Tree_black;
+								w->color = _RB_Tree_red;
+
+								right_rotate(w);
+
+								//reset w
+								w = Pnode->parent->right;
+
+							}
+
+
+							//Case 4: brother w is RED, w's right child is RED
+							//change 3 node's color and left rotate
+							w->color = Pnode->parent->color;
+							Pnode->parent->color = _RB_Tree_black;
+
+							//set RED right child as BLACK
+							w->right->color = _RB_Tree_black;
+
+							//left rotate
+							left_rotate(Pnode->parent);
+
+							//a trick: root's color might be changed, so for safety.
+							Pnode = Proot;
+
+						}//3->4->END, 4->END
+
+					}//end if(Pnode is left child)
+
+
+					//Pnode is right child
+					else
+					{
+
+						//w is Pnode's brother
+						RBNode_ptr w = Pnode->parent->left;
+
+
+						//Case 1: brother w is RED
+						if (w->color == _RB_Tree_red)
+						{
+
+							//swap w and parent color,
+							//then right rotate
+							w->color = _RB_Tree_black;
+							Pnode->parent->color = _RB_Tree_red;
+							right_rotate(Pnode->parent);
+
+							//reset w as Pnode's brother
+							w = Pnode->parent->left;
+
+						}//Nota Bene: Case 1 leads to End
+						 //1->2->End, 1->4->End, 1->3->4->End.
+
+
+						 //Case 2: brother w is BLACK, and w's 2 childs are BLACK.
+						 //remove BLACK of both Pnode and w,
+						 //then compensate "a BLACK" to parent.
+						 //tips: no check for w's color
+						 //		because Case 1 check the color as RED
+						 //		and end up with color as BLACK.
+						if (w->right->color == _RB_Tree_black
+							&&
+							w->left->color == _RB_Tree_black)
+						{
+
+							//remove w's BLACK
+							w->color = _RB_Tree_red;
+
+							//remove Pnode's BLACK, and compensate parent with "a BLACK".
+							//because "a BLACK" is with Pnode, so set Pnode is its parent.
+							Pnode = Pnode->parent;
+
+						}//2->(1|2|3|4|END)
+
+
+						 //Case 3: brother w is RED,
+						 //		  w's right child is RED, w's left child is BLACK
+						 //Case 4:
+						else
+						{
+
+							//Case 3
+							//tips: w's right child is definitely RED
+							//		because previous "if" indicates at least one child is RED.
+							if (w->left->color == _RB_Tree_black)
+							{
+
+								//swap two node's color
+								//and left rotate
+								w->right->color = _RB_Tree_black;
+								w->color = _RB_Tree_red;
+
+								left_rotate(w);
+
+								//reset w
+								w = Pnode->parent->left;
+
+							}
+
+
+							//Case 4: brother w is RED, w's left child is RED
+							//change 3 node's color and right rotate
+							w->color = Pnode->parent->color;
+							Pnode->parent->color = _RB_Tree_black;
+
+							//set RED left child as BLACK
+							w->left->color = _RB_Tree_black;
+
+							//right rotate
+							right_rotate(Pnode->parent);
+
+							//a trick: root's color might be changed, so for safety.
+							Pnode = Proot;
+
+						}//3->4->END, 4->END
+
+
+					}
+
+
+				}//end while-loop
+
+
+				//quit loop, set Pnode(Proot) color as BLACK for safety.
+				Pnode->color = _RB_Tree_black;
+
+			}//end function RB_Delete_Fixup(RBNode_ptr)
 
 
 
@@ -371,7 +665,7 @@ namespace RSY_TOOL
 			}
 
 
-			//insert value with argument 
+			//insert a node with specific value with a flag argument 
 			void RB_Insert(const _Ty& value, INSERT_ARG _arg)
 			{
 				RBNode_ptr Pnode{ std::make_shared<RB_Tree_Node<_Ty> >(value) };
@@ -379,15 +673,43 @@ namespace RSY_TOOL
 			}
 
 
-			//TODO
-			void RB_Delete(const _Ty& value)
+			//delete specific key node,
+			//if no such node, do nothing.
+			void RB_Delete(const _Ty& k_value)
 			{
 
+				//find whether there exists such node
+				RBNode_ptr Pnode = std::make_shared<node_type>(k_value);
 
 
+				//RB_Tree is empty
+				if (node_count == 0)return;
 
 
-			}
+				//find the node according to the property of BST
+				RBNode_ptr x = Proot;
+
+				while (x != NIL)
+				{
+
+					if (_rb_Key_comp(Pnode, x))			//Pnode.key < x.key
+						x = x->left;
+
+					else if (_rb_Key_comp(x, Pnode))	//x.key < Pnode.key
+						x = x->right;
+
+					else								//key collision
+					{
+						Pnode = x;
+						doRB_Delete(Pnode);
+						return;
+					}
+
+				}//end while
+
+				throw RBTEx{ "There is no such key element." };
+
+			}//end function RB_Delete(const _Ty&)
 
 
 		};//end class RB_TreeImpl

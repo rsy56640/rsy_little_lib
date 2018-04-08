@@ -113,7 +113,7 @@ int main()
 
 
 	using namespace myInteger;
-	//	RB_Tree<string> rbt2;
+
 
 
 	/*
@@ -133,16 +133,25 @@ int main()
 
 
 	RB_Tree<string> rbtImpl1{ less<string>() };
-	rbtImpl1.RB_Insert("aaa");
-	rbtImpl1.RB_Insert("cbb");
-	rbtImpl1.RB_Insert("sss");
-	rbtImpl1.RB_Insert("bbf");
-	rbtImpl1.RB_Insert("aaf");
-	rbtImpl1.RB_Insert("sas");
+	try
+	{
 
 
+		rbtImpl1.insert("aaa");
+		rbtImpl1.insert("cbb");
+		rbtImpl1.insert("sss");
+		rbtImpl1.insert("bbf");
+		rbtImpl1.insert("aaf");
+		rbtImpl1.insert("sas");
 
+		rbtImpl1.erase("cbb");
+		rbtImpl1.erase("ssb");
 
+	}
+	catch (RB_Tree_Exception& e)
+	{
+		cout << e << endl;
+	}
 
 
 

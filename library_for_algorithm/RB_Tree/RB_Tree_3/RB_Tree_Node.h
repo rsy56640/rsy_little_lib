@@ -29,6 +29,7 @@ namespace RSY_TOOL
 			_Ty value_field;			//node value
 
 
+			/*
 			RB_Tree_Node()
 				:color(_RB_Tree_red),
 				parent(nullptr),
@@ -39,9 +40,10 @@ namespace RSY_TOOL
 						//so I use only node_type for every node,
 						//but that means NIL has a value_field.
 						//So it requests the _Ty has a default constructor.
+			*/
 
 
-			RB_Tree_Node(const _Ty& value)
+			RB_Tree_Node(const _Ty& value = _Ty{})
 				:color(_RB_Tree_red),
 				parent(nullptr),
 				left(nullptr),
@@ -50,20 +52,7 @@ namespace RSY_TOOL
 			{}
 
 
-			static RBTreeNode_ptr minimum(RBTreeNode_ptr root)
-			{
-				while (root->left != nullptr)
-					root = root->left;
-				return root;
-			}
-
-
-			static RBTreeNode_ptr maximum(RBTreeNode_ptr root)
-			{
-				while (root->right != nullptr)
-					root = root->right;
-				return root;
-			}
+			
 
 
 		};

@@ -20,7 +20,7 @@ namespace RSY_TOOL
 			using color_type = typename _RB_Tree_color_type;
 			using node_type = typename RB_Tree_Node<_Ty>;
 			using link_type = typename RB_Tree_Node<_Ty>*;
-			using RBTreeNode_ptr = typename std::shared_ptr<RB_Tree_Node<_Ty> >;
+			using RBTreeNode_ptr = typename std::shared_ptr<node_type>;
 
 			color_type color;
 			RBTreeNode_ptr parent;

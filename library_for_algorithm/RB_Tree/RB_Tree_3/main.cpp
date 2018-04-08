@@ -134,7 +134,7 @@ int main()
 
 	RB_Tree<string> rbtImpl1{ less<string>() };
 	rbtImpl1.RB_Insert("aaa");
-	rbtImpl1.RB_Insert("bbb");
+	rbtImpl1.RB_Insert("cbb");
 	rbtImpl1.RB_Insert("sss");
 	rbtImpl1.RB_Insert("bbf");
 	rbtImpl1.RB_Insert("aaf");
@@ -142,18 +142,6 @@ int main()
 
 
 
-	/*
-	map<int, int> sss;
-	sss.insert(make_pair(1, 2));
-	cout << sss[1] << endl;
-	sss.insert(make_pair(11, 4));
-	sss.insert(make_pair(2, 5));
-	sss.insert(make_pair(3, 3));
-	sss.insert_or_assign(1, 7);
-	cout << sss[1] << endl;
-	sss[1] = 65675;
-	cout << sss[1] << endl;
-	*/
 
 
 

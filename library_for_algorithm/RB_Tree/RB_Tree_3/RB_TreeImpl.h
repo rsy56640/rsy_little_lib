@@ -60,19 +60,16 @@ namespace RSY_TOOL
 			*    if _rb_comp(p1, p2) > 0   *
 			*    it means that p1 < p2     *
 			\******************************/
-			RB_Comp _rb_Key_comp;
+			const RB_Comp _rb_Key_comp;
 
 
 		protected:
 
 
 			//initialize the Comparator with the customized comp function for _Ty type.
-			void init(const Comp& comp)
+			void init()
 			{
-				_rb_Key_comp = [&comp](const RBNode_ptr& lhs, const RBNode_ptr& rhs)->bool
-				{
-					return comp(lhs->value_field, rhs->value_field);
-				};
+				NIL->color = _RB_Tree_black;
 			}
 
 
@@ -95,7 +92,7 @@ namespace RSY_TOOL
 				//mutually
 				if (Pnode->parent == NIL)
 					Proot = right_child;
-				else if (Pnode = Pnode->parent->left)Pnode->parent->left = right_child;
+				else if (Pnode == Pnode->parent->left)Pnode->parent->left = right_child;
 				else Pnode->parent->right = right_child;
 
 				//finally set the relation between them
@@ -124,7 +121,7 @@ namespace RSY_TOOL
 				//mutually
 				if (Pnode->parent == NIL)
 					Proot = left_child;
-				else if (Pnode = Pnode->parent->left)Pnode->parent->left = left_child;
+				else if (Pnode == Pnode->parent->left)Pnode->parent->left = left_child;
 				else Pnode->parent->right = left_child;
 
 				//finally set the relation between them
@@ -143,6 +140,7 @@ namespace RSY_TOOL
 				RBNode_ptr y = NIL;
 				RBNode_ptr x = Proot;
 				bool left = true;
+
 
 				//find the position to insert,
 				//according to the property of BST.
@@ -227,7 +225,7 @@ namespace RSY_TOOL
 				{
 
 					//z.p is left child
-					if (z->parent = z->parent->parent->left)
+					if (z->parent == z->parent->parent->left)
 					{
 
 						//y is z's uncle node
@@ -360,9 +358,16 @@ namespace RSY_TOOL
 			RB_TreeImpl(const Comp& comp)
 				:node_count{ 0 },
 				NIL{ std::make_shared<node_type>() },
-				Proot{ NIL }
+				Proot{ NIL },
+				_rb_Key_comp
 			{
-				init(comp);
+				[comp](const RBNode_ptr& lhs, const RBNode_ptr& rhs)->bool
+			{
+				return comp(lhs->value_field, rhs->value_field);
+			}
+			}
+			{
+				init();
 			}
 
 

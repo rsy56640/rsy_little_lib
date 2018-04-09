@@ -12,6 +12,12 @@ https://blog.csdn.net/rsy56640/article/details/79676868
     
 红黑树4：删除     
 https://blog.csdn.net/rsy56640/article/details/79696648     
+       
+一开始看 stl 源码的时候还一脸懵逼（hhhh）     
+https://blog.csdn.net/rsy56640/article/details/79651168    
+    
+意识到 stl 版本好像是不可实现的。    
+https://blog.csdn.net/rsy56640/article/details/79675756    
     
 最后的感想：     
 https://blog.csdn.net/rsy56640/article/details/79874869    

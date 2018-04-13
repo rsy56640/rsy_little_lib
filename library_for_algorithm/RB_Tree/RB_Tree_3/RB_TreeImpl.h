@@ -190,7 +190,7 @@ namespace RSY_TOOL
 				*       Pnode = std::static_pointer_cast<node_type>(Proot);               *
 				*   }                                                                     *
 				*                                                                         *
-				\**************************************************************************/
+				\*************************************************************************/
 
 
 				//not empty, then set the relation between y and Pnod

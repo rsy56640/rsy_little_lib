@@ -162,44 +162,8 @@ namespace RSY_TOOL
 			//@ Prameter list:
 			//@		Pnode: the node to be inserted.
 			//@		_arg : indicate whether or not to be substituted if key collides.
-			void doRB_Insert(RBNode_ptr Pnode, INSERT_ARG _arg)
+			void doRB_Insert(RBNode_ptr Pnode, RBNode_ptr y, bool left)
 			{
-
-				node_count++;
-
-				RBNode_ptr y = NIL;
-				RBNode_ptr x = Proot;
-				bool left = true;
-
-
-				//find the position to insert,
-				//according to the property of BST.
-				while (x != NIL)
-				{
-					y = x;
-					if (_rb_Key_comp(Pnode, x))			//Pnode.key < x.key
-					{
-						x = x->left;
-						left = true;
-					}
-					else if (_rb_Key_comp(x, Pnode))	//x.key < Pnode.key
-					{
-						x = x->right;
-						left = false;
-					}
-					else								//key collision
-					{
-						node_count--;
-
-						//if the argument indicates the replacement.
-						if (typeid(_arg) == typeid(Assignment))
-						{
-							x->value_field = Pnode->value_field;
-						}
-						return;
-
-					}
-				}
 
 				//now y is the parent of Pnode
 				Pnode->parent = y;
@@ -215,15 +179,15 @@ namespace RSY_TOOL
 				*   if (y == NIL)                                                         *
 				*   {                                                                     *
 				*       Proot->value_field =                                              *
-				* 		    (static_cast<link_type>(Pnode.operator->()))->value_field;    *
-				* 	    //= std::make_shared<RB_Tree_Node<_Ty> >(                         *
-				*	    //(static_cast<link_type>(Pnode.operator->())->value_field));     *
-				*	    //Proot->parent = NIL;                                            *
-				*	    //Pnode.reset(static_cast<base_type_ptr>(Proot.operator->()));    *
-				*	    Proot->parent = NIL;                                              *
-				*	    Proot->left = Pnode->left;                                        *
-				*	    Proot->right = Pnode->right;                                      *
-				*	    Pnode = std::static_pointer_cast<node_type>(Proot);               *
+				*           (static_cast<link_type>(Pnode.operator->()))->value_field;    *
+				*       //= std::make_shared<RB_Tree_Node<_Ty> >(                         *
+				*       //(static_cast<link_type>(Pnode.operator->())->value_field));     *
+				*       //Proot->parent = NIL;                                            *
+				*       //Pnode.reset(static_cast<base_type_ptr>(Proot.operator->()));    *
+				*       Proot->parent = NIL;                                              *
+				*       Proot->left = Pnode->left;                                        *
+				*       Proot->right = Pnode->right;                                      *
+				*       Pnode = std::static_pointer_cast<node_type>(Proot);               *
 				*   }                                                                     *
 				*                                                                         *
 				\**************************************************************************/
@@ -668,8 +632,47 @@ namespace RSY_TOOL
 			//insert a node with specific value with a flag argument 
 			void RB_Insert(const _Ty& value, INSERT_ARG _arg)
 			{
+
 				RBNode_ptr Pnode{ std::make_shared<RB_Tree_Node<_Ty> >(value) };
-				doRB_Insert(Pnode, _arg);
+
+				node_count++;
+
+				RBNode_ptr y = NIL;
+				RBNode_ptr x = Proot;
+				bool left = true;
+
+
+				//find the position to insert,
+				//according to the property of BST.
+				while (x != NIL)
+				{
+					y = x;
+					if (_rb_Key_comp(Pnode, x))			//Pnode.key < x.key
+					{
+						x = x->left;
+						left = true;
+					}
+					else if (_rb_Key_comp(x, Pnode))	//x.key < Pnode.key
+					{
+						x = x->right;
+						left = false;
+					}
+					else								//key collision
+					{
+						node_count--;
+
+						//if the argument indicates the replacement.
+						if (typeid(_arg) == typeid(Assignment))
+						{
+							x->value_field = Pnode->value_field;
+						}
+						return;
+
+					}
+				}
+
+				doRB_Insert(Pnode, y, left);
+
 			}
 
 

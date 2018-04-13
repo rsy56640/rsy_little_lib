@@ -116,20 +116,19 @@ int main()
 
 
 
-	/*
-	using mt = shared_ptr<int>;
+
+	//using mt = shared_ptr<int>;
 	shared_ptr<B> x1{ std::make_shared<B>(1,2) };
-	shared_ptr<A>& x2(std::static_pointer_cast<A>(x1));
+	//shared_ptr<A>& x2((x1.get()));
+	shared_ptr<A> x2 = x1;
+	//(std::static_pointer_cast<A>(x1));
 	shared_ptr<A> x3{ std::make_shared<A>(233) };
 	x2->a = 9;
-	x1->b = 11;
-	T t{ *x1 };
-	x2->a = 100;
 	x1->a = 17;
 	x2 = x3;
 	x2->a = 9;
 	x1->a = 88;
-	*/
+
 
 
 	RB_Tree<string> rbtImpl1{ less<string>() };

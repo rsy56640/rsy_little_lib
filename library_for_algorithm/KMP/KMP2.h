@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _KMP_H
-#define _KMP_H
+#ifndef _KMP2_H
+#define _KMP2_H
 #include <functional>
 #include <string>
 #include <vector>
@@ -15,40 +15,12 @@ namespace RSY_TOOL
 
 
 		/*
-		 * Knuth-Morris-Pratt algorithm
-		 * It's used to match the pattern string in the text.
-		 * Time Complexity: O(n), n is the length of the text.
-		**/
-		//@ Parameter list:
-		//@     text:
-		//@     pattern:
-		//@ Return value:
-		//@     return an array of the initio iterator of the matched string.
-		std::vector<std::string::const_iterator>
-			kmp(const std::string& text, const std::string& pattern);
-
-
-		/*
-		 * compute prefix function,
-		 * which represents the maximum length of identical suffix and prefix.
-		 * Time Complexity: O(m), m is the length of pattern.
-		**/
-		//@ Parameter list:
-		//@     pattern:
-		//@ Return value:
-		//@     No return value, and prefix is set appropriate.
-		inline void
-			kmp_prefix_function(const std::string& pattern, std::vector<int>& prefix);
-
-
-
-		/*
-		 * Generics program for KMP searching algorithm.
-		 * Require random-access-iterator.
+		* Generics program for KMP searching algorithm.
+		* Require random-access-iterator.
 		**/
 
 		/*
-		 * verify whether the iterator is random accessable.
+		* verify whether the iterator is random accessable.
 		**/
 
 #ifndef _IS_RANDOM_ACCESS
@@ -65,17 +37,17 @@ namespace RSY_TOOL
 		}//end anonymous namespace
 #endif // !_IS_RANDOM_ACCESS
 
-		/*
+		 /*
 		 * KMP TEMPLATE
-		**/
-		//@ Parameter list:
-		//@     _text_First:
-		//@     _text_Last:
-		//@     _pattern_First:
-		//@     _pattern_Last:
+		 **/
+		 //@ Parameter list:
+		 //@     _text_First:
+		 //@     _text_Last:
+		 //@     _pattern_First:
+		 //@     _pattern_Last:
 		template<class _InIt>
 		std::vector<_InIt>
-			kmp_template(_InIt _text_First, _InIt _text_Last,
+			kmp_template2(_InIt _text_First, _InIt _text_Last,
 				_InIt _pattern_First, _InIt  _pattern_Last)
 		{
 
@@ -94,14 +66,14 @@ namespace RSY_TOOL
 
 
 			/*
-			 * compute prefix function
+			* compute prefix function
 			**/
-			std::vector<difference_type> prefix(_pattern_length);
-			prefix[0] = -1;
+			std::vector<_InIt> prefix(_pattern_length);
+			prefix[0] = _pattern_First;
 
 			//cur_pos must always be the backward last position of the prefix string 
 			//that the previous prefix[i-1] matches.
-			difference_type cur_pos = -1;
+			difference_type cur_pos = 0;
 
 			//compute every prefix[i]
 			for (difference_type i = 1; i < _pattern_length; ++i)
@@ -110,31 +82,31 @@ namespace RSY_TOOL
 				//0 1 2, ..., cur, cur+1, ..., i-1, i, ...
 				//A B C  ...   X     Y
 				//       A B C      ...         X   ?
-				while (cur_pos >= 0 && *(_pattern_First + (cur_pos + 1)) != *(_pattern_First + i))
-					cur_pos = prefix[cur_pos];
+				while (cur_pos > 0 && *(_pattern_First + cur_pos) != *(_pattern_First + i))
+					cur_pos = prefix[cur_pos] - _pattern_First;
 
-				if (*(_pattern_First + (cur_pos + 1)) == *(_pattern_First + i))
+				if (*(_pattern_First + cur_pos) == *(_pattern_First + i))
 					cur_pos++;
 
-				prefix[i] = cur_pos;
+				prefix[i] = _pattern_First + cur_pos;
 
 			}
 
 
 			/*
-			 * Knuth-Morris-Pratt algorithm
-			 * It's used to match the pattern in the text.
-			 * Time Complexity: O(n), n is the length of the text.
+			* Knuth-Morris-Pratt algorithm
+			* It's used to match the pattern in the text.
+			* Time Complexity: O(n), n is the length of the text.
 			**/
 			std::vector<_InIt> result;
 
-			int q = 0;			//number of characters matched
+			difference_type q = 0;			//number of elements matched
 
 			for (auto it = _text_First; it != _text_Last; ++it)
 			{
 
 				while (q > 0 && *(_pattern_First + q) != *it)
-					q = prefix[q - 1] + 1;
+					q = prefix[q - 1] - prefix[0];
 
 				if (*(_pattern_First + q) == *it)
 					q++;
@@ -142,7 +114,7 @@ namespace RSY_TOOL
 				if (q == _pattern_length)
 				{
 					result.push_back(it - (_pattern_length - 1));
-					q = prefix[q - 1] + 1;
+					q = prefix[q - 1] - prefix[0];
 				}
 
 			}
@@ -156,4 +128,4 @@ namespace RSY_TOOL
 
 }//end namespace RSY_TOOL
 
-#endif // !_KMP_H
+#endif // !_KMP2_H

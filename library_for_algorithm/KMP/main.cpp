@@ -1,6 +1,7 @@
-#include <iostream>
 #include "KMP.h"
+#include "KMP2.h"
 
+#include <iostream>
 #include <string>
 #include <numeric>
 #include <algorithm>
@@ -16,7 +17,7 @@ int main()
 {
 
 	string pattern = "abxab";
-	string text = "abxcabxabaxabxababx";
+	string text = "abxcabxabaxabxababxabczh";
 
 
 	auto result = kmp(text, pattern);
@@ -30,7 +31,18 @@ int main()
 	cout << "\n\n" << endl;
 
 
-	auto result2 = kmp_template(text.begin(), text.end(), pattern.begin(), pattern.end());
+	auto result1 = kmp_template(text.begin(), text.end(), pattern.begin(), pattern.end());
+	for (auto it = result1.begin(); it != result1.end(); ++it)
+	{
+		std::copy(*it, *it + pattern.size(), _oit);
+		cout << endl;
+	}
+
+
+	cout << "\n\n" << endl;
+
+
+	auto result2 = kmp_template2(text.begin(), text.end(), pattern.begin(), pattern.end());
 	for (auto it = result2.begin(); it != result2.end(); ++it)
 	{
 		std::copy(*it, *it + pattern.size(), _oit);

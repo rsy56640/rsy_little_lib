@@ -20,8 +20,8 @@ namespace RSY_TOOL
 		 * Time Complexity: O(n), n is the length of the text.
 		**/
 		//@ Parameter list:
-		//@     text:
-		//@     pattern:
+		//@     text:      a long series of data.
+		//@     pattern:   the pattern to be matched.
 		//@ Return value:
 		//@     return an array of the initio iterator of the matched string.
 		std::vector<std::string::const_iterator>
@@ -34,7 +34,8 @@ namespace RSY_TOOL
 		 * Time Complexity: O(m), m is the length of pattern.
 		**/
 		//@ Parameter list:
-		//@     pattern:
+		//@     pattern:    the pattern to be matched.
+		//@     prefix:     the prefix function.s
 		//@ Return value:
 		//@     No return value, and prefix is set appropriate.
 		inline void
@@ -69,10 +70,10 @@ namespace RSY_TOOL
 		 * KMP TEMPLATE
 		**/
 		//@ Parameter list:
-		//@     _text_First:
-		//@     _text_Last:
-		//@     _pattern_First:
-		//@     _pattern_Last:
+		//@     _text_First:     the begin iterator of the text.
+		//@     _text_Last:      the end iterator of the text.
+		//@     _pattern_First:  the begin iterator of the pattern.
+		//@     _pattern_Last:   the end iterator of the pattern.
 		template<class _InIt>
 		std::vector<_InIt>
 			kmp_template(_InIt _text_First, _InIt _text_Last,

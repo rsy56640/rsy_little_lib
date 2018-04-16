@@ -15,12 +15,12 @@ namespace RSY_TOOL
 
 
 		/*
-		* Generics program for KMP searching algorithm.
-		* Require random-access-iterator.
+		 * Generics program for KMP searching algorithm.
+		 * Require random-access-iterator.
 		**/
 
 		/*
-		* verify whether the iterator is random accessable.
+		 * verify whether the iterator is random accessable.
 		**/
 
 #ifndef _IS_RANDOM_ACCESS
@@ -38,13 +38,13 @@ namespace RSY_TOOL
 #endif // !_IS_RANDOM_ACCESS
 
 		 /*
-		 * KMP TEMPLATE
+		  * KMP TEMPLATE
 		 **/
 		 //@ Parameter list:
-		 //@     _text_First:
-		 //@     _text_Last:
-		 //@     _pattern_First:
-		 //@     _pattern_Last:
+		 //@     _text_First:     the begin iterator of the text.
+		 //@     _text_Last:      the end iterator of the text.
+		 //@     _pattern_First:  the begin iterator of the pattern.
+		 //@     _pattern_Last:   the end iterator of the pattern.
 		template<class _InIt>
 		std::vector<_InIt>
 			kmp_template2(_InIt _text_First, _InIt _text_Last,
@@ -66,7 +66,7 @@ namespace RSY_TOOL
 
 
 			/*
-			* compute prefix function
+			 * compute prefix function
 			**/
 			std::vector<_InIt> prefix(_pattern_length);
 			prefix[0] = _pattern_First;
@@ -94,9 +94,9 @@ namespace RSY_TOOL
 
 
 			/*
-			* Knuth-Morris-Pratt algorithm
-			* It's used to match the pattern in the text.
-			* Time Complexity: O(n), n is the length of the text.
+			 * Knuth-Morris-Pratt algorithm
+			 * It's used to match the pattern in the text.
+			 * Time Complexity: O(n), n is the length of the text.
 			**/
 			std::vector<_InIt> result;
 

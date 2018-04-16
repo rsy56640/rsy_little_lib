@@ -16,15 +16,15 @@ std::ostream_iterator<char> _oit(std::cout, "");
 int main()
 {
 
-	string pattern = "abxab";
-	string text = "abxcabxabaxabxababxabczh";
+	string pattern = "abs";
+	string text = "absxxccabcsabseabs";
 
 
 	auto result = kmp(text, pattern);
 	for (auto it = result.begin(); it != result.end(); ++it)
 	{
 		std::copy(*it, *it + pattern.size(), _oit);
-		cout << endl;
+		cout << "\t" << *it - text.begin() << endl;
 	}
 
 
@@ -35,7 +35,7 @@ int main()
 	for (auto it = result1.begin(); it != result1.end(); ++it)
 	{
 		std::copy(*it, *it + pattern.size(), _oit);
-		cout << endl;
+		cout << "\t" << *it - text.begin() << endl;
 	}
 
 
@@ -46,7 +46,7 @@ int main()
 	for (auto it = result2.begin(); it != result2.end(); ++it)
 	{
 		std::copy(*it, *it + pattern.size(), _oit);
-		cout << endl;
+		cout << "\t" << *it - text.begin() << endl;
 	}
 
 

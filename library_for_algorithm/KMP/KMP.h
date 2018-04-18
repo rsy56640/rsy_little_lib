@@ -63,7 +63,7 @@ namespace RSY_TOOL
 			template<>
 			struct isRandom_Access<std::random_access_iterator_tag> :std::true_type {};
 
-			//no need, because template struct iterator_traits has specialized for _Ty* 
+			//no need, because template struct iterator_traits has been specialized for _Ty*
 			//template<>
 			//struct isRandom_Access<void*> :std::true_type {};
 

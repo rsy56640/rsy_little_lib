@@ -52,8 +52,8 @@ namespace RSY_TOOL
 		 * verify whether the iterator is random accessable.
 		**/
 
-#ifndef _IS_RANDOM_ACCESS
-#define _IS_RANDOM_ACCESS
+#ifndef _ISRANDOM_ACCESS
+#define _ISRANDOM_ACCESS
 		namespace
 		{
 
@@ -63,8 +63,12 @@ namespace RSY_TOOL
 			template<>
 			struct isRandom_Access<std::random_access_iterator_tag> :std::true_type {};
 
+			//no need, because template struct iterator_traits has specialized for _Ty* 
+			//template<>
+			//struct isRandom_Access<void*> :std::true_type {};
+
 		}//end anonymous namespace
-#endif // !_IS_RANDOM_ACCESS
+#endif // !_ISRANDOM_ACCESS
 
 		/*
 		 * KMP TEMPLATE

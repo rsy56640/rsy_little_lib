@@ -18,6 +18,8 @@ int main()
 
 	string pattern = "abs";
 	string text = "absxxccabcsabseabs";
+	char* p = "abs";
+	char* t = "absxxccabcsabseabs";
 
 
 	auto result = kmp(text, pattern);
@@ -47,6 +49,17 @@ int main()
 	{
 		std::copy(*it, *it + pattern.size(), _oit);
 		cout << "\t" << *it - text.begin() << endl;
+	}
+
+
+	cout << "\n\n" << endl;
+
+
+	auto result3 = kmp_template2(t, t + strlen(t), p, p + strlen(p));
+	for (auto it = result3.begin(); it != result3.end(); ++it)
+	{
+		std::copy(*it, *it + strlen(p), _oit);
+		cout << "\t" << *it - t << endl;
 	}
 
 

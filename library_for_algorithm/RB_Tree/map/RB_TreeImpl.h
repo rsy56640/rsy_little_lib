@@ -72,7 +72,7 @@ namespace RSY_TOOL
 			}
 
 
-			RBTreeNode_ptr minimum(RBTreeNode_ptr root)
+			RBTreeNode_ptr left_most(RBTreeNode_ptr root) const
 			{
 				while (root->left != NIL)
 					root = root->left;
@@ -80,7 +80,7 @@ namespace RSY_TOOL
 			}
 
 
-			RBTreeNode_ptr maximum(RBTreeNode_ptr root)
+			RBTreeNode_ptr right_most(RBTreeNode_ptr root) const
 			{
 				while (root->right != NIL)
 					root = root->right;
@@ -341,7 +341,7 @@ namespace RSY_TOOL
 				{
 
 					//find successor
-					y = minimum(Pnode->right);
+					y = left_most(Pnode->right);
 
 					y_original_color = y->color;
 
@@ -609,6 +609,22 @@ namespace RSY_TOOL
 			}
 
 
+			RBTreeNode_ptr minimum() const
+			{
+				RBTreeNode_ptr root(Proot);
+				while (root->left != NIL)
+					root = root->left;
+				return root;
+			}
+
+			RBTreeNode_ptr right_most() const
+			{
+				RBTreeNode_ptr root(Proot);
+				while (root->right != NIL)
+					root = root->right;
+				return root;
+			}
+
 			//insert a node with specific value with a flag argument 
 			void RB_Insert(const _Ty& value, INSERT_ARG _arg)
 			{
@@ -690,7 +706,7 @@ namespace RSY_TOOL
 
 				}//end while
 
-				throw RBTEx{ "There is no such key element." };
+				throw RBTEx{ "There is no such key element.", RBTEx::erase_ex };
 
 			}//end function RB_Delete(const _Ty&)
 

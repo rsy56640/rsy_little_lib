@@ -15,13 +15,28 @@ namespace RSY_TOOL
 
 		public:
 
-			RB_Tree_Exception(const std::string& msg)
-				:_msg(msg)
+			static constexpr int erase_ex = 0;
+			static constexpr int iterator_ex = 1;
+
+			RB_Tree_Exception(const std::string& msg, int mode)
+				:_msg(msg), _mode(mode)
 			{}
+
+			std::string message() const
+			{
+				return _msg;
+			}
+
+			int mode() const noexcept
+			{
+				return _mode;
+			}
 
 		private:
 
 			std::string _msg;
+
+			int _mode;
 
 			friend std::ostream& operator<<(std::ostream&, const RB_Tree_Exception&);
 

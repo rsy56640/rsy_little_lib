@@ -17,12 +17,12 @@ namespace RSY_TOOL
 		template<class Key, class Value>
 		struct map_type
 		{
-			using kep_type = Key;
+			using key_type = Key;
 			using mapped_type = Value;
 			using value_type = _STD pair<const Key, Value>;
 			using size_type = _STD size_t;
 			using difference_type = _STD ptrdiff_t;
-			using key_Compare = _STD function<bool(const kep_type&, const kep_type&)>;
+			using key_Compare = _STD function<bool(const key_type&, const key_type&)>;
 			using const_reference = const value_type&;
 			using iterator_type = typename RB_Tree<_STD pair<const Key, Value> >::iterator_type;
 

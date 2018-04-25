@@ -2,9 +2,11 @@
 #include <set>
 #include <map>
 #include <functional>
+#include <iostream>
 #include <vector>
-using namespace std;
+#include <cassert>
 using namespace RSY_TOOL::MY_RB_Tree;
+using namespace std;
 
 namespace myInteger
 {
@@ -89,7 +91,7 @@ namespace std
 int main()
 {
 
-
+	ostream_iterator<int> _oit(cout, " ");
 
 	vector<int>::iterator it;
 
@@ -97,9 +99,8 @@ int main()
 
 	rsy_map<int, int> rm;
 
-	RB_Tree_Iterator_Base<int> a;
-
 	RB_Tree<string> rbtImpl1{ less<string>() };
+
 	try
 	{
 

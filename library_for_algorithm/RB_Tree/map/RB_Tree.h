@@ -2,8 +2,7 @@
 #ifndef _RB_TREE_H
 #define _RB_TREE_H
 #include "RB_TreeImpl.h"
-#include <memory>
-#include <algorithm>
+
 namespace RSY_TOOL
 {
 
@@ -21,7 +20,7 @@ namespace RSY_TOOL
 
 			using link_type = typename RB_Tree_Node<_Ty>::link_type;
 
-			using iterator_type = typename RB_Tree_Iterator_Base<_Ty>;
+			using iterator_type = typename RB_Tree_Iterator<_Ty>::iterator_type;
 
 			using Comp = typename std::function<bool(const _Ty&, const _Ty&)>;
 
@@ -31,10 +30,9 @@ namespace RSY_TOOL
 
 		public:
 
-			RB_Tree(const Comp& comp = less<_Ty>{})
+			RB_Tree(const Comp& comp)
 				:_pImpl(std::make_shared<RB_TreeImpl<_Ty> >(comp))
 			{}
-
 
 
 			void swap(RB_Tree& other)
@@ -52,6 +50,18 @@ namespace RSY_TOOL
 			void erase(const _Ty& value)
 			{
 				_pImpl->RB_Delete(value);
+			}
+
+
+			iterator_type minimum() const
+			{
+				return _pImpl->minimum();
+			}
+
+
+			iterator_type maximum() const
+			{
+				return _pImpl->maximum();
 			}
 
 

@@ -14,6 +14,19 @@ namespace RSY_TOOL
 		const _RB_Tree_color_type _RB_Tree_black = true;
 
 
+		/*
+		* verify whether the node is NIL
+		**/
+		template<class _Ty>
+		struct RB_Tree_Node;
+		template<class _Ty>
+		bool isNIL(const std::shared_ptr<RB_Tree_Node<_Ty> > p)
+		{
+			if (p->father == nullptr)
+				return true;
+			return false;
+		}
+
 		template<typename _Ty>
 		struct RB_Tree_Node
 		{
@@ -52,6 +65,26 @@ namespace RSY_TOOL
 			{}
 
 
+
+
+
+			/*
+			 * find the minimum node according the property of BST
+			**/
+			RBTreeNode_ptr minimum(const RBTreeNode_ptr& root) const
+			{
+
+
+			}
+
+
+			/*
+			 * find the maximum node according the property of BST
+			**/
+			RBTreeNode_ptr maximum(const RBTreeNode_ptr& root) const
+			{
+
+			}
 
 		};
 

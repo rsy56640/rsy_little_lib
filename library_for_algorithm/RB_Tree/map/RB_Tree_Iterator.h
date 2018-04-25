@@ -37,53 +37,92 @@ namespace RSY_TOOL
 
 
 			/*
-			 * iterator increment
+			 * iterator increment operation
 			**/
 			void increment()
 			{
+
+				//if node is T.NIL
+				//NB: it is allowed that iterator is end(), which is T.NIL.
 				if (isNIL(node))
 					throw RBTEx("iterator out of range.", RBTEx::iterator_ex);
+
 				//right child exits
 				if (!isNIL(node->right))
 				{
 					node = node->right;
-					while (!isNIL(node->left))
-						node = node->left;
+					node = minimum(node);
 				}
+
+
 				//no right child
 				else {
+
+					//NB: the case is considered when node is root, and temp is T.NIL.
 					RBTreeNode_ptr temp = node->parent;
+
 					//trace back until node is not a right child
 					while (node == temp->right)
 					{
 						node = temp;
 						temp = temp->parent;
 					}
+
 					//assign temp to node,
-					//regardless of wether or not temp is NIL.
+					//regardless of whether or not temp is T.NIL.
 					node = temp;
+
 				}
-			}//end function increment()
+
+			}//end function increment();
 
 
 			/*
-			 * iterator decremnt
+			 * iterator decremnt operation
 			**/
 			void decrement()
 			{
-				//when node is T.NIL
-				if (node->color == _RB_Tree_red && node->parent->parent == node)
-					node = node->right;
 
-				//
-				if (node->color = )
+				//if node is T.NIL
+				if (isNIL(node))
+					//Since the implementation has been changed a little,
+					//the statement below has the correct result.
+					//2018-04-25
+					node = maximum(node->parent);
 
+				//left child exists
+				if (!isNIL(node->left))
+				{
+					node = node->left;
+					node = maximum(node);
+				}
 
+				//no left child
+				else {
 
+					//NB: the case is considered when node is root, and temp is T.NIL.
+					RBTreeNode_ptr temp = node->parent;
 
+					//trace back until node is not a left child
+					while (node == temp->left)
+					{
+						node = temp;
+						temp = temp->parent;
+					}
 
+					//temp is T.NIL, 
+					//which means the node is left-most of the RB_Tree.
+					//throw an exception
+					if (isNIL(temp))
+						throw RBTEx("iterator out of range.", RBTEx::iterator_ex);
 
-			}
+					//assign temp to node
+					node = temp;
+
+				}
+
+			}//end function decrement();
+
 
 		};//end class RB_Tree_Iterator_Base
 
@@ -116,6 +155,16 @@ namespace RSY_TOOL
 			RB_Tree_Iterator(const self_type& it) { node = it.node; }
 
 
+			bool operator==(const iterator_type& other)
+			{
+				return (this->node == other.node);
+			}
+
+			bool operator!=(const iterator_type& other)
+			{
+				return (this->node != other.node);
+			}
+
 			reference operator*() const noexcept
 			{
 				return node->value_field;
@@ -132,6 +181,7 @@ namespace RSY_TOOL
 					increment();
 				}
 				catch (const RBTEx& e) {
+					std::cout << "preposition increment error." << std::endl;
 					std::cout << e << std::endl;
 				}
 				return *this;
@@ -144,6 +194,7 @@ namespace RSY_TOOL
 					increment();
 				}
 				catch (const RBTEx& e) {
+					std::cout << "postposition increment error." << std::endl;
 					std::cout << e << std::endl;
 				}
 				return temp;
@@ -155,6 +206,7 @@ namespace RSY_TOOL
 					decrement();
 				}
 				catch (const RBTEx& e) {
+					std::cout << "preposition decrement error." << std::endl;
 					std::cout << e << std::endl;
 				}
 				return *this;
@@ -167,6 +219,7 @@ namespace RSY_TOOL
 					decrement();
 				}
 				catch (const RBTEx& e) {
+					std::cout << "postposition decrement error." << std::endl;
 					std::cout << e << std::endl;
 				}
 				return temp;

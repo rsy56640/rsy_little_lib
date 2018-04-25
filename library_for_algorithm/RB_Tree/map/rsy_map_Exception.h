@@ -42,7 +42,7 @@ namespace RSY_TOOL
 
 			friend _STD ostream& operator<<(_STD ostream& os, const map_Exception& e)
 			{
-				//os<<
+				os << e._msg;
 				return os;
 			}
 

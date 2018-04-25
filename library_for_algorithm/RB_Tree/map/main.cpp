@@ -93,27 +93,35 @@ int main()
 
 	ostream_iterator<int> _oit(cout, " ");
 
-	vector<int>::iterator it;
+	rsy_map<int, string>::iterator it;
+
 
 	map<int, int> m;
+	m.insert_or_assign(1, 1);
 
-	rsy_map<int, int> rm;
+	rsy_map<int, string> rbtImpl1;
 
-	RB_Tree<string> rbtImpl1{ less<string>() };
+	//RB_Tree<string> rbtImpl1{ less<string>() };
 
 	try
 	{
 
 
-		rbtImpl1.insert("aaa");
-		rbtImpl1.insert("cbb");
-		rbtImpl1.insert("sss");
-		rbtImpl1.insert("bbf");
-		rbtImpl1.insert("aaf");
-		rbtImpl1.insert("sas");
+		rbtImpl1.insert(make_pair(5, "aaa"));
+		rbtImpl1.insert(make_pair(2, "cbb"));
+		rbtImpl1.insert(make_pair(1, "sss"));
+		rbtImpl1.insert(make_pair(4, "bbf"));
+		rbtImpl1.insert(make_pair(6, "aaf"));
+		rbtImpl1.insert(make_pair(3, "sas"));
 
-		rbtImpl1.erase("cbb");
-		rbtImpl1.erase("ssb");
+		for (rsy_map<int, string>::iterator it = rbtImpl1.begin(); it != rbtImpl1.end(); ++it)
+		{
+			cout << (*it).second << endl;
+		}
+
+
+		//rbtImpl1.erase("cbb");
+		//rbtImpl1.erase("ssb");
 
 	}
 	catch (RB_Tree_Exception& e)

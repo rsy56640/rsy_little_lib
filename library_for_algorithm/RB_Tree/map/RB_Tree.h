@@ -41,6 +41,12 @@ namespace RSY_TOOL
 			}
 
 
+			_STD size_t size() const
+			{
+				return _pImpl->size();
+			}
+
+
 			void insert(const _Ty& value, INSERT_ARG _arg = _INSERT_NOASSIGNMENT)
 			{
 				_pImpl->RB_Insert(value, _arg);

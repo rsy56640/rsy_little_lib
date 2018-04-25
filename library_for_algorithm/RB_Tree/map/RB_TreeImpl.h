@@ -1,3 +1,15 @@
+/*****************************************************\
+*     To implement the iterator::decrement();         *
+*     I make a little update, that is:                *
+*       Let T.NIL->parent = Proot;                    *
+*       in the function init();                       *
+*                                        2018-04-25   *
+*     To implement the map::insert_assign();          *
+*     function RB_Insert() has been changed:          *
+*       it is assumed that the _Ty is  std::pair;     *
+*                                        2018-04-26   *
+\*****************************************************/
+
 #pragma once
 #ifndef _RB_TREEIMPL_H
 #define _RB_TREEIMPL_H
@@ -22,6 +34,23 @@ namespace RSY_TOOL
 #define _INSERT_ASSIGNMENT Assignment{}
 #define _INSERT_NOASSIGNMENT NoAssignment{}
 
+		namespace
+		{
+			/*
+			template<class _Ty>
+			struct is_pair :false_type {};
+
+			template<>
+			struct is_pair<>
+			*/
+
+			template<class Key, class Value>
+			Value& insert_assign(_STD pair<const Key, Value>& data)
+			{
+				return data.second;
+			}
+
+		}
 
 
 		//template class for RB_Tree
@@ -69,6 +98,11 @@ namespace RSY_TOOL
 			void init()
 			{
 				NIL->color = _RB_Tree_black;
+
+				//2018-04-25
+				NIL->parent = Proot;
+				//2018-04-25
+
 			}
 
 
@@ -617,12 +651,17 @@ namespace RSY_TOOL
 				return root;
 			}
 
-			RBTreeNode_ptr right_most() const
+			RBTreeNode_ptr maximum() const
 			{
 				RBTreeNode_ptr root(Proot);
 				while (root->right != NIL)
 					root = root->right;
 				return root;
+			}
+
+			_STD size_t size() const
+			{
+				return node_count;
 			}
 
 			//insert a node with specific value with a flag argument 
@@ -642,28 +681,32 @@ namespace RSY_TOOL
 				//according to the property of BST.
 				while (x != NIL)
 				{
+
 					y = x;
-					if (_rb_Key_comp(Pnode, x))			//Pnode.key < x.key
+					if (_rb_Key_comp(Pnode, x))         //Pnode.key < x.key
 					{
 						x = x->left;
 						left = true;
 					}
-					else if (_rb_Key_comp(x, Pnode))	//x.key < Pnode.key
+					else if (_rb_Key_comp(x, Pnode))    //x.key < Pnode.key
 					{
 						x = x->right;
 						left = false;
 					}
-					else								//key collision
+					else                                //key collision
 					{
 						node_count--;
 
 						//if the argument indicates the replacement.
 						if (typeid(_arg) == typeid(Assignment))
 						{
-							x->value_field = Pnode->value_field;
+							//2018-04-26
+							//Since the std::pair::operator= is so fuck,
+							//this statement should be modifyed.
+							insert_assign(x->value_field) = _STD forward<typename _Ty::second_type>
+								(insert_assign(Pnode->value_field));
 						}
 						return;
-
 					}
 				}
 

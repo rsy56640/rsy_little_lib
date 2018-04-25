@@ -2,6 +2,7 @@
 #ifndef _RSY_MAP_H
 #define _RSY_MAP_H
 #include "RB_Tree.h"
+#include "rsy_map_iterator.h"
 #include "rsy_map_Exception.h"
 #include "rsy_map_type.h"
 
@@ -28,6 +29,10 @@ namespace RSY_TOOL
 
 
 		protected:
+
+
+			//helper function for find();
+			iterator_type doFind(const Key& key);
 
 
 			/*
@@ -71,11 +76,15 @@ namespace RSY_TOOL
 
 			iterator end() const;
 
-			void insert(const std::pair<Key, Value>& data);
+			_STD size_t size() const;
 
-			void insert_assign(const std::pair<Key, Value>& data);
+			iterator find(const Key&);
 
-			void erase(const Key& key);
+			void insert(const std::pair<const Key, Value>&);
+
+			void insert_assign(const std::pair<const Key, Value>&);
+
+			void erase(const Key&);
 
 
 			ValueProxy operator[](const Key&);
@@ -83,7 +92,7 @@ namespace RSY_TOOL
 			//const
 			const mapped_type& operator[](const Key&)const;
 
-			void swap(RBTree_ptr& other);
+			void swap(rsy_map<Key, Value>&);
 
 
 
@@ -133,6 +142,11 @@ namespace RSY_TOOL
 		 ****  functions of class rsy_map<Ket, Value>
 		*****/
 
+		template<class Key, class Value>
+		inline typename rsy_map<Key, Value>::iterator rsy_map<Key, Value>::doFind(const Key& key)
+		{
+			//_rbt->
+		}
 
 		/*
 		 * default constructor
@@ -185,10 +199,28 @@ namespace RSY_TOOL
 		}
 
 
+		//size of the map container
+		template<class Key, class Value>
+		inline _STD size_t rsy_map<Key, Value>::size() const
+		{
+			return _rbt->size();
+		}
+
+
+		//find the iterator pointing to the specific key,
+		//if the key does not exist,
+		//the return value will be end().
+		template<class Key, class Value>
+		inline typename rsy_map<Key, Value>::iterator rsy_map<Key, Value>::find(const Key& key)
+		{
+			_rbt->doFind(key);
+		}
+
+
 		//insert a pair of K-V
 		//will not substitute if key collides
 		template<class Key, class Value>
-		inline void rsy_map<Key, Value>::insert(const std::pair<Key, Value>& data)
+		inline void rsy_map<Key, Value>::insert(const std::pair<const Key, Value>& data)
 		{
 			_rbt->insert(data);
 		}
@@ -197,7 +229,7 @@ namespace RSY_TOOL
 		//insert a pair of K-V
 		//will substitute if key collides
 		template<class Key, class Value>
-		inline void rsy_map<Key, Value>::insert_assign(const std::pair<Key, Value>& data)
+		inline void rsy_map<Key, Value>::insert_assign(const std::pair<const Key, Value>& data)
 		{
 			_rbt->insert(data, _INSERT_ASSIGNMENT);
 		}
@@ -224,19 +256,40 @@ namespace RSY_TOOL
 		}
 
 		template<class Key, class Value>
-		inline void rsy_map<Key, Value>::swap(RBTree_ptr& other)
+		inline void rsy_map<Key, Value>::swap(rsy_map<Key, Value>& other)
 		{
-
+			_rbt->swap(other._rbt);
 		}
 
+
+
+		//non-member swap function
+		//specialization for this namespace
 		template<class Key, class Value>
 		void swap(rsy_map<Key, Value>& lhs, rsy_map<Key, Value>& rhs)
 		{
 			lhs.swap(rhs);
 		}
 
+
+
 	}//end namespace MY_RB_Tree
 
 }//end namespace RSY_TOOL
+
+
+/*
+ * non-member swap function
+ *specialization for namespace std.
+**/
+namespace std
+{
+	using RSY_TOOL::MY_RB_Tree::rsy_map;
+	template<class Key, class Value>
+	void swap(rsy_map<Key, Value>& lhs, rsy_map<Key, Value>& rhs)
+	{
+		lhs.swap(rhs);
+	}
+}
 
 #endif // !_RSY_MAP_H

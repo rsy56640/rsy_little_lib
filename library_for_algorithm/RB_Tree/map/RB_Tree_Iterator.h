@@ -152,8 +152,9 @@ namespace RSY_TOOL
 
 			RB_Tree_Iterator(RBTreeNode_ptr _node) { node = _node; }
 
-			RB_Tree_Iterator(const self_type& it) { node = it.node; }
+			RB_Tree_Iterator(const self_type&) = default;
 
+			RB_Tree_Iterator& operator=(const self_type&) & = default;
 
 			bool operator==(const iterator_type& other)
 			{

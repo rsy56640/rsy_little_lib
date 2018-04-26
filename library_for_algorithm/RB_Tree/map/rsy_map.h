@@ -1,3 +1,8 @@
+/******************************************\
+* Proxy class is just a try, no need here. *
+* An experiment according to Item 30 in    *
+*          <<More Effective C++>>          *
+\******************************************/
 #pragma once
 #ifndef _RSY_MAP_H
 #define _RSY_MAP_H
@@ -27,16 +32,18 @@ namespace RSY_TOOL
 
 			using RBTree_ptr = typename _STD shared_ptr<RB_Tree<value_type> >;
 
+			using mapEx = map_Exception;
 
 		protected:
 
 
-			//helper function for find();
-			iterator_type doFind(const Key& key);
-
-
 			/*
 			 * Proxy class for distinguishing reading and writing
+			 *
+			 * no need here for Proxy class.
+			 * I just attempt to implement Proxy class.
+			 * Since I have just read the Item 30 in  <<More Effective C++>>.
+			 *
 			**/
 			class ValueProxy
 			{
@@ -142,11 +149,7 @@ namespace RSY_TOOL
 		 ****  functions of class rsy_map<Ket, Value>
 		*****/
 
-		template<class Key, class Value>
-		inline typename rsy_map<Key, Value>::iterator rsy_map<Key, Value>::doFind(const Key& key)
-		{
-			//_rbt->
-		}
+
 
 		/*
 		 * default constructor
@@ -187,7 +190,7 @@ namespace RSY_TOOL
 		template<class Key, class Value>
 		inline typename rsy_map<Key, Value>::iterator rsy_map<Key, Value>::begin() const
 		{
-			return  _rbt->minimum();
+			return  _rbt->begin();
 		}
 
 
@@ -195,7 +198,7 @@ namespace RSY_TOOL
 		template<class Key, class Value>
 		inline typename rsy_map<Key, Value>::iterator rsy_map<Key, Value>::end() const
 		{
-			return  ++(_rbt->maximum());
+			return  _rbt->end();
 		}
 
 
@@ -213,7 +216,7 @@ namespace RSY_TOOL
 		template<class Key, class Value>
 		inline typename rsy_map<Key, Value>::iterator rsy_map<Key, Value>::find(const Key& key)
 		{
-			_rbt->doFind(key);
+			return _rbt->find(typename rsy_map<Key, Value>::value_type(key, Value{}));
 		}
 
 
@@ -235,24 +238,38 @@ namespace RSY_TOOL
 		}
 
 
-		//erase 
+		//erase a pair with the specific key
 		template<class Key, class Value>
 		inline void rsy_map<Key, Value>::erase(const Key& key)
 		{
-
+			try {
+				_rbt->erase(typename rsy_map<Key, Value>::value_type(key, Value{}));
+			}
+			catch (const RB_Tree_Exception& e)
+			{
+				return;
+			}
 		}
 
+
+		//read
 		template<class Key, class Value>
 		inline typename rsy_map<Key, Value>::ValueProxy rsy_map<Key, Value>::operator[](const Key&)
 		{
+			typename rsy_map<Key, Value>::iterator it = find(key);
 
 		}
 
-		//const
-		template<class Key, class Value>
-		inline const Value& rsy_map<Key, Value>::operator[](const Key&) const
-		{
 
+		//read
+		//const operator[] function 
+		template<class Key, class Value>
+		inline const Value& rsy_map<Key, Value>::operator[](const Key& key) const
+		{
+			typename rsy_map<Key, Value>::iterator it = find(key);
+			if (it == end())
+				return Value{};
+			else return it->second;
 		}
 
 		template<class Key, class Value>
@@ -280,7 +297,7 @@ namespace RSY_TOOL
 
 /*
  * non-member swap function
- *specialization for namespace std.
+ * specialization for namespace std.
 **/
 namespace std
 {

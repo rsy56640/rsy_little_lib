@@ -47,6 +47,24 @@ namespace RSY_TOOL
 			}
 
 
+			iterator_type begin()
+			{
+				return static_cast<iterator_type>(_pImpl->begin());
+			}
+
+
+			iterator_type end()
+			{
+				return static_cast<iterator_type>(_pImpl->end());
+			}
+
+
+			iterator_type find(const _Ty& value)
+			{
+				return _pImpl->find(value);
+			}
+
+
 			void insert(const _Ty& value, INSERT_ARG _arg = _INSERT_NOASSIGNMENT)
 			{
 				_pImpl->RB_Insert(value, _arg);
@@ -71,7 +89,7 @@ namespace RSY_TOOL
 			}
 
 
-		};//end class
+		};//end class RB_Tree
 
 
 		template<class _Ty>
@@ -81,7 +99,23 @@ namespace RSY_TOOL
 		}
 
 
-	}
+	}//end namespace MY_RB_Tree
 
+}//end namespace RSY_TOOL
+
+
+ /*
+  * non-member swap function
+  * specialization for namespace std.
+ **/
+namespace std
+{
+	using RSY_TOOL::MY_RB_Tree::RB_Tree;
+	template<class _Ty>
+	void swap(RB_Tree<_Ty>& lhs, RB_Tree<_Ty>& rhs)
+	{
+		lhs.swap(rhs);
+	}
 }
+
 #endif // !_RB_TREE_H

@@ -87,6 +87,32 @@ namespace std
 	};
 }
 
+template<class Key, class Value>
+void print(const rsy_map<Key, Value>& map)
+{
+	for (typename rsy_map<Key, Value>::iterator it = map.begin(); it != map.end(); ++it)
+	{
+		cout << it->second << endl;
+	}
+	cout << endl;
+}
+
+class myStr {
+public:
+	/*
+	myStr()
+		:_s{}
+	{}
+	*/
+	myStr(string s)
+		:_s(s)
+	{}
+	myStr(const myStr&) = default;
+	myStr& operator=(const myStr&) & = default;
+
+private:
+	string _s;
+};
 
 int main()
 {
@@ -96,8 +122,10 @@ int main()
 	rsy_map<int, string>::iterator it;
 
 
-	map<int, int> m;
-	m.insert_or_assign(1, 1);
+	map<int, myStr> m;
+	m.insert_or_assign(1, string("123"));
+	m.erase(0);
+	//myStr sss = m[0];		//require default constructor
 
 	rsy_map<int, string> rbtImpl1;
 
@@ -106,22 +134,26 @@ int main()
 	try
 	{
 
-
 		rbtImpl1.insert(make_pair(5, "aaa"));
 		rbtImpl1.insert(make_pair(2, "cbb"));
 		rbtImpl1.insert(make_pair(1, "sss"));
 		rbtImpl1.insert(make_pair(4, "bbf"));
 		rbtImpl1.insert(make_pair(6, "aaf"));
 		rbtImpl1.insert(make_pair(3, "sas"));
+		rbtImpl1.insert(make_pair(14, " ^*&"));
 
-		for (rsy_map<int, string>::iterator it = rbtImpl1.begin(); it != rbtImpl1.end(); ++it)
-		{
-			cout << (*it).second << endl;
-		}
+		print(rbtImpl1);
 
+		auto it1 = rbtImpl1.find(5);
+		if (it1 != rbtImpl1.end())
+			cout << (*it1).second << endl;
 
-		//rbtImpl1.erase("cbb");
-		//rbtImpl1.erase("ssb");
+		rbtImpl1.erase(1);
+		rbtImpl1.erase(2);
+
+		cout << endl;
+
+		print(rbtImpl1);
 
 	}
 	catch (RB_Tree_Exception& e)

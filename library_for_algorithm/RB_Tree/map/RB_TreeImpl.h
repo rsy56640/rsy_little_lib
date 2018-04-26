@@ -188,6 +188,40 @@ namespace RSY_TOOL
 			}
 
 
+			/******************************************\
+			*                  doFind                  *
+			* help find the node with the specific key *
+			\******************************************/
+			RBTreeNode_ptr doFind(const _Ty& value)
+			{
+
+				const RBNode_ptr Pnode{ std::make_shared<RB_Tree_Node<_Ty> >(value) };
+
+				RBNode_ptr y = NIL;
+				RBNode_ptr x = Proot;
+
+				//find the position to insert,
+				//according to the property of BST.
+				while (x != NIL)
+				{
+
+					y = x;
+					if (_rb_Key_comp(Pnode, x))         //Pnode.key < x.key
+						x = x->left;
+
+					else if (_rb_Key_comp(x, Pnode))    //x.key < Pnode.key
+						x = x->right;
+
+					else                                //key collision
+						return x;
+
+				}
+
+				throw RBTEx("no such element.", RBTEx::iterator_ex);
+
+			}//end function doFind(const _Ty&);
+
+
 			/*************************************\
 			*  Insert a node with specific value  *
 			\*************************************/
@@ -659,10 +693,34 @@ namespace RSY_TOOL
 				return root;
 			}
 
-			_STD size_t size() const
+			_STD size_t size() const noexcept
 			{
 				return node_count;
 			}
+
+			RBTreeNode_ptr begin()
+			{
+				return minimum();
+			}
+
+			RBTreeNode_ptr end()
+			{
+				return NIL;
+			}
+
+
+			//find the node with the specific key
+			RBTreeNode_ptr find(const _Ty& value)
+			{
+				try {
+					return doFind(value);
+				}
+				catch (const RBTEx& e)
+				{
+					return NIL;
+				}
+			}
+
 
 			//insert a node with specific value with a flag argument 
 			void RB_Insert(const _Ty& value, INSERT_ARG _arg)
@@ -712,7 +770,7 @@ namespace RSY_TOOL
 
 				doRB_Insert(Pnode, y, left);
 
-			}
+			}//end function RB_Insert(const _Ty&, INSERT_ARG);
 
 
 			//delete specific key node,

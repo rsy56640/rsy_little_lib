@@ -92,71 +92,190 @@ void print(const rsy_map<Key, Value>& map)
 {
 	for (typename rsy_map<Key, Value>::iterator it = map.begin(); it != map.end(); ++it)
 	{
-		cout << it->second << endl;
+		cout << it->first << "\t" << it->second << endl;
 	}
 	cout << endl;
 }
 
+
 class myStr {
 public:
-	/*
+	///*
 	myStr()
 		:_s{}
 	{}
-	*/
+	//*/
 	myStr(string s)
 		:_s(s)
 	{}
 	myStr(const myStr&) = default;
 	myStr& operator=(const myStr&) & = default;
 
+	operator string() const
+	{
+		return _s;
+	}
+
 private:
 	string _s;
+	friend ostream& operator<<(ostream&, const myStr&);
 };
+ostream& operator<<(ostream& os, const myStr& ms)
+{
+	os << ms._s;
+	return os;
+}
+
+template<class T, class U>
+class Fuck
+{
+public:
+	Fuck(U a) :f(a) {}
+
+	class Fuck2
+	{
+
+	public:
+
+		Fuck2(U a) :x(a) {}
+
+		operator U() const
+		{
+			return static_cast<U>(x);
+		}
+
+		U x;
+
+	};
+
+
+
+	Fuck2 get()
+	{
+		return f;
+	}
+
+	operator Fuck2()
+	{
+		return f;
+	}
+
+private:
+
+	Fuck2 f;
+
+};
+
+void printStr(const string& str)
+{
+	cout << str << endl;
+}
+
+
+ostream& operator<<(ostream& os, const string& s)
+{
+	std::operator<<(os, s);
+	return os;
+}
+
 
 int main()
 {
 
 	ostream_iterator<int> _oit(cout, " ");
 
-	rsy_map<int, string>::iterator it;
-
 
 	map<int, myStr> m;
 	m.insert_or_assign(1, string("123"));
 	m.erase(0);
-	//myStr sss = m[0];		//require default constructor
+	m[2] = string("qwe");
+	m.at(1) = string("asd");
+	myStr sss = m[0];		//require default constructor
 
-	rsy_map<int, string> rbtImpl1;
 
-	//RB_Tree<string> rbtImpl1{ less<string>() };
+
+	Fuck<string, myStr> a{ string("22") };
+	myStr b = a.operator Fuck<string, myStr>::Fuck2().operator myStr();
+	myStr c = a.operator Fuck<string, myStr>::Fuck2();
+	myStr d = (a.get());
+	cout << d << endl;
+	cout << a.get() << endl;
+
+	rsy_map<int, std::string> mmp;
+
+	cout << typeid(rsy_map<int, string>::iterator_category).name() << endl;
+	cout << typeid(rsy_map<int, string>::iterator_type).name() << endl;
+	cout << endl;
+
 
 	try
 	{
 
-		rbtImpl1.insert(make_pair(5, "aaa"));
-		rbtImpl1.insert(make_pair(2, "cbb"));
-		rbtImpl1.insert(make_pair(1, "sss"));
-		rbtImpl1.insert(make_pair(4, "bbf"));
-		rbtImpl1.insert(make_pair(6, "aaf"));
-		rbtImpl1.insert(make_pair(3, "sas"));
-		rbtImpl1.insert(make_pair(14, " ^*&"));
+		mmp.insert(make_pair(5, "aaa"));
+		mmp.insert(make_pair(2, "cbb"));
+		mmp.insert(make_pair(1, "sss"));
+		mmp.insert(make_pair(4, "bbf"));
+		mmp.insert(make_pair(6, "aaf"));
+		mmp.insert(make_pair(3, "sas"));
+		mmp.insert(make_pair(14, " ^*&"));
 
-		print(rbtImpl1);
+		print(mmp);
 
-		auto it1 = rbtImpl1.find(5);
-		if (it1 != rbtImpl1.end())
+		auto it1 = mmp.find(5);
+		if (it1 != mmp.end())
 			cout << (*it1).second << endl;
 
-		rbtImpl1.erase(1);
-		rbtImpl1.erase(2);
+		mmp.erase(1);
+		mmp.erase(2);
+
+		mmp[6] = "tyu";
+		mmp[2] = mmp[6];
 
 		cout << endl;
 
-		print(rbtImpl1);
+		mmp[6] = "rsy";
+
+		try {
+			string s = mmp.at(7);
+		}
+		catch (std::out_of_range& e)
+		{
+			cout << e.what() << endl;
+		}
+
+		string sss = mmp[6];
+		cout << sss << endl;
+		printStr(mmp[6]);
+
+		ostream& operator<<(ostream&, const string&);     //WTF !!!!
+		cout << mmp[6] << endl;                           //WTF !!!!
+
+
+
+		cout << mmp[6].operator string() << endl;
+		cout << mmp[2].operator std::string() << endl;
+
+		cout << endl;
+
+		print(mmp);
+
+		mmp[8] = "123";
+		mmp[11] = "iop";
+		mmp[12] = "uuu";
+
+		auto it_begin = mmp.lower_bound(2);
+		auto it_end = mmp.upper_bound(13);
+
+		for (auto it = it_begin; it != it_end; ++it)
+		{
+			cout << it->first << "\t" << it->second << endl;
+		}
+		cout << endl;
+
+		print(mmp);
 
 	}
-	catch (RB_Tree_Exception& e)
+	catch (map_Exception& e)
 	{
 		cout << e << endl;
 	}

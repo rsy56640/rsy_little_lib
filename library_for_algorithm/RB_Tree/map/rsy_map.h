@@ -7,7 +7,6 @@
 #ifndef _RSY_MAP_H
 #define _RSY_MAP_H
 #include "RB_Tree.h"
-#include "rsy_map_iterator.h"
 #include "rsy_map_Exception.h"
 #include "rsy_map_type.h"
 
@@ -21,21 +20,24 @@ namespace RSY_TOOL
 		class rsy_map :public map_type<Key, Value>
 		{
 
+		public:
+
 			using key_type = typename map_type<Key, Value>::key_type;
 			using mapped_type = typename map_type<Key, Value>::mapped_type;
 			using value_type = typename map_type<Key, Value>::value_type;
 			using size_type = typename map_type<Key, Value>::size_type;
 			using difference_type = typename map_type<Key, Value>::difference_type;
-			using key_Compare = typename map_type<Key, Value>::key_Compare;
 			using const_reference = typename map_type<Key, Value>::const_reference;
+			using key_Compare = typename map_type<Key, Value>::key_Compare;
 			using iterator_type = typename map_type<Key, Value>::iterator_type;
+			using iterator_category = typename map_type<Key, Value>::iterator_category;
 
 			using RBTree_ptr = typename _STD shared_ptr<RB_Tree<value_type> >;
 
 			using mapEx = map_Exception;
 
-		protected:
 
+		protected:
 
 			/*
 			 * Proxy class for distinguishing reading and writing
@@ -50,10 +52,14 @@ namespace RSY_TOOL
 
 			public:
 
-				//for writing
-				ValueProxy& operator=(const ValueProxy& other);
+				ValueProxy(Value&);
 
-				ValueProxy& operator=(Value value);
+				ValueProxy(const ValueProxy&) = default;
+
+				//for writing
+				ValueProxy& operator=(const ValueProxy&);
+
+				ValueProxy& operator=(Value&&);
 
 				//for reading
 				operator Value() const;
@@ -61,8 +67,10 @@ namespace RSY_TOOL
 
 			private:
 
+				Value& _value;
 
 			};//end class ValueProxy
+
 
 
 		public:
@@ -85,7 +93,15 @@ namespace RSY_TOOL
 
 			_STD size_t size() const;
 
+			bool empty() const;
+
 			iterator find(const Key&);
+
+			iterator lower_bound(const Key&);
+
+			iterator upper_bound(const Key&);
+
+			_STD size_t count(const Key&);
 
 			void insert(const std::pair<const Key, Value>&);
 
@@ -93,14 +109,13 @@ namespace RSY_TOOL
 
 			void erase(const Key&);
 
-
 			ValueProxy operator[](const Key&);
 
-			//const
+			ValueProxy at(const Key&);
+
 			const mapped_type& operator[](const Key&)const;
 
 			void swap(rsy_map<Key, Value>&);
-
 
 
 		private:
@@ -116,12 +131,23 @@ namespace RSY_TOOL
 		*****/
 
 		/*
+		 * constructor
+		**/
+		template<class Key, class Value>
+		rsy_map<Key, Value>::ValueProxy::ValueProxy(Value& value)
+			:_value(value)
+		{}
+
+
+		/*
 		 * for writing
 		**/
 		template<class Key, class Value>
 		inline typename rsy_map<Key, Value>::ValueProxy& rsy_map<Key, Value>::ValueProxy::operator=(const typename rsy_map<Key, Value>::ValueProxy& other)
 		{
-			;
+			Value temp = other._value;
+			this->_value = _STD move(temp);
+			return *this;
 		}
 
 
@@ -129,19 +155,20 @@ namespace RSY_TOOL
 		 * for writing
 		**/
 		template<class Key, class Value>
-		inline typename rsy_map<Key, Value>::ValueProxy& rsy_map<Key, Value>::ValueProxy::operator=(Value value)
+		inline typename rsy_map<Key, Value>::ValueProxy& rsy_map<Key, Value>::ValueProxy::operator=(Value&& value)
 		{
-
+			this->_value = _STD forward<Value>(value);
+			return *this;
 		}
 
 
 		/*
-		 *for reading
+		 * for reading
 		**/
 		template<class Key, class Value>
 		inline rsy_map<Key, Value>::ValueProxy::operator Value() const
 		{
-
+			return this->_value;
 		}
 
 
@@ -152,7 +179,7 @@ namespace RSY_TOOL
 
 
 		/*
-		 * default constructor
+		 * constructor
 		**/
 		template<class Key, class Value>
 		rsy_map<Key, Value>::rsy_map(const key_Compare& key_compare)
@@ -177,7 +204,9 @@ namespace RSY_TOOL
 		}
 
 
-		//move assignment
+		/*
+		 * move assignment
+		**/
 		template<class Key, class Value>
 		inline rsy_map<Key, Value>& rsy_map<Key, Value>::operator=(rsy_map<Key, Value>&& other)
 		{
@@ -186,7 +215,9 @@ namespace RSY_TOOL
 		}
 
 
-		//the begin iterator of the map
+		/*
+		 * the begin iterator of the map
+		**/
 		template<class Key, class Value>
 		inline typename rsy_map<Key, Value>::iterator rsy_map<Key, Value>::begin() const
 		{
@@ -194,7 +225,9 @@ namespace RSY_TOOL
 		}
 
 
-		//the end iterator of the map
+		/*
+		 * the end iterator of the map
+		**/
 		template<class Key, class Value>
 		inline typename rsy_map<Key, Value>::iterator rsy_map<Key, Value>::end() const
 		{
@@ -202,7 +235,9 @@ namespace RSY_TOOL
 		}
 
 
-		//size of the map container
+		/*
+		 * size of the map container
+		**/
 		template<class Key, class Value>
 		inline _STD size_t rsy_map<Key, Value>::size() const
 		{
@@ -210,9 +245,21 @@ namespace RSY_TOOL
 		}
 
 
-		//find the iterator pointing to the specific key,
-		//if the key does not exist,
-		//the return value will be end().
+		/*
+		 * judge whether the map is empty.
+		**/
+		template<class Key, class Value>
+		inline bool rsy_map<Key, Value>::empty() const
+		{
+			return 0 == _rbt->size();
+		}
+
+
+		/*
+		 * find the iterator pointing to the specific key,
+		 * if the key does not exist,
+		 * the return value will be end().
+		**/
 		template<class Key, class Value>
 		inline typename rsy_map<Key, Value>::iterator rsy_map<Key, Value>::find(const Key& key)
 		{
@@ -220,8 +267,48 @@ namespace RSY_TOOL
 		}
 
 
-		//insert a pair of K-V
-		//will not substitute if key collides
+		/*
+		 * returns an iterator pointing to the first element that is not less than key.
+		**/
+		template<class Key, class Value>
+		inline typename rsy_map<Key, Value>::iterator rsy_map<Key, Value>::lower_bound(const Key& key)
+		{
+			return _rbt->lower_bound(typename rsy_map<Key, Value>::value_type(key, Value{}));
+		}
+
+
+		/*
+		 * returns an iterator pointing to the first element that is greater than key.
+		**/
+		template<class Key, class Value>
+		inline typename rsy_map<Key, Value>::iterator rsy_map<Key, Value>::upper_bound(const Key& key)
+		{
+			return _rbt->upper_bound(typename rsy_map<Key, Value>::value_type(key, Value{}));
+		}
+
+
+		/*
+		 * count the number of pair with specific key.
+		 * since the map is BST, so return value is between 0 and 1.
+		**/
+		template<class Key, class Value>
+		inline _STD size_t rsy_map<Key, Value>::count(const Key& key)
+		{
+			try {
+				at(key);
+				return 1;
+			}
+			catch (std::out_of_range& e)
+			{
+				return 0;
+			}
+		}
+
+
+		/*
+		 * insert a pair of K-V
+		 * will not substitute if key collides
+		**/
 		template<class Key, class Value>
 		inline void rsy_map<Key, Value>::insert(const std::pair<const Key, Value>& data)
 		{
@@ -229,8 +316,10 @@ namespace RSY_TOOL
 		}
 
 
-		//insert a pair of K-V
-		//will substitute if key collides
+		/*
+		 * insert a pair of K-V
+		 * will substitute if key collides
+		**/
 		template<class Key, class Value>
 		inline void rsy_map<Key, Value>::insert_assign(const std::pair<const Key, Value>& data)
 		{
@@ -238,7 +327,9 @@ namespace RSY_TOOL
 		}
 
 
-		//erase a pair with the specific key
+		/*
+		 * erase a pair with the specific key
+		**/
 		template<class Key, class Value>
 		inline void rsy_map<Key, Value>::erase(const Key& key)
 		{
@@ -252,17 +343,40 @@ namespace RSY_TOOL
 		}
 
 
-		//read
+		/*
+		 * read the value mapped from the specific key,
+		 * if the key does not exsit, insert the key with default value.
+		**/
 		template<class Key, class Value>
-		inline typename rsy_map<Key, Value>::ValueProxy rsy_map<Key, Value>::operator[](const Key&)
+		inline typename rsy_map<Key, Value>::ValueProxy rsy_map<Key, Value>::operator[](const Key& key)
 		{
 			typename rsy_map<Key, Value>::iterator it = find(key);
-
+			if (it == end())
+				insert(_STD make_pair(key, Value{}));
+			it = find(key);
+			return typename rsy_map<Key, Value>::ValueProxy{ it->second };
 		}
 
 
-		//read
-		//const operator[] function 
+		/*
+		 * read the value mapped from the specific key,
+		 * if the key does not exsit, throw std::out_of_range exception.
+		**/
+		template<class Key, class Value>
+		inline typename rsy_map<Key, Value>::ValueProxy rsy_map<Key, Value>::at(const Key& key)
+		{
+			typename rsy_map<Key, Value>::iterator it = find(key);
+			if (it == end())
+				throw std::out_of_range("no such key exists.");
+			else return typename rsy_map<Key, Value>::ValueProxy{ it->second };
+		}
+
+
+		/*
+		 * const operator[] function.
+		 * read the value mapped from the specific key,
+		 * if the key does not exist, return value will be default Value.
+		**/
 		template<class Key, class Value>
 		inline const Value& rsy_map<Key, Value>::operator[](const Key& key) const
 		{
@@ -272,6 +386,10 @@ namespace RSY_TOOL
 			else return it->second;
 		}
 
+
+		/*
+		 * member function swap();
+		**/
 		template<class Key, class Value>
 		inline void rsy_map<Key, Value>::swap(rsy_map<Key, Value>& other)
 		{
@@ -279,9 +397,10 @@ namespace RSY_TOOL
 		}
 
 
-
-		//non-member swap function
-		//specialization for this namespace
+		/*
+		 * non-member function swap();
+		 * specialization for this namespace
+		**/
 		template<class Key, class Value>
 		void swap(rsy_map<Key, Value>& lhs, rsy_map<Key, Value>& rhs)
 		{
@@ -291,6 +410,7 @@ namespace RSY_TOOL
 
 
 	}//end namespace MY_RB_Tree
+
 
 }//end namespace RSY_TOOL
 

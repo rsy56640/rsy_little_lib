@@ -22,6 +22,8 @@ namespace RSY_TOOL
 
 			using iterator_type = typename RB_Tree_Iterator<_Ty>::iterator_type;
 
+			using iterator_category = typename RB_Tree_Iterator<_Ty>::iterator_category;
+
 			using Comp = typename std::function<bool(const _Ty&, const _Ty&)>;
 
 			using PImpl = std::shared_ptr<RB_TreeImpl<_Ty> >;
@@ -61,7 +63,19 @@ namespace RSY_TOOL
 
 			iterator_type find(const _Ty& value)
 			{
-				return _pImpl->find(value);
+				return iterator_type(_pImpl->find(value));
+			}
+
+
+			iterator_type lower_bound(const _Ty& value)
+			{
+				return iterator_type(_pImpl->lower_bound(value));
+			}
+
+
+			iterator_type upper_bound(const _Ty& value)
+			{
+				return iterator_type(_pImpl->upper_bound(value));
 			}
 
 

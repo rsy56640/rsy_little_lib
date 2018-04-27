@@ -25,7 +25,7 @@ namespace RSY_TOOL
 			using key_Compare = _STD function<bool(const key_type&, const key_type&)>;
 			using const_reference = const value_type&;
 			using iterator_type = typename RB_Tree<_STD pair<const Key, Value> >::iterator_type;
-
+			using iterator_category = typename RB_Tree<_STD pair<const Key, Value> >::iterator_category;
 		};
 
 	}//end namespace MY_RB_Tree

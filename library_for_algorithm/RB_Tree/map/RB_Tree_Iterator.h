@@ -28,8 +28,7 @@ namespace RSY_TOOL
 			using difference_type = _My_ITERATOR ptrdiff_t;
 			using reference = _Ty&;
 			using pointer = _Ty*;
-			//using iterator_category = typename  _My_ITERATOR bidirectional_iterator_tag;
-			using iterator_category = typename   RB_Tree_Iterator_Base<_Ty>;
+			using iterator_category = typename  _My_ITERATOR bidirectional_iterator_tag;
 			using RBTreeNode_ptr = typename RB_Tree_Node<_Ty>::RBTreeNode_ptr;
 			using RBTEx = RB_Tree_Exception;
 
@@ -148,9 +147,9 @@ namespace RSY_TOOL
 			using iterator_type = RB_Tree_Iterator<_Ty>;
 
 
-			RB_Tree_Iterator() = default;
+			//RB_Tree_Iterator() = default;
 
-			RB_Tree_Iterator(RBTreeNode_ptr _node) { node = _node; }
+			explicit RB_Tree_Iterator(RBTreeNode_ptr _node) { node = _node; }
 
 			RB_Tree_Iterator(const self_type&) = default;
 

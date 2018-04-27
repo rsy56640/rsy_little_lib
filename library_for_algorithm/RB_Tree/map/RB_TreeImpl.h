@@ -709,7 +709,9 @@ namespace RSY_TOOL
 			}
 
 
-			//find the node with the specific key
+			/*
+			 * find the node with the specific key
+			**/
 			RBTreeNode_ptr find(const _Ty& value)
 			{
 				try {
@@ -722,7 +724,71 @@ namespace RSY_TOOL
 			}
 
 
-			//insert a node with specific value with a flag argument 
+			/*
+			 * returns a node pointing to the first element that is not less than key.
+			**/
+			RBTreeNode_ptr lower_bound(const _Ty& value) const
+			{
+
+				RBNode_ptr Pnode{ std::make_shared<RB_Tree_Node<_Ty> >(value) };
+
+				RBNode_ptr y = NIL;
+				RBNode_ptr x = Proot;
+
+				while (x != NIL)
+				{
+
+					if (_rb_Key_comp(x, Pnode))          //x.key < Pnode.key
+						x = x->right;
+
+					else if (_rb_Key_comp(Pnode, x))     //x.key > Pnode.key
+					{
+						y = x;
+						x = x->left;
+					}
+
+					else return x;                       //key collision
+
+				}
+
+				return y;
+
+			}
+
+
+			/*
+			 * returns a node pointing to the first element that is greater than key.
+			**/
+			RBTreeNode_ptr upper_bound(const _Ty& value) const
+			{
+
+				RBNode_ptr Pnode{ std::make_shared<RB_Tree_Node<_Ty> >(value) };
+
+				RBNode_ptr y = NIL;
+				RBNode_ptr x = Proot;
+
+				while (x != NIL)
+				{
+
+					if (!_rb_Key_comp(Pnode, x))         //x.key <= Pnode.key
+						x = x->right;
+
+					else if (_rb_Key_comp(Pnode, x))     //x.key > Pnode.key
+					{
+						y = x;
+						x = x->left;
+					}
+
+				}
+
+				return y;
+
+			}
+
+
+			/*
+			 * insert a node with specific value with a flag argument
+			**/
 			void RB_Insert(const _Ty& value, INSERT_ARG _arg)
 			{
 
@@ -773,8 +839,10 @@ namespace RSY_TOOL
 			}//end function RB_Insert(const _Ty&, INSERT_ARG);
 
 
-			//delete specific key node,
-			//if no such node, do nothing.
+			/*
+			 * delete specific key node,
+			 * if no such node, do nothing.
+			**/
 			void RB_Delete(const _Ty& k_value)
 			{
 

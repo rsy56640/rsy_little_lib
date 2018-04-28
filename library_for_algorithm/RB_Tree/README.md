@@ -1,5 +1,5 @@
     
-   1是模仿STL的，结果发现缺少很多组件，比如allocator,iterator,stl_config等等，因此搁置。    
+   1是模仿STL的，结果发现缺少很多组件，比如allocator, iterator, stl_config等等，因此搁置。    
         
    2是后来重新开的一个，但是因为 “智能指针的转化问题” 而流产，但是为了纪念，我还是选择了保留。    
         
@@ -7,5 +7,9 @@
         
    CSDN上的总结 https://blog.csdn.net/rsy56640/article/details/79874914    
        
-  2018-4-10 完结    
+  2018-4-10 完结       
+        
+        
+又顺手封装了一个map     
+2018-04-27
     

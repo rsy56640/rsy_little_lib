@@ -57,8 +57,8 @@ namespace RSY_TOOL
 			//write to the disk or some device
 			//...
 
-			if (_mode)
-				delete pNode;
+			if (_mode);
+			//delete pNode;
 
 		}
 

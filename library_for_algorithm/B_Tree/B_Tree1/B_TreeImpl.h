@@ -48,6 +48,7 @@ namespace RSY_TOOL
 			using Data_Comp = typename B_tree_type<Key, Value>::Data_Comp;
 			using Data_Key_Comp = typename B_tree_type<Key, Value>::Data_Key_Comp;
 
+			using BTEx = BTreeException;
 
 		public:
 
@@ -56,10 +57,11 @@ namespace RSY_TOOL
 			 * default constructor
 			 * degree is default, and default compare function is less<Key>().
 			**/
-			B_TreeImpl(const _STD size_t degree = default_degree, Key_Comp key_comp = _STD less<Key>());
+			B_TreeImpl(const _STD size_t degree, Key_Comp key_comp);
 
 
 			B_TreeImpl(const B_TreeImpl&) = delete;
+
 
 			B_TreeImpl& operator=(const B_TreeImpl&) = delete;
 
@@ -94,7 +96,7 @@ namespace RSY_TOOL
 
 
 
-		protected:		//auxiliary functions for implementation
+		protected:    //auxiliary functions for implementation
 
 
 			/*
@@ -146,6 +148,14 @@ namespace RSY_TOOL
 			void B_Tree_Right_Rotate(base_ptr pNode, _STD size_t index);
 
 
+			/*
+			 * erase a key in the subtree pNode
+			 * assume pNode is big enough,
+			 * which means pNode has no less than _degree key_words.
+			**/
+			void B_Tree_erase_BIGENOUGH(base_ptr pNode, const Key& key);
+
+
 
 		private:
 
@@ -157,10 +167,10 @@ namespace RSY_TOOL
 		};//end class B_TreeImpl
 
 
-		 /*
-		  * default constructor
-		  * degree is default, and default compare function is less<Key>().
-		 **/
+		/*
+		 * default constructor
+		 * degree is default, and default compare function is less<Key>().
+		**/
 		template<class Key, class Value>
 		B_TreeImpl<Key, Value>::B_TreeImpl(const _STD size_t degree, typename B_TreeImpl<Key, Value>::Key_Comp key_comp)
 			:_degree(degree),
@@ -270,7 +280,7 @@ namespace RSY_TOOL
 		 * responsible for freeing memory during its process
 		**/
 		template<class Key, class Value>
-		void B_TreeImpl<Key, Value>::erase(const Key&)
+		void B_TreeImpl<Key, Value>::erase(const Key& key)
 		{
 
 
@@ -487,10 +497,10 @@ namespace RSY_TOOL
 		}//end function B_Tree_Insert_NONFULL();
 
 
-		 /*
-		  * left rotate at position index of pNode.
-		  * assume 3 nodes has already been read in the memory
-		 **/
+		/*
+		 * left rotate at position index of pNode.
+		 * assume 3 nodes has already been read in the memory
+		**/
 		template<class Key, class Value>
 		void B_TreeImpl<Key, Value>::B_Tree_Left_Rotate(base_ptr pNode, _STD size_t index)
 		{
@@ -553,6 +563,50 @@ namespace RSY_TOOL
 			DISK_WRITE(right, W_NOERASE);
 
 		}
+
+
+		/*
+		 * erase a key in the subtree pNode
+		 * assume pNode is big enough,
+		 * which means pNode has no less than _degree key_words.
+		**/
+		template<class Key, class Value>
+		void B_TreeImpl<Key, Value>::B_Tree_erase_BIGENOUGH(base_ptr pNode, const Key& key)
+		{
+
+			link_type p = static_cast<link_type>(pNode);
+
+			//pNode is a leaf node
+			if (pNode->leaf())
+			{
+				for (int i = 0; i < pNode->_key_size; ++i)
+					if (!_key_comp(p->data[i]->first, key) && !_key_comp(key, p->data[i]->first))
+					{
+						for (int j = i; i < pNode->_key_size - 1; ++j)
+							p->data[j] = p->data[j + 1];
+						pNode->_key_size--;
+						DISK_WRITE(pNode);
+						return;
+					}
+
+				DISK_WRITE(pNode, W_NODIRTY);
+
+				throw BTEx("There is no such key.");
+
+			}//end if pNode is leaf
+
+			//pNode is an internal node
+			else {
+
+
+
+
+
+
+			}
+
+
+		}//end function B_Tree_erase_BIGENOUGH():
 
 
 

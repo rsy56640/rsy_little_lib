@@ -12,6 +12,10 @@ int main()
 
 
 	B_TreeImpl<int, int> b(2, less<int>());
+	//b.B_Tree_find()
+	b.erase(1);
+	b.insert(2, 3, _INSERT_NOASSIGNMENT);
+
 
 	BTree<int, int> b2;
 

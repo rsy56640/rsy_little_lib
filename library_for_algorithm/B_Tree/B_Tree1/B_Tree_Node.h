@@ -26,7 +26,32 @@ namespace RSY_TOOL
 		/*
 		 * set the src leaf property according to the dest node
 		**/
-		inline void setLeaf(int& _src_degree_isLeaf, const int _dest__degree_isLeaf);
+		void setLeaf(int& _src_degree_isLeaf, const int _dest__degree_isLeaf);
+
+
+		struct B_Tree_Node_Base;
+		/*
+		 * find the minimum key in the subtree pNode
+		**/
+		_STD pair<B_Tree_Node_Base*, int> minimum(B_Tree_Node_Base* pNode);
+
+
+		/*
+		 * find the maximum key in the subtree pNode
+		**/
+		_STD pair<B_Tree_Node_Base*, int> maximum(B_Tree_Node_Base* pNode);
+
+
+		/*
+		 * decrement
+		**/
+		_STD pair<B_Tree_Node_Base*, int> decrement(B_Tree_Node_Base* _node, int _index);
+
+
+		/*
+		 * increment
+		**/
+		_STD pair<B_Tree_Node_Base*, int> increment(B_Tree_Node_Base* _node, int _index);
 
 
 		/*

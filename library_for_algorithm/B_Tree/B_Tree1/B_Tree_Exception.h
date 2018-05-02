@@ -28,17 +28,13 @@ namespace RSY_TOOL
 
 			const char* _msg;
 
-			friend std::ostream& operator<<(std::ostream& os, const BTreeException& e);
+			friend std::ostream& operator<<(std::ostream& os, const BTreeException& e)
+			{
+				os << e._msg;
+				return os;
+			}
 
 		};//end class BTreeException
-
-
-		std::ostream& operator<<(std::ostream& os, const BTreeException& e)
-		{
-			os << e._msg;
-			return os;
-		}
-
 
 	}//end namespace BTree
 

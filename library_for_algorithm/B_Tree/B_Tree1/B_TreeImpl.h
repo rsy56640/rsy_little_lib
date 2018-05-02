@@ -254,7 +254,7 @@ namespace RSY_TOOL
 				//create a null node as the new root.
 				base_ptr root = allocate_node();
 				_root = root;
-				setLeaf(root, NULL);
+				setLeaf(root->degree_isLeaf, NULL);
 				root->_key_size = 0;
 				root->branch[0] = r;
 				r->parent = root;
@@ -270,7 +270,7 @@ namespace RSY_TOOL
 			}
 
 			//now root is not full
-			B_Tree_Insert_NONFULL(_root, key, value, _arg);
+			B_Tree_Insert_NONFULL(_root, key, _STD move(value), _arg);
 
 		}
 
@@ -284,6 +284,9 @@ namespace RSY_TOOL
 		template<class Key, class Value>
 		void B_TreeImpl<Key, Value>::erase(const Key& key)
 		{
+
+
+			B_Tree_erase_BIGENOUGH(_root, key);
 
 
 		}
@@ -339,7 +342,7 @@ namespace RSY_TOOL
 			link_type right = static_cast<link_type>(sibling);
 
 			//reallocate the resource of the to sibling
-			setLeaf(sibling, p);
+			setLeaf(sibling->degree_isLeaf, p->degree_isLeaf);
 
 			sibling->_key_size = _degree - 1;
 
@@ -417,7 +420,7 @@ namespace RSY_TOOL
 				{
 					//if _arg indicats assignment, then modify the data
 					if (typeid(_arg) == typeid(Assignment))
-						p->data[index]->second = _STD foward<Value>(value);
+						p->data[index]->second = _STD forward<Value>(value);
 				}
 				//not equal
 				else {
@@ -453,7 +456,7 @@ namespace RSY_TOOL
 				{
 					//if _arg indicats assignment, then modify the data
 					if (typeid(_arg) == typeid(Assignment))
-						p->data[index]->second = _STD foward<Value>(value);
+						p->data[index]->second = _STD forward<Value>(value);
 					return;
 				}
 
@@ -493,7 +496,7 @@ namespace RSY_TOOL
 					DISK_WRITE(pNode);
 
 				//insert key via recursve process
-				B_Tree_Insert_NONFULL(child, key, value, _arg);
+				B_Tree_Insert_NONFULL(child, key, _STD move(value), _arg);
 
 			}
 
@@ -512,7 +515,7 @@ namespace RSY_TOOL
 
 			link_type p = static_cast<link_type>(pNode);
 			link_type y = static_cast<link_type>(left);
-			link_type z = static_cast<link_type>(rigt);
+			link_type z = static_cast<link_type>(right);
 
 			y->data[left->_key_size++] = p->data[index];
 			left->branch[left->_key_size] = right->branch[0];
@@ -546,7 +549,7 @@ namespace RSY_TOOL
 
 			link_type p = static_cast<link_type>(pNode);
 			link_type y = static_cast<link_type>(left);
-			link_type z = static_cast<link_type>(rigt);
+			link_type z = static_cast<link_type>(right);
 
 			right->branch[right->_key_size + 1] = right->branch[right->_key_size];
 			for (int i = right->_key_size; i > 0; --i)
@@ -614,13 +617,57 @@ namespace RSY_TOOL
 				{
 					//process key collision in the internal node
 
+					DISK_READ(pNode->branch[index]);
+					DISK_READ(pNode->branch[index + 1]);
+					base_ptr left = pNode->branch[index];
+					base_ptr right = pNode->branch[index + 1];
 
+					link_type y = static_cast<link_type>(left);
+					link_type z = static_cast<link_type>(right);
 
+					if (left->_key_size >= _degree)
+					{
+						DISK_WRITE(right, W_NODIRTY);
+						auto result = maximum(left);
+						B_Tree_erase_BIGENOUGH(pNode, static_cast<link_type>(result.first)->data[result.second]->second);
+						p->data[index] = static_cast<link_type>(result.first)->data[result.second];
+					}
+					else if (right->_key_size >= _degree)
+					{
+						DISK_WRITE(left, W_NODIRTY);
+						auto result = minimum(right);
+						B_Tree_erase_BIGENOUGH(pNode, static_cast<link_type>(result.first)->data[result.second]->second);
+						p->data[index] = static_cast<link_type>(result.first)->data[result.second];
+					}
+					//left and right both have (_degree - 1) keys,
+					//then merge together
+					//and delete recursively
+					else
+					{
+						y->data[_degree] = p->data[index];
+						for (int i = 0; i < _degree - 1; ++i)
+						{
+							y->data[_degree + i] = z->data[i];
+							left->branch[_degree + i] = right->branch[i];
+						}
+						left->branch[(_degree << 1) - 1] = right->branch[_degree - 1];
+						left->_key_size = (_degree << 1) - 1;
 
+						//left shift pNode from size-1 to index
+						for (int i = index; i < pNode->_key_size - 1; ++i)
+						{
+							pNode->branch[i] = pNode->branch[i + 1];
+							p->data[i + 1] = p->data[i + 2];
+						}
+						pNode->_key_size--;
 
+						DISK_WRITE(pNode, W_NOERASE);
+						DISK_WRITE(left);
+						DISK_WRITE(right, W_NODIRTY);
 
+						B_Tree_erase_BIGENOUGH(pNode, key);
 
-
+					}
 
 				}//end if key collision in the intrenal node
 

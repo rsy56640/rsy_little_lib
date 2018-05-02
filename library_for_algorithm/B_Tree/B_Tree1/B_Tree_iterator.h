@@ -17,6 +17,7 @@ namespace RSY_TOOL
 			using iterator_category = std::bidirectional_iterator_tag;
 			using difference_type = std::ptrdiff_t;
 			using base_ptr = B_Tree_Node_Base*;
+			using BTEx = BTreeException;
 
 			B_Tree_iterator_base(base_ptr node, int index)
 				:_node(node), _index(index)
@@ -25,28 +26,19 @@ namespace RSY_TOOL
 			base_ptr _node;
 			int _index;
 
-			/*
-			 * find the minimum key in the subtree pNode
-			**/
-			_STD pair<base_ptr, int> B_Tree_minimum(base_ptr pNode);
-
 
 			/*
-			 * find the maximum key in the subtree pNode
+			 * the precursor of the key
+			 * if no precursor, an exception will be threw
 			**/
-			_STD pair<base_ptr, int> B_Tree_maximum(base_ptr pNode);
+			void decrement();
 
 
 			/*
-			 * find the precursor of the key
+			 * the successor of the key
+			 * if no successor, an exception will be threw
 			**/
-			_STD pair<base_ptr, int> decrement(base_ptr pNode, const int index);
-
-
-			/*
-			 * find the successor of the key
-			**/
-			_STD pair<base_ptr, int> increment(base_ptr pNode, const int index);
+			void increment();
 
 		};
 
@@ -68,7 +60,7 @@ namespace RSY_TOOL
 			using pointer = value_type*;
 			using self_type = B_Tree_iterator<Key, Value>;
 			using iterator_type = self_type;
-			using BTEx = BTreeException;
+			using BTEx = typename B_Tree_iterator_base::BTEx;
 
 
 			B_Tree_iterator(base_ptr node, int index)

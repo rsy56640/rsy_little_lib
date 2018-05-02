@@ -35,6 +35,8 @@ namespace RSY_TOOL
 
 			using B_TreeImpl_ptr = typename std::shared_ptr<B_TreeImpl<Key, Value> >;
 
+			using iterator_category = typename B_Tree_iterator<Key, Value>::iterator_category;
+			using iterator_type = typename B_Tree_iterator<Key, Value>::iterator_type;
 
 		public:
 

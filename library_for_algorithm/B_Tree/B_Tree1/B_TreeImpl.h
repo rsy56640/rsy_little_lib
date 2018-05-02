@@ -157,6 +157,7 @@ namespace RSY_TOOL
 
 
 
+
 		private:
 
 			const _STD size_t _degree;
@@ -256,6 +257,7 @@ namespace RSY_TOOL
 				setLeaf(root, NULL);
 				root->_key_size = 0;
 				root->branch[0] = r;
+				r->parent = root;
 
 				//split full node r (root[0])
 				B_Tree_Split_child(root, 0);
@@ -330,6 +332,7 @@ namespace RSY_TOOL
 
 			//create a sibling, and reassign to sibling the latter part of pNode
 			base_ptr sibling = allocate_node();
+			sibling->parent = pNode;
 			base_ptr p = pNode->branch[index];
 
 			link_type left = static_cast<link_type>(p);
@@ -598,16 +601,166 @@ namespace RSY_TOOL
 			//pNode is an internal node
 			else {
 
+				//find the appropriate position of the key
+				int index = 0;
+				while (index < pNode->_key_size && _key_comp(p->data[index]->first, key)) //p.key_i < key
+					index++;
+				//now index == size
+				//or key is in (p.key_{i-1} / inf if index==0, p.key_i];
+
+
+				//judge whether the key collides
+				if (index != pNode->_key_size && !_key_comp(key, p->data[index]->first))
+				{
+					//process key collision in the internal node
 
 
 
 
 
-			}
+
+
+
+
+				}//end if key collision in the intrenal node
+
+
+				//no collision, index == size,
+				//or key is in (key_{i-1}, key_i),
+				//key might be in p->data[index].
+				else {
+
+					DISK_READ(pNode->branch[index]);
+
+					//if child is not big enough
+					//if neighbor sibling has enough, then steal one by rotating.
+					if (pNode->branch[index]->_key_size == _degree - 1)
+					{
+
+						bool _OK = false;
+						//right sibling
+						if (index != pNode->_key_size)
+						{
+							//load right and rotate left
+							DISK_READ(pNode->branch[index + 1]);
+							if (pNode->branch[index + 1]->_key_size != _degree - 1)
+								B_Tree_Left_Rotate(pNode, index);
+
+							_OK = true;
+							//free sibling
+							DISK_WRITE(pNode->branch[index + 1], W_NODIRTY);
+
+						}
+
+						//left sibling
+						if (index > 0 && !_OK)
+						{
+							//load left and rotate right
+							DISK_READ(pNode->branch[index - 1]);
+							if (pNode->branch[index - 1]->_key_size != _degree - 1)
+								B_Tree_Right_Rotate(pNode, index);
+
+							_OK = true;
+							//free sibling
+							DISK_WRITE(pNode->branch[index - 1], W_NODIRTY);
+
+						}
+
+						//not enough, merge with one neighbor
+						if (!_OK)
+						{
+
+							//push down one key in pNode,
+							//which serves as thee middle key.
+
+							//merge with right sibling
+							if (index != pNode->_key_size)
+							{
+
+								DISK_READ(pNode->branch[index + 1]);
+
+								base_ptr left = pNode->branch[index];
+								base_ptr right = pNode->branch[index + 1];
+
+								link_type y = static_cast<link_type>(left);
+								link_type z = static_cast<link_type>(right);
+
+								y->data[_degree - 1] = p->data[index];
+								for (int i = 0; i < _degree - 1; ++i)
+								{
+									y->data[_degree + i] = z->data[i];
+									left->branch[_degree + i] = right->branch[i];
+								}
+								left->branch[(_degree << 1) - 1] = right->branch[_degree - 1];
+								left->_key_size = (_degree << 1) - 1;
+
+								//free, lest memory leak
+								DISK_WRITE(right, W_NODIRTY);
+
+								//shift key and data in pNode from index to size
+								for (int i = index; i < pNode->_key_size - 1; ++i)
+								{
+									pNode->branch[i] = pNode->branch[i + 1];
+									p->data[i + 1] = p->data[i + 2];
+								}
+								pNode->_key_size--;
+
+								DISK_WRITE(pNode, W_NOERASE);
+								DISK_WRITE(left, W_NOERASE);
+
+							}
+							//merge with left sibling
+							//in fact at this time index == key_size !!!!
+							else {
+
+								DISK_READ(pNode->branch[index - 1]);
+
+								base_ptr left = pNode->branch[index - 1];
+								base_ptr right = pNode->branch[index];
+
+								link_type y = static_cast<link_type>(left);
+								link_type z = static_cast<link_type>(right);
+
+								y->data[_degree - 1] = p->data[index - 1];
+								for (int i = 0; i < _degree - 1; ++i)
+								{
+									y->data[_degree + i] = z->data[i];
+									left->branch[_degree + i] = right->branch[i];
+								}
+								left->branch[(_degree << 1) - 1] = right->branch[_degree - 1];
+								left->_key_size = (_degree << 1) - 1;
+
+								//free, lest memory leak
+								DISK_WRITE(right, W_NODIRTY);
+
+								pNode->_key_size--;
+
+								DISK_WRITE(pNode, W_NOERASE);
+								DISK_WRITE(left, W_NOERASE);
+
+							}
+
+
+						}//end merge with ones neighbor
+
+					}//end child is not big enough
+
+
+					//big enough, do recursive process
+					base_ptr child = pNode->branch[index];
+
+					//free memory
+					DISK_WRITE(pNode, W_NODIRTY);
+
+					B_Tree_erase_BIGENOUGH(child, key);
+
+				}//end if no key collision in this pNode
+
+
+			}//end if pNode is an internal node
 
 
 		}//end function B_Tree_erase_BIGENOUGH():
-
 
 
 	}//end namespace BTree

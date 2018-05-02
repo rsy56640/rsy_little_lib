@@ -43,6 +43,10 @@ namespace RSY_TOOL
 
 			B_Tree_Node_Base(const _STD size_t degree);
 
+			B_Tree_Node_Base(const B_Tree_Node_Base&) = delete;
+
+			B_Tree_Node_Base& operator=(const B_Tree_Node_Base&) = delete;
+
 			virtual ~B_Tree_Node_Base() = 0;
 
 			const _STD size_t degree()const noexcept;
@@ -54,6 +58,7 @@ namespace RSY_TOOL
 			_STD size_t _key_size;
 			base_ptr* branch;
 			base_ptr parent;
+
 
 		};//end struct B_Tree_Node_Base
 
@@ -78,6 +83,9 @@ namespace RSY_TOOL
 				data = new data_ptr[(degree << 1) - 1];
 			}
 
+			B_Tree_Node(const B_Tree_Node&) = delete;
+
+			B_Tree_Node& operator=(const B_Tree_Node&) = delete;
 
 			~B_Tree_Node()
 			{
@@ -92,7 +100,7 @@ namespace RSY_TOOL
 
 		/*
 		 * write the node to the disk
-		 * responsible for the deleting the node,if _mode == W_ERASE.
+		 * the operation is based on the argument _mode
 		**/
 		constexpr int W_ERASE = 0;     //write back and free memory
 		constexpr int W_NOERASE = 1;   //onlt write back, no free memory operation

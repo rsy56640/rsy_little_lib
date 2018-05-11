@@ -14,7 +14,7 @@
 #ifndef _RB_TREEIMPL_H
 #define _RB_TREEIMPL_H
 #include "RB_Tree_Exception.h"
-#include "RB_Tree_Iterator.h"
+#include "RB_Tree_Node.h"
 #include <functional>
 #include <typeinfo>
 
@@ -26,13 +26,16 @@ namespace RSY_TOOL
 
 		namespace
 		{
-			struct INSERT_ARG { virtual ~INSERT_ARG() = default; };
-			typedef struct :public INSERT_ARG {}  Assignment;	//if key collides, replace value
-			typedef struct :public INSERT_ARG {}  NoAssignment;	//no replace
+			struct INSERT_ARGUMENT { virtual ~INSERT_ARGUMENT() = 0 {}; };
+			typedef struct :public INSERT_ARGUMENT {}  Assignment;     //if key collides, replace value
+			typedef struct :public INSERT_ARGUMENT {}  NoAssignment;   //no replace
+			static const Assignment _Assignment;
+			static const NoAssignment _NoAssignment;
 		}
+		using INSERT_ARG = const INSERT_ARGUMENT&;
 
-#define _INSERT_ASSIGNMENT Assignment{}
-#define _INSERT_NOASSIGNMENT NoAssignment{}
+#define _INSERT_ASSIGNMENT  _Assignment
+#define _INSERT_NOASSIGNMENT _NoAssignment
 
 		namespace
 		{

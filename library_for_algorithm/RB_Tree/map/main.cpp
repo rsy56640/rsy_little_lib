@@ -79,12 +79,17 @@ namespace std
 	template<>
 	struct less<Integer>
 	{
-
 		bool operator()(const Integer& lhs, const Integer& rhs)
 		{
 			return lhs.value() < rhs.value();
 		}
 	};
+
+
+	template
+		basic_ostream<char, char_traits<char>>& std::operator<< <char, char_traits<char>, allocator<char>>
+		(basic_ostream<char, char_traits<char>>&, const basic_string<char, char_traits<char>, allocator<char>>&);
+
 }
 
 template<class Key, class Value>
@@ -172,6 +177,9 @@ void printStr(const string& str)
 }
 
 
+
+
+
 ostream& operator<<(ostream& os, const string& s)
 {
 	std::operator<<(os, s);
@@ -179,11 +187,12 @@ ostream& operator<<(ostream& os, const string& s)
 }
 
 
+
+
 int main()
 {
 
 	ostream_iterator<int> _oit(cout, " ");
-
 
 	map<int, myStr> m;
 	m.insert_or_assign(1, string("123"));
@@ -246,11 +255,13 @@ int main()
 		string sss = mmp[6];
 		cout << sss << endl;
 		printStr(mmp[6]);
+		string ss1(mmp[6]);
+
 
 		ostream& operator<<(ostream&, const string&);     //WTF !!!!
+		using std::operator<<;
 		cout << mmp[6] << endl;                           //WTF !!!!
-
-
+		//cout.operator<<(mmp[6]) << endl;
 
 		cout << mmp[6].operator string() << endl;
 		cout << mmp[2].operator std::string() << endl;

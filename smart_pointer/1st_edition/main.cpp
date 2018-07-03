@@ -17,6 +17,7 @@ public:
 	{
 		cout << "ctor " << i << endl;
 	}
+	A(int, std::string, double) {}
 	void foo()
 	{
 		cout << "foo() " << i << endl;
@@ -35,8 +36,8 @@ int main()
 {
 	std::function<void(A*)> d = del;
 
-	//shared_ptr<A>  pa(new A{1}, d);
-	//shared_ptr<A>  pb = _STD make_shared<A>(1);
+	shared_ptr<A>  pa(new A{ 1 }, d);
+	shared_ptr<A>  pb = _STD make_shared<A>(1, "asd", 3.14);
 
 
 	//A* p = pa.get();

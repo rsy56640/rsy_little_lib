@@ -73,9 +73,19 @@ namespace RSY_TOOL
 			_Ty* get() const noexcept { return pointee; }
 			_Ty& operator*() const noexcept { return *pointee; }
 
+
 		private:
+
 			template<typename _Ty>
 			friend class SmartPtr;
+
+			/* WTF, this violates with template copy ctor
+			template<class... _Types>
+			Ref_Count_Obj(_Types&&... _Args)
+				:refCount(new int(1)),
+				pointee(new _Ty(std::forward<_Types>(_Args)...))
+			{}
+			*/
 
 			Ref_Count_Obj()
 				:refCount(nullptr), pointee(nullptr)
@@ -110,12 +120,16 @@ namespace RSY_TOOL
 			SmartPtr(_Ty* ptr)
 				:Ref_Count_Obj(ptr) {}
 
+			template<class... _Types>
+			SmartPtr(_Types&&..._Args)
+				: Ref_Count_Obj(std::forward<_Types>(_Args)...)
+			{}
 
 			/*
 			 * Copy Constructor
 			**/
 			SmartPtr(const SmartPtr& other)
-				:Ref_Count_Obj(other)
+				: Ref_Count_Obj(other)
 			{}
 
 
@@ -196,6 +210,18 @@ namespace RSY_TOOL
 			}
 
 		};//end template class SmartPtr
+
+
+		/*
+		 * Template Function make_smart
+		**/
+		template<class _Ty,
+			class... _Types> inline
+			SmartPtr<_Ty> make_smart(_Types&&..._Args)
+		{
+			return SmartPtr<_Ty>(std::forward<_Ty>(_Args)...);
+		}
+
 
 
 	}//end namespace Smart_Pointer

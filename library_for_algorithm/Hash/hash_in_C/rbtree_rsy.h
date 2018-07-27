@@ -1,8 +1,6 @@
 /*
- *
- *
- *
- *
+ * you should first look at "customized_util.h"
+ * then complete necessary data structure and functions.
 **/
 #pragma once
 #ifndef _RBTREE_RSY_H
@@ -13,7 +11,6 @@
 typedef struct rb_tree rb_tree;
 typedef struct rb_node rb_node;
 typedef struct rb_node_it rb_node_it;
-#define rb_NULL 0x80000000
 
 /*
  * initial an empty rbt, which later has to be deleted by rb_delete().

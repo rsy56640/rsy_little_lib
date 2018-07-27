@@ -1,3 +1,7 @@
+/*
+ * you should first look at "customized_util.h"
+ * then complete necessary data structure and functions.
+**/
 #pragma once
 #ifndef _HASH_RSY_H
 #define _HASH_RSY_H

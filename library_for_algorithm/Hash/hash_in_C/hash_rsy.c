@@ -1,9 +1,9 @@
 #include "hash_rsy.h"
 #include "rbtree_rsy.h"
 
-#define MAXSIZE_HASH_RSY 5
-const inline int magic_num = 3;
-const inline int addition = 1;
+#define MAXSIZE_HASH_RSY 769
+const inline int magic_num = 97;
+const inline int addition = 32;
 
 struct hash
 {

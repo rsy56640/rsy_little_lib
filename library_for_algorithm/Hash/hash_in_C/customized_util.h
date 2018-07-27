@@ -1,23 +1,25 @@
 #ifndef _CUSTOMIZED_UTIL_H
 #define _CUSTOMIZED_UTIL_H
-
+/*
+ * Users are able to customize their own data structure in Pair,
+ * which means "struct K" and "struct V" should be defined by users.
+ * Also there are some functions left to be defined.
+**/
 /*********************     user customized     *********************/
-struct K;
-struct V;
+struct K;                                                 //TO BE DEFINED
+struct V;                                                 //TO BE DEFINED
 struct Pair
 {
 	struct K* key;
 	struct V* value;
 };
 /*************************** for  RBtree ***************************/
-int rb_key_compare(struct K* k1, struct K* k2);
-void assign_V(struct V** src, const struct V** dest);
-void free_K(struct K*);
-void free_V(struct V*);
+int rb_key_compare(struct K* k1, struct K* k2);           //TO BE DEFINED
+void assign_V(struct V** src, const struct V** dest);     //TO BE DEFINED
+void free_K(struct K*);                                   //TO BE DEFINED
+void free_V(struct V*);                                   //TO BE DEFINED
 /**************************** for  Hash ****************************/
-struct hash;
-int K2int(struct K*);
-
+int K2int(struct K*);                                     //TO BE DEFINED
 /*******************************************************************/
 
 

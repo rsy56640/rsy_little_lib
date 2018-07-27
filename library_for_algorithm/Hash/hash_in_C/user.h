@@ -1,14 +1,11 @@
-#ifndef _CUSTOMIZED_UTIL_H
-#define _CUSTOMIZED_UTIL_H
+#ifndef _USER_H
+#define _USER_H
+#include "customized_util.h"
 
 /*********************     user customized     *********************/
-struct K;
-struct V;
-struct Pair
-{
-	struct K* key;
-	struct V* value;
-};
+struct K { int key; };
+struct V { int value; };
+struct Pair;
 /*************************** for  RBtree ***************************/
 int rb_key_compare(struct K* k1, struct K* k2);
 void assign_V(struct V** src, const struct V** dest);
@@ -20,5 +17,15 @@ int K2int(struct K*);
 
 /*******************************************************************/
 
+#define RAII(free_func) __attribute__((cleanup(free_func)))
 
-#endif // !_CUSTOMIZED_UTIL_H
+struct K* getK(int);
+struct V* getV(int);
+void freeK(struct K**);
+void freeV(struct V**);
+
+void init_K_in_Pair(struct K**, int);
+void init_V_in_Pair(struct V**, int);
+
+
+#endif // !_USER_H

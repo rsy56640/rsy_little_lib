@@ -9,20 +9,7 @@
 #define _RBTREE_RSY_H
 #include <stdio.h>
 #include <stdlib.h>
-
-/*********************     user customized     *********************/
-struct K;
-struct V;
-struct Pair
-{
-	struct K* key;
-	struct V* value;
-};
-int rb_key_compare(struct K* k1, struct K* k2);
-void assign_V(struct V* src, const struct V* dest);
-void free_V(struct V*);
-/*******************************************************************/
-
+#include "customized_util.h"
 typedef struct rb_tree rb_tree;
 typedef struct rb_node rb_node;
 typedef struct rb_node_it rb_node_it;
@@ -55,12 +42,12 @@ extern int rb_get_size(const struct rb_tree* rbt);
 /*
  * return the begin iterator of rbt.
 **/
-extern rb_node_it* rb_begin(const struct rb_tree* rbt);
+extern struct rb_node_it* rb_begin(const struct rb_tree* rbt);
 
 /*
  * return the end iterator of rbt.
 **/
-extern rb_node_it* rb_end(const struct rb_tree* rbt);
+extern struct rb_node_it* rb_end(const struct rb_tree* rbt);
 
 /* return 0 if there is no next node,
  *        1 if possible.
@@ -72,21 +59,22 @@ extern int rb_it_increment(const struct rb_tree* rbt, struct rb_node_it* node_it
 **/
 extern int rb_it_decrement(const struct rb_tree* rbt, struct rb_node_it* node_it);
 
+extern void rb_it_delete(struct rb_node_it* node_it);
+
 extern struct Pair rb_it_get(struct rb_node_it* node_it);
 
 /*
  * return the insertion status:
  *    0 when value does exist or rbt is NULL,
  *    1 when insertion is completed.
- * Notice: the value shall not be rb_NULL(0x80000000).
 **/
 extern int rb_insert(struct rb_tree* rbt, const struct Pair pair);
 
 /*
  * return the insertion status:
  *    0 when insertion does nothing,
- *    1 when insertion is completed.
- * Notice: the value shall not be rb_NULL(0x80000000).
+ *    1 when insertion is completed,
+ *    2 when value is replaced.
 **/
 extern int rb_insert_assign(struct rb_tree* rbt, const struct Pair pair);
 
@@ -108,7 +96,7 @@ extern struct V* rb_find(const struct rb_tree* rbt, const struct K* key);
 /*
  * delete the rbt previously initialed by rb_get().
  *   If rbt is NULL, does nothing.
- *   Pairhe behavior is undefined if rbt does not equal a pointer returned earlier by rb_get().
+ *   The behavior is undefined if rbt does not equal a pointer returned earlier by rb_get().
 **/
 extern void rb_delete(struct rb_tree* rbt);
 

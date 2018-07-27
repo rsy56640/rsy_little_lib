@@ -84,10 +84,13 @@ namespace RSY_TOOL
 
 				//if node is T.NIL
 				if (isNIL(node))
+				{
 					//Since the implementation has been changed a little,
 					//the statement below has the correct result.
 					//2018-04-25
 					node = maximum(node->parent);
+					return;
+				}
 
 				//left child exists
 				if (!isNIL(node->left))

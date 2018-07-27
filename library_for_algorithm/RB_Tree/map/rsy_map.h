@@ -24,12 +24,15 @@ namespace RSY_TOOL
 
 			using key_type = typename map_type<Key, Value>::key_type;
 			using mapped_type = typename map_type<Key, Value>::mapped_type;
-			using value_type = typename map_type<Key, Value>::value_type;
 			using size_type = typename map_type<Key, Value>::size_type;
-			using difference_type = typename map_type<Key, Value>::difference_type;
 			using const_reference = typename map_type<Key, Value>::const_reference;
 			using key_Compare = typename map_type<Key, Value>::key_Compare;
 			using iterator_type = typename map_type<Key, Value>::iterator_type;
+
+			using difference_type = typename map_type<Key, Value>::difference_type;
+			using value_type = typename map_type<Key, Value>::value_type;
+			using pointer = typename value_type*;
+			using reference = typename value_type&;
 			using iterator_category = typename map_type<Key, Value>::iterator_category;
 
 			using RBTree_ptr = typename _STD shared_ptr<RB_Tree<value_type> >;

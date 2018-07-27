@@ -2,7 +2,9 @@
 *     To implement the iterator::decrement();         *
 *     I make a little update, that is:                *
 *       Let T.NIL->parent = Proot;                    *
-*       in the function init();                       *
+*       in the functions:                             *
+*         init();left_rotate();right_rotate;          *
+*         doRB_Insert();RB_Transplant();              *
 *                                        2018-04-25   *
 *     To implement the map::insert_assign();          *
 *     function RB_Insert() has been changed:          *
@@ -103,7 +105,7 @@ namespace RSY_TOOL
 				NIL->color = _RB_Tree_black;
 
 				//2018-04-25
-				NIL->parent = Proot;
+				NIL->parent = Proot;//2018-04-25 to implement iterator decrement.
 				//2018-04-25
 
 			}
@@ -111,7 +113,9 @@ namespace RSY_TOOL
 
 			RBTreeNode_ptr left_most(RBTreeNode_ptr root) const
 			{
-				while (root->left != NIL)
+				if (isNIL(root))
+					return NIL;
+				while (!isNIL(root->left))
 					root = root->left;
 				return root;
 			}
@@ -119,7 +123,7 @@ namespace RSY_TOOL
 
 			RBTreeNode_ptr right_most(RBTreeNode_ptr root) const
 			{
-				while (root->right != NIL)
+				while (!isNIL(root->right))
 					root = root->right;
 				return root;
 			}
@@ -140,14 +144,17 @@ namespace RSY_TOOL
 				Pnode->right = right_child->left;
 
 				//mutually
-				if (right_child->left != NIL)right_child->left->parent = Pnode;
+				if (!isNIL(right_child->left))right_child->left->parent = Pnode;
 
 				//set right child's parent
 				right_child->parent = Pnode->parent;
 
 				//mutually
-				if (Pnode->parent == NIL)
+				if (isNIL(Pnode->parent))
+				{
 					Proot = right_child;
+					NIL->parent = Proot;//2018-04-25 to implement iterator decrement.
+				}
 				else if (Pnode == Pnode->parent->left)Pnode->parent->left = right_child;
 				else Pnode->parent->right = right_child;
 
@@ -173,14 +180,17 @@ namespace RSY_TOOL
 				Pnode->left = left_child->right;
 
 				//mutually
-				if (left_child->right != NIL)left_child->right->parent = Pnode;
+				if (!isNIL(left_child->right))left_child->right->parent = Pnode;
 
 				//set left child's parent
 				left_child->parent = Pnode->parent;
 
 				//mutually
-				if (Pnode->parent == NIL)
+				if (isNIL(Pnode->parent))
+				{
 					Proot = left_child;
+					NIL->parent = Proot;//2018-04-25 to implement iterator decrement.
+				}
 				else if (Pnode == Pnode->parent->left)Pnode->parent->left = left_child;
 				else Pnode->parent->right = left_child;
 
@@ -195,7 +205,7 @@ namespace RSY_TOOL
 			*                  doFind                  *
 			* help find the node with the specific key *
 			\******************************************/
-			RBTreeNode_ptr doFind(const _Ty& value)
+			RBTreeNode_ptr doFind(const _Ty& value) const
 			{
 
 				const RBNode_ptr Pnode{ std::make_shared<RB_Tree_Node<_Ty> >(value) };
@@ -205,7 +215,7 @@ namespace RSY_TOOL
 
 				//find the position to insert,
 				//according to the property of BST.
-				while (x != NIL)
+				while (!isNIL(x))
 				{
 
 					y = x;
@@ -240,11 +250,14 @@ namespace RSY_TOOL
 
 
 				//judge whether the tree is empty
-				if (y == NIL)
+				if (isNIL(y))
+				{
 					Proot = Pnode;
+					NIL->parent = Proot;//2018-04-25 to implement iterator decrement.
+				}
 
 
-				//not empty, then set the relation between y and Pnod
+				//not empty, then set the relation between y and Pnode
 				else if (left)
 					y->left = Pnode;
 				else y->right = Pnode;
@@ -356,12 +369,15 @@ namespace RSY_TOOL
 			/****************************************************\
 			*  replace Psrc with Pdest, in terms of Psrc-parent  *
 			\****************************************************/
-			void RB_Tranplant(RBNode_ptr Psrc, RBNode_ptr Pdest)
+			void RB_Transplant(RBNode_ptr Psrc, RBNode_ptr Pdest)
 			{
 
 				//if Psrc is root
-				if (Psrc->parent == NIL)
+				if (isNIL(Psrc->parent))
+				{
 					Proot = Pdest;
+					NIL->parent = Proot;//2018-04-25 to implement iterator decrement.
+				}
 
 				//if Psrc is left child
 				else if (Psrc == Psrc->parent->left)
@@ -392,16 +408,16 @@ namespace RSY_TOOL
 
 				//find the successor of Pnode
 
-				if (Pnode->left == NIL)					//left child is NIL
+				if (isNIL(Pnode->left))					//left child is NIL
 				{
 					x = Pnode->right;
-					RB_Tranplant(Pnode, Pnode->right);
+					RB_Transplant(Pnode, Pnode->right);
 				}
 
-				else if (Pnode->right == NIL)			//right child is NIL
+				else if (isNIL(Pnode->right))			//right child is NIL
 				{
 					x = Pnode->left;
-					RB_Tranplant(Pnode, Pnode->left);
+					RB_Transplant(Pnode, Pnode->left);
 				}
 
 
@@ -427,7 +443,7 @@ namespace RSY_TOOL
 					{
 
 						//use x to substitute y
-						RB_Tranplant(y, y->right);
+						RB_Transplant(y, y->right);
 
 						//steal Pnode's right subtree
 						y->right = Pnode->right;
@@ -436,7 +452,7 @@ namespace RSY_TOOL
 					}
 
 					//use y to substitute Pnode
-					RB_Tranplant(Pnode, y);
+					RB_Transplant(Pnode, y);
 
 					//steal Pnode's left subtree
 					y->left = Pnode->left;
@@ -683,7 +699,7 @@ namespace RSY_TOOL
 			RBTreeNode_ptr minimum() const
 			{
 				RBTreeNode_ptr root(Proot);
-				while (root->left != NIL)
+				while (!isNIL(root->left))
 					root = root->left;
 				return root;
 			}
@@ -691,7 +707,7 @@ namespace RSY_TOOL
 			RBTreeNode_ptr maximum() const
 			{
 				RBTreeNode_ptr root(Proot);
-				while (root->right != NIL)
+				while (!isNIL(root->right))
 					root = root->right;
 				return root;
 			}
@@ -701,12 +717,12 @@ namespace RSY_TOOL
 				return node_count;
 			}
 
-			RBTreeNode_ptr begin()
+			const RBTreeNode_ptr begin() const
 			{
 				return minimum();
 			}
 
-			RBTreeNode_ptr end()
+			const RBTreeNode_ptr end() const
 			{
 				return NIL;
 			}
@@ -715,7 +731,7 @@ namespace RSY_TOOL
 			/*
 			 * find the node with the specific key
 			**/
-			RBTreeNode_ptr find(const _Ty& value)
+			RBTreeNode_ptr find(const _Ty& value) const
 			{
 				try {
 					return doFind(value);
@@ -738,7 +754,7 @@ namespace RSY_TOOL
 				RBNode_ptr y = NIL;
 				RBNode_ptr x = Proot;
 
-				while (x != NIL)
+				while (!isNIL(x))
 				{
 
 					if (_rb_Key_comp(x, Pnode))          //x.key < Pnode.key
@@ -770,7 +786,7 @@ namespace RSY_TOOL
 				RBNode_ptr y = NIL;
 				RBNode_ptr x = Proot;
 
-				while (x != NIL)
+				while (!isNIL(x))
 				{
 
 					if (!_rb_Key_comp(Pnode, x))         //x.key <= Pnode.key
@@ -806,7 +822,7 @@ namespace RSY_TOOL
 
 				//find the position to insert,
 				//according to the property of BST.
-				while (x != NIL)
+				while (!isNIL(x))
 				{
 
 					y = x;
@@ -860,7 +876,7 @@ namespace RSY_TOOL
 				//find the node according to the property of BST
 				RBNode_ptr x = Proot;
 
-				while (x != NIL)
+				while (!isNIL(x))
 				{
 
 					if (_rb_Key_comp(Pnode, x))			//Pnode.key < x.key

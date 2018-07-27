@@ -1,4 +1,3 @@
-#pragma once
 #include "rbtree_rsy.h"
 #ifndef true
 #define true 1
@@ -85,8 +84,8 @@ void free_node(struct rb_node* node)
 
 void free_Pair(struct Pair* pair)
 {
-	free(pair->key);
-	free(pair->value);
+	free_K(pair->key);
+	free_V(pair->value);
 }
 
 void init(struct rb_tree* rbt)
@@ -106,16 +105,18 @@ int isNIL(const struct rb_node* node)
 
 struct rb_node* left_most(struct rb_tree* rbt)
 {
+	if (rbt->node_count == 0)return rbt->rb_NIL;
 	struct rb_node* node = rbt->rb_root;
-	while (node->rb_left != rbt->rb_NIL)
+	while (!isNIL(node->rb_left))
 		node = node->rb_left;
 	return node;
 }
 
 struct rb_node* right_most(struct rb_tree* rbt)
 {
+	if (rbt->node_count == 0)return rbt->rb_NIL;
 	struct rb_node* node = rbt->rb_root;
-	while (node->rb_right != rbt->rb_NIL)
+	while (!isNIL(node->rb_right))
 		node = node->rb_right;
 	return node;
 }
@@ -127,13 +128,16 @@ void left_rotate(struct rb_tree* rbt, struct rb_node* Pnode)
 	//set right child's left child as Pnode's right child
 	Pnode->rb_right = right_child->rb_left;
 	//mutually
-	if (right_child->rb_left != rbt->rb_NIL)
+	if (!isNIL(right_child->rb_left))
 		rb_set_parent(right_child->rb_left, Pnode);
 	//set right child's parent
 	rb_set_parent(right_child, rb_parent(Pnode));
 	//mutually
-	if (rb_parent(Pnode) == rbt->rb_NIL)
+	if (isNIL(rb_parent(Pnode)))
+	{
 		rbt->rb_root = right_child;
+		rb_set_parent(rbt->rb_NIL, rbt->rb_root); //to implement iterator decrement.
+	}
 	else if (Pnode == rb_parent(Pnode)->rb_left)
 		rb_parent(Pnode)->rb_left = right_child;
 	else rb_parent(Pnode)->rb_right = right_child;
@@ -149,13 +153,16 @@ void right_rotate(struct rb_tree* rbt, struct rb_node* Pnode)
 	//set left child's right child as Pnode's left child
 	Pnode->rb_left = left_child->rb_right;
 	//mutually
-	if (left_child->rb_right != rbt->rb_NIL)
+	if (!isNIL(left_child->rb_right))
 		rb_set_parent(left_child->rb_right, Pnode);
 	//set left child's parent
 	rb_set_parent(left_child, rb_parent(Pnode));
 	//mutually
-	if (rb_parent(Pnode) == rbt->rb_NIL)
+	if (isNIL(rb_parent(Pnode)))
+	{
 		rbt->rb_root = left_child;
+		rb_set_parent(rbt->rb_NIL, rbt->rb_root); //to implement iterator decrement.
+	}
 	else if (Pnode == rb_parent(Pnode)->rb_left)
 		rb_parent(Pnode)->rb_left = left_child;
 	else  rb_parent(Pnode)->rb_right = left_child;
@@ -172,7 +179,7 @@ struct rb_node* doFind(const struct rb_tree* rbt, const struct K* key)
 {
 	struct rb_node* y = rbt->rb_NIL;
 	struct rb_node* x = rbt->rb_root;
-	while (x != rbt->rb_NIL)
+	while (!isNIL(x))
 	{
 		y = x;
 		if (rb_key_compare(key, x->pair.key))
@@ -269,8 +276,11 @@ void doRB_insert(struct rb_tree* rbt, struct rb_node* Pnode, struct rb_node* y, 
 	rb_set_parent(Pnode, y);
 
 	//judge whether the tree is empty
-	if (y == rbt->rb_NIL)
+	if (isNIL(y))
+	{
 		rbt->rb_root = Pnode;
+		rb_set_parent(rbt->rb_NIL, rbt->rb_root); //to implement iterator decrement.
+	}
 
 	//not empty, then set the relation between y and Pnode
 	else if (left)
@@ -293,8 +303,11 @@ void RB_Transplant(struct rb_tree* rbt, struct rb_node* Psrc, struct rb_node* Pd
 {
 
 	//if Psrc is root
-	if (rb_parent(Psrc) == rbt->rb_NIL)
+	if (isNIL(rb_parent(Psrc)))
+	{
 		rbt->rb_root = Pdest;
+		rb_set_parent(rbt->rb_NIL, rbt->rb_root); //to implement iterator decrement.
+	}
 
 	//if Psrc is left child
 	else if (Psrc == rb_parent(Psrc)->rb_left)
@@ -318,12 +331,12 @@ void doRB_Delete(struct rb_tree* rbt, struct rb_node* Pnode)
 	int y_original_color = rb_color(y);
 
 	//find the successor of Pnode
-	if (Pnode->rb_left == rbt->rb_NIL)					//left child is NIL
+	if (isNIL(Pnode->rb_left))					//left child is NIL
 	{
 		x = Pnode->rb_right;
 		RB_Transplant(rbt, Pnode, Pnode->rb_right);
 	}
-	else if (Pnode->rb_right == rbt->rb_NIL)			//right child is NIL
+	else if (isNIL(Pnode->rb_right))			//right child is NIL
 	{
 		x = Pnode->rb_left;
 		RB_Transplant(rbt, Pnode, Pnode->rb_left);
@@ -528,7 +541,7 @@ int RB_Insert(struct rb_tree* rbt, const struct Pair pair, int _mode_t)
 
 	//find the position to insert,
 	//according to the property of BSPair.
-	while (x != rbt->rb_NIL)
+	while (!isNIL(x))
 	{
 		y = x;
 		if (rb_key_compare(Pnode->pair.key, x->pair.key))         //Pnode.key < x.key
@@ -551,13 +564,18 @@ int RB_Insert(struct rb_tree* rbt, const struct Pair pair, int _mode_t)
 				//Since the std::pair::operator= is so fuck,
 				//this statement should be modifyed.
 
-				//free operation has been set in "assign_V".
+				//free_V operation has been set in "assign_V".
 				assign_V(&x->pair.value, &Pnode->pair.value);
+				free_K(Pnode->pair.key);
+				free(Pnode);
 
-				return 1;
+				return 2;
 			}
 			else
+			{
+				free_node(Pnode);
 				return 0;
+			}
 		}
 	}
 	doRB_insert(rbt, Pnode, y, left);
@@ -606,14 +624,14 @@ int rb_get_size(const struct rb_tree* rbt)
 	return rbt->node_count;
 }
 
-rb_node_it* rb_begin(const struct rb_tree* rbt)
+struct rb_node_it* rb_begin(const struct rb_tree* rbt)
 {
 	struct rb_node_it* it = malloc(sizeof(struct rb_node_it));
 	it->node = left_most(rbt);
 	return it;
 }
 
-rb_node_it* rb_end(const struct rb_tree* rbt)
+struct rb_node_it* rb_end(const struct rb_tree* rbt)
 {
 	struct rb_node_it* it = malloc(sizeof(struct rb_node_it));
 	it->node = rbt->rb_NIL;
@@ -691,6 +709,11 @@ int rb_it_decrement(const struct rb_tree* rbt, struct rb_node_it* node_it)
 	}
 }//end rb_it_decrement(const struct rb_tree* rbt, const struct rb_node_it* node_it);
 
+void rb_it_delete(struct rb_node_it* node_it)
+{
+	free(node_it);
+}
+
 struct Pair rb_it_get(struct rb_node_it* node_it)
 {
 	return node_it->node->pair;
@@ -716,7 +739,7 @@ int rb_erase(struct rb_tree* rbt, const struct K* key)
 	if (rbt->node_count == 0)return;
 	//find the node according to the property of BSPair
 	struct rb_node* x = rbt->rb_root;
-	while (x != rbt->rb_NIL)
+	while (!isNIL(x))
 	{
 		struct rb_node* Pnode;
 		if (rb_key_compare(key, x->pair.key))			//key < x.key
@@ -735,6 +758,8 @@ int rb_erase(struct rb_tree* rbt, const struct K* key)
 
 struct V* rb_find(const struct rb_tree* rbt, const struct K* key)
 {
+	if (NULL == rbt)
+		return NULL;
 	struct rb_node* node = doFind(rbt, key);
 	if (!isNIL(node))
 		return node->pair.value;
@@ -743,7 +768,7 @@ struct V* rb_find(const struct rb_tree* rbt, const struct K* key)
 
 void rb_delete(struct rb_tree* rbt)
 {
-	if (rbt == NULL || rbt->node_count == 0)
+	if (rbt == NULL)
 		return;
 	const int size = rbt->node_count;
 	const int s_size = rbt->node_count / 2 + 1;

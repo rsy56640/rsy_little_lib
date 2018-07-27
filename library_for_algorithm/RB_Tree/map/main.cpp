@@ -285,6 +285,14 @@ int main()
 
 		print(mmp);
 
+		cout << "\n\n test decrement\n";
+		auto it2 = mmp.end();
+		--it2;
+		for (; it2 != mmp.begin(); --it2)
+			cout << it2->first << "\t" << it2->second << endl;
+		cout << it2->first << "\t" << it2->second << endl;
+		cout << endl;
+
 	}
 	catch (map_Exception& e)
 	{

@@ -1,4 +1,4 @@
-#include "customized_util.h"
+#include "user.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -10,15 +10,25 @@ int rb_key_compare(struct K* k1, struct K* k2)
 	return 0;
 }
 
-void assign_V(struct V* src, const struct V* dest)
+void assign_V(struct V** src, const struct V** dest)
 {
-	free_V(src);
-	src->value = dest->value;
+	free_V(*src);
+	*src = *dest;
+}
+
+void free_K(struct K* k)
+{
+	free(k);
 }
 
 void free_V(struct V* v)
 {
+	free(v);
+}
 
+int K2int(struct K* key)
+{
+	return key->key * 99;
 }
 
 /**************************************************************/
@@ -44,15 +54,13 @@ void freeV(struct V** value)
 	free(*value);
 }
 
-
 void init_K_in_Pair(struct K** key, int k)
 {
-	*key = malloc(sizeof(struct K));
+	*key = (struct K*) malloc(sizeof(struct K));
 	(*key)->key = k;
 }
-
 void init_V_in_Pair(struct V** value, int v)
 {
-	*value = malloc(sizeof(struct V));
+	*value = (struct V*) malloc(sizeof(struct V));
 	(*value)->value = v;
 }

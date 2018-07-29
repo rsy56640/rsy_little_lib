@@ -28,19 +28,19 @@ struct rb_node_it
 	struct rb_node* node;
 };
 
-static inline struct rb_node* rb_parent(struct rb_node* rb)
+static inline struct rb_node* rb_parent(const struct rb_node* rb)
 {
 	return (struct rb_node *)((rb)->rb_parent_color & ~3);
 }
-static inline int rb_color(struct rb_node* rb)
+static inline int rb_color(const struct rb_node* rb)
 {
 	return ((rb)->rb_parent_color & 1);
 }
-static inline int rb_is_red(struct rb_node* rb)
+static inline int rb_is_red(const struct rb_node* rb)
 {
 	return !rb_color(rb);
 }
-static inline int rb_is_black(struct rb_node* rb)
+static inline int rb_is_black(const struct rb_node* rb)
 {
 	return rb_color(rb);
 }
@@ -52,11 +52,11 @@ static inline void rb_set_black(struct rb_node* rb)
 {
 	(rb)->rb_parent_color |= (unsigned long long) 1;
 }
-static inline void rb_set_parent(struct rb_node* rb, struct rb_node* p)
+static inline void rb_set_parent(struct rb_node* rb, const struct rb_node* p)
 {
 	rb->rb_parent_color = (rb->rb_parent_color & (unsigned long long)3) | (unsigned long long)p;
 }
-static inline void rb_set_color(struct rb_node* rb, unsigned int color)
+static inline void rb_set_color(struct rb_node* rb, const unsigned int color)
 {
 	rb->rb_parent_color = (rb->rb_parent_color & ~1) | color;
 }
@@ -103,7 +103,7 @@ int isNIL(const struct rb_node* node)
 	return node->rb_left == NULL;
 }
 
-struct rb_node* left_most(struct rb_tree* rbt)
+struct rb_node* left_most(const struct rb_tree* rbt)
 {
 	if (rbt->node_count == 0)return rbt->rb_NIL;
 	struct rb_node* node = rbt->rb_root;
@@ -112,7 +112,7 @@ struct rb_node* left_most(struct rb_tree* rbt)
 	return node;
 }
 
-struct rb_node* right_most(struct rb_tree* rbt)
+struct rb_node* right_most(const struct rb_tree* rbt)
 {
 	if (rbt->node_count == 0)return rbt->rb_NIL;
 	struct rb_node* node = rbt->rb_root;
@@ -321,69 +321,6 @@ void RB_Transplant(struct rb_tree* rbt, struct rb_node* Psrc, struct rb_node* Pd
 
 }
 
-void doRB_Delete(struct rb_tree* rbt, struct rb_node* Pnode)
-{
-	//the count minus by 1
-	rbt->node_count--;
-
-	struct rb_node* y = Pnode;
-	struct rb_node* x = NULL;
-	int y_original_color = rb_color(y);
-
-	//find the successor of Pnode
-	if (isNIL(Pnode->rb_left))					//left child is NIL
-	{
-		x = Pnode->rb_right;
-		RB_Transplant(rbt, Pnode, Pnode->rb_right);
-	}
-	else if (isNIL(Pnode->rb_right))			//right child is NIL
-	{
-		x = Pnode->rb_left;
-		RB_Transplant(rbt, Pnode, Pnode->rb_left);
-	}
-
-	//left and right isn't either NIL,
-	//find the successor of Pnode,
-	//then substitute Pnode with its successor.
-	else
-	{
-		//find successor
-		y = left_most(Pnode->rb_right);
-		y_original_color = rb_color(y);
-		//to fill in the y's position
-		x = y->rb_right;
-		//if Pnode's successor is its right child
-		if (rb_parent(y) == Pnode)
-			rb_set_parent(x, y);
-		else
-		{
-			//use x to substitute y
-			RB_Transplant(rbt, y, y->rb_right);
-			//steal Pnode's right subtree
-			y->rb_right = Pnode->rb_right;
-			rb_set_parent(y->rb_right, y);
-		}
-		//use y to substitute Pnode
-		RB_Transplant(rbt, Pnode, y);
-		//steal Pnode's left subtree
-		y->rb_left = Pnode->rb_left;
-		rb_set_parent(y->rb_left, y);
-		rb_set_color_with_node(y, Pnode);
-	}
-
-	free_node(Pnode);
-
-	//the position has been set appropriately,
-	//then fixup the color change
-
-	//if original color is BLACK,
-	//then push down to the x.
-	//so x has 2 level BLACK,
-	//fixup
-	if (y_original_color == RB_BLACK)
-		RB_Delete_Fixup(rbt, x);
-}//end doRB_Delete(struct rb_tree*, struct rb_node*);
-
 void RB_Delete_Fixup(struct rb_tree* rbt, struct rb_node* Pnode)
 {
 	//if Pnode is BLACK(BLACK) and non-root
@@ -526,6 +463,69 @@ void RB_Delete_Fixup(struct rb_tree* rbt, struct rb_node* Pnode)
 	 //quit loop, set Pnode(Proot) color as BLACK for safety.
 	rb_set_black(Pnode);
 }//end function RB_Delete_Fixup(RBNode_ptr)
+
+void doRB_Delete(struct rb_tree* rbt, struct rb_node* Pnode)
+{
+	//the count minus by 1
+	rbt->node_count--;
+
+	struct rb_node* y = Pnode;
+	struct rb_node* x = NULL;
+	int y_original_color = rb_color(y);
+
+	//find the successor of Pnode
+	if (isNIL(Pnode->rb_left))					//left child is NIL
+	{
+		x = Pnode->rb_right;
+		RB_Transplant(rbt, Pnode, Pnode->rb_right);
+	}
+	else if (isNIL(Pnode->rb_right))			//right child is NIL
+	{
+		x = Pnode->rb_left;
+		RB_Transplant(rbt, Pnode, Pnode->rb_left);
+	}
+
+	//left and right isn't either NIL,
+	//find the successor of Pnode,
+	//then substitute Pnode with its successor.
+	else
+	{
+		//find successor
+		y = left_most(Pnode->rb_right);
+		y_original_color = rb_color(y);
+		//to fill in the y's position
+		x = y->rb_right;
+		//if Pnode's successor is its right child
+		if (rb_parent(y) == Pnode)
+			rb_set_parent(x, y);
+		else
+		{
+			//use x to substitute y
+			RB_Transplant(rbt, y, y->rb_right);
+			//steal Pnode's right subtree
+			y->rb_right = Pnode->rb_right;
+			rb_set_parent(y->rb_right, y);
+		}
+		//use y to substitute Pnode
+		RB_Transplant(rbt, Pnode, y);
+		//steal Pnode's left subtree
+		y->rb_left = Pnode->rb_left;
+		rb_set_parent(y->rb_left, y);
+		rb_set_color_with_node(y, Pnode);
+	}
+
+	free_node(Pnode);
+
+	//the position has been set appropriately,
+	//then fixup the color change
+
+	//if original color is BLACK,
+	//then push down to the x.
+	//so x has 2 level BLACK,
+	//fixup
+	if (y_original_color == RB_BLACK)
+		RB_Delete_Fixup(rbt, x);
+}//end doRB_Delete(struct rb_tree*, struct rb_node*);
 
 int RB_Insert(struct rb_tree* rbt, const struct Pair pair, int _mode_t)
 {
@@ -736,7 +736,7 @@ int rb_insert_assign(struct rb_tree* rbt, const struct Pair pair)
 int rb_erase(struct rb_tree* rbt, const struct K* key)
 {
 	//RB_Pairree is empty
-	if (rbt->node_count == 0)return;
+	if (rbt->node_count == 0)return 0;
 	//find the node according to the property of BSPair
 	struct rb_node* x = rbt->rb_root;
 	while (!isNIL(x))

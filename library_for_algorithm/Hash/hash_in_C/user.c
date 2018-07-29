@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 
-int rb_key_compare(struct K* k1, struct K* k2)
+int rb_key_compare(const struct K* k1, const struct K* k2)
 {
 	if (k1->key < k2->key)
 		return 1;
@@ -26,7 +26,7 @@ void free_V(struct V* v)
 	free(v);
 }
 
-int K2int(struct K* key)
+int K2int(const struct K* key)
 {
 	return key->key * 99;
 }

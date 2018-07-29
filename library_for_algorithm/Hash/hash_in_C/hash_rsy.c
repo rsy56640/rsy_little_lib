@@ -4,8 +4,8 @@
 #define BIT_HASH_RSY 10
 #define MAXSIZE_HASH_RSY (1 << BIT_HASH_RSY)
 #define MOD_HASH_RSY 0x000003ff
-const inline int magic_num = 769;
-const inline int addition = 32;
+const int magic_num = 769;
+const int addition = 32;
 
 struct hash
 {

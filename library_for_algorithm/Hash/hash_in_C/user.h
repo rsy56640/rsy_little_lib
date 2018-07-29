@@ -7,13 +7,13 @@ struct K { int key; };
 struct V { int value; };
 struct Pair;
 /*************************** for  RBtree ***************************/
-int rb_key_compare(struct K* k1, struct K* k2);
+int rb_key_compare(const struct K* k1, const struct K* k2);
 void assign_V(struct V** src, const struct V** dest);
 void free_K(struct K*);
 void free_V(struct V*);
 /**************************** for  Hash ****************************/
 struct hash;
-int K2int(struct K*);
+int K2int(const struct K*);
 
 /*******************************************************************/
 

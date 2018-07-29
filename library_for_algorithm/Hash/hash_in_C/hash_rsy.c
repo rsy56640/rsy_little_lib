@@ -1,8 +1,10 @@
 #include "hash_rsy.h"
 #include "rbtree_rsy.h"
 
-#define MAXSIZE_HASH_RSY 769
-const inline int magic_num = 97;
+#define BIT_HASH_RSY 10
+#define MAXSIZE_HASH_RSY (1 << BIT_HASH_RSY)
+#define MOD_HASH_RSY 0x000003ff
+const inline int magic_num = 769;
 const inline int addition = 32;
 
 struct hash
@@ -13,7 +15,7 @@ struct hash
 
 static inline int map(int value)
 {
-	return ((value * magic_num + addition) + MAXSIZE_HASH_RSY) % MAXSIZE_HASH_RSY;
+	return (value * magic_num + addition) & MOD_HASH_RSY;
 }
 
 /********************    Implementation for header file    ********************/
@@ -89,4 +91,6 @@ void hash_delete(struct hash* hs)
 }
 
 
+#undef BIT_HASH_RSY
 #undef MAXSIZE_HASH_RSY
+#undef MOD_HASH_RSY

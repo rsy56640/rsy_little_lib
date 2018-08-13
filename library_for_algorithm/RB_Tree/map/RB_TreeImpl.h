@@ -41,13 +41,16 @@ namespace RSY_TOOL
 
 		namespace
 		{
-			/*
-			template<class _Ty>
-			struct is_pair :false_type {};
+			template <typename T, template <typename...> class Template>
+			struct is_specialization_of : std::false_type {};
 
-			template<>
-			struct is_pair<>
-			*/
+			template <template <typename...> class Template, typename... Args>
+			struct is_specialization_of<Template<Args...>, Template>
+				: std::true_type {};
+
+			template<typename T> struct is_pair : is_specialization_of
+				<typename std::decay<T>::type, std::pair> {};
+
 
 			template<class Key, class Value>
 			Value& insert_assign(_STD pair<const Key, Value>& data)
@@ -810,6 +813,8 @@ namespace RSY_TOOL
 			**/
 			void RB_Insert(const _Ty& value, INSERT_ARG _arg)
 			{
+
+				static_assert(is_pair<_Ty>::value, "std::pair needed.");
 
 				RBNode_ptr Pnode{ std::make_shared<RB_Tree_Node<_Ty> >(value) };
 

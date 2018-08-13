@@ -339,7 +339,7 @@ namespace RSY_TOOL
 			try {
 				_rbt->erase(typename rsy_map<Key, Value>::value_type(key, Value{}));
 			}
-			catch (const RB_Tree_Exception& e)
+			catch (const RB_Tree_Exception&)
 			{
 				return;
 			}

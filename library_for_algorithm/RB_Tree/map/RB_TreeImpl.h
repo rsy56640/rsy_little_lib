@@ -48,8 +48,8 @@ namespace RSY_TOOL
 			struct is_specialization_of<Template<Args...>, Template>
 				: std::true_type {};
 
-			template<typename T> struct is_pair : is_specialization_of
-				<typename std::decay<T>::type, std::pair> {};
+			template<typename T> struct is_pair
+				: is_specialization_of<typename std::decay<T>::type, std::pair> {};
 
 
 			template<class Key, class Value>

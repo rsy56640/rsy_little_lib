@@ -13,7 +13,7 @@ namespace RSY_TOOL::SkipList
 		using value_type = Value;
 		using base_ptr = typename SkipListNode<key_type, value_type>::base_ptr;
 		using node_type = typename SkipListNode<key_type, value_type>::node_type;
-		using Key_Compare = std::function<bool(const node_type&, const node_type&)>;
+		using Key_Compare = std::function<bool(const base_ptr&, const base_ptr&)>;
 	};
 
 }//end namespace RSY_TOOL::SkipList

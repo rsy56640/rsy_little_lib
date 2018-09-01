@@ -32,11 +32,12 @@ namespace RSY_TOOL::SkipList
 			: _key(std::forward<Key>(key)), _value(std::forward<Value>(value)) {}
 	};
 
-	template<typename Key, typename Value> decltype(auto) make_node(Key&& key, Value&& value)
+	template<typename Key, typename Value,typename Key_t,typename Value_t>
+	decltype(auto) make_node(Key_t&& key, Value_t&& value)
 	{
 		return new SkipListNode<Key, Value>
-			(std::forward<Key>(key),
-				std::forward<Value>(value));
+			(std::forward<Key_t>(key),
+				std::forward<Value_t>(value));
 	}
 
 	template<typename Key, typename Value>

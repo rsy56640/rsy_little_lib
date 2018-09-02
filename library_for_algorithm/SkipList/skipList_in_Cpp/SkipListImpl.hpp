@@ -19,8 +19,8 @@ namespace RSY_TOOL::SkipList
 
 	public:
 
-		SkipListImpl(Key_Compare key_compare)
-			:_head(nullptr), _key_compare(key_compare) {}
+		SkipListImpl(Key_Compare&& key_compare)
+			:_head(nullptr), _key_compare(std::move(key_compare)) {}
 
 	private:
 		base_ptr _head;

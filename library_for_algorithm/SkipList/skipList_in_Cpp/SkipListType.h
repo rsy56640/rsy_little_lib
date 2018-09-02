@@ -12,8 +12,9 @@ namespace RSY_TOOL::SkipList
 		using key_type = Key;
 		using value_type = Value;
 		using base_ptr = typename SkipListNode<key_type, value_type>::base_ptr;
-		using node_type = typename SkipListNode<key_type, value_type>::node_type;
-		using Key_Compare = std::function<bool(const base_ptr&, const base_ptr&)>;
+		using node_ptr = typename SkipListNode<key_type, value_type>::node_ptr;
+		using Key_Compare = std::function<bool(const key_type&, const base_ptr&)>;
+		enum class insert_type { insert, insert_or_assign };
 	};
 
 }//end namespace RSY_TOOL::SkipList

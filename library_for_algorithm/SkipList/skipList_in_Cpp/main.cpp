@@ -1,29 +1,25 @@
 #include <iostream>
 #include "SkipList.hpp"
+#include <vector>
 using namespace std;
 using namespace RSY_TOOL::SkipList;
 
+
+struct A {};
+
 void test()
 {
+	SkipList<string, A> sl([](const string& lhs, const string& rhs) { return lhs < rhs; });
+
 
 }
 
 
-struct A {
-	template <
-		typename U,
-		std::enable_if_t<std::is_convertible<U, A>::value> * = nullptr>
-		A(U &&u) {}
-};
 
 
 int main()
 {
 	test();
-	int x, y = 0;
-
-
-
 	system("pause");
 	return 0;
 }

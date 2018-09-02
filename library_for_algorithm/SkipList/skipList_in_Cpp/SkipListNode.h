@@ -18,7 +18,7 @@ namespace RSY_TOOL::SkipList
 	template<typename Key, typename Value> struct SkipListNode :NodeBase
 	{
 		using base_ptr = typename NodeBase::base_ptr;
-		using node_type = typename SkipListNode<Key, Value>;
+		using node_ptr = typename SkipListNode<Key, Value>*;
 		Key _key;
 		Value _value;
 		template<
@@ -30,8 +30,11 @@ namespace RSY_TOOL::SkipList
 			>* = nullptr
 		> explicit SkipListNode(Key_t&& key, Value_t&& value)
 			: _key(std::forward<Key>(key)), _value(std::forward<Value>(value)) {}
-		explicit SkipListNode(const SkipListNode& other)
-			:_key(other._key), _value(other._value) {}
+		SkipListNode(const SkipListNode& other)
+			: _key(other._key), _value(other._value) {}
+		SkipListNode& operator=(const SkipListNode&) = delete;
+		SkipListNode(SkipListNode&&) = delete;
+		SkipListNode& operator=(SkipListNode&&) = delete;
 	};
 
 	template<typename Key, typename Value, typename Key_t, typename Value_t>

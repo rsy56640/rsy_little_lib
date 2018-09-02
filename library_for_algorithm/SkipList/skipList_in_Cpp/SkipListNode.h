@@ -19,7 +19,7 @@ namespace RSY_TOOL::SkipList
 	{
 		using base_ptr = typename NodeBase::base_ptr;
 		using node_ptr = typename SkipListNode<Key, Value>*;
-		Key _key;
+		const Key _key;
 		Value _value;
 		template<
 			typename Key_t,
@@ -43,6 +43,12 @@ namespace RSY_TOOL::SkipList
 		return new SkipListNode<Key, Value>
 			(std::forward<Key_t>(key),
 				std::forward<Value_t>(value));
+	}
+
+	template<typename Key, typename Value>
+	decltype(auto) make_copy(const SkipListNode<Key, Value>& node)
+	{
+		return new SkipListNode<Key, Value>{ node };
 	}
 
 	template<typename Key, typename Value>

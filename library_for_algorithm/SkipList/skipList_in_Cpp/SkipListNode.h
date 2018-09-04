@@ -25,8 +25,8 @@ namespace RSY_TOOL::SkipList
 			typename Key_t,
 			typename Value_t,
 			std::enable_if_t<
-			std::is_convertible_v<Key, Key_t> &&
-			std::is_convertible_v<Value, Value_t>
+			std::is_convertible_v<Key, std::decay_t<Key_t>> &&
+			std::is_convertible_v<Value, std::decay_t<Value_t>>
 			>* = nullptr
 		> explicit SkipListNode(Key_t&& key, Value_t&& value)
 			: _key(std::forward<Key_t>(key)), _value(std::forward<Value_t>(value)) {}
@@ -40,9 +40,7 @@ namespace RSY_TOOL::SkipList
 	template<typename Key, typename Value, typename Key_t, typename Value_t>
 	decltype(auto) make_node(Key_t&& key, Value_t&& value)
 	{
-		return new SkipListNode<Key, Value>
-			(std::forward<Key_t>(key),
-				std::forward<Value_t>(value));
+		return new SkipListNode<Key, Value>(std::forward<Key_t>(key), std::forward<Value_t>(value));
 	}
 
 	template<typename Key, typename Value>

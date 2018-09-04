@@ -22,16 +22,17 @@ namespace RSY_TOOL::SkipList
 
 		constexpr static std::size_t fail = 0;
 		constexpr static std::size_t success = 1;
-#define RETURN_INSERT_FAIL return fail;
-#define RETURN_INSERT_SUCCESS return success;
-#define RETURN_ERASE_FAIL return fail;
-#define RETURN_ERASE_SUCCESS return success;
+#define RETURN_INSERT_FAIL do{ call_time++; recycle(); return fail; }while (0);
+#define RETURN_INSERT_SUCCESS do{ call_time++; recycle(); return success; }while (0);
+#define RETURN_ERASE_FAIL do{ call_time++; recycle(); return fail; }while (0);
+#define RETURN_ERASE_SUCCESS do{ call_time++; recycle(); return success; }while (0);
 
 
 		/*
-		 *
+		 * interval times between per call of recycle().
 		 */
-		constexpr static std::size_t recycle_times = 6;
+		constexpr static std::size_t recycle_times = 64;
+		constexpr static double size_rate_tolerance = 0.70;
 
 
 		/*
@@ -137,8 +138,8 @@ namespace RSY_TOOL::SkipList
 			typename Key_t,
 			typename Value_t,
 			std::enable_if_t<
-			std::is_convertible_v<Key, Key_t> &&
-			std::is_convertible_v<Value, Value_t>
+			std::is_convertible_v<Key, std::decay_t<Key_t>> &&
+			std::is_convertible_v<Value, std::decay_t<Value_t>>
 			>* = nullptr
 		> std::size_t insert(Key_t&& key, Value_t&& value, insert_type type)
 		{
@@ -157,8 +158,7 @@ namespace RSY_TOOL::SkipList
 				else RETURN_INSERT_FAIL
 			}
 			else { // insert at the right
-				const base_ptr new_node = make_node<Key, Value>
-					(std::forward<Key_t>(key), std::forward<Value_t>(value));
+				const base_ptr new_node = make_node<Key, Value>(std::forward<Key_t>(key), std::forward<Value_t>(value));
 				const std::size_t level = get_level();
 				std::size_t cur_level = 0;
 				base_ptr below_node;
@@ -205,8 +205,7 @@ namespace RSY_TOOL::SkipList
 		 */
 		std::size_t erase(const key_type& key)
 		{
-			typename std::list<std::pair<base_ptr, std::size_t>>::reverse_iterator
-				head_it = _heads.rbegin();
+			typename std::list<std::pair<base_ptr, std::size_t>>::reverse_iterator head_it = _heads.rbegin();
 			base_ptr cur = head_it->first;
 			while (cur != nullptr)
 			{
@@ -263,6 +262,9 @@ namespace RSY_TOOL::SkipList
 
 		Key_Compare _key_compare;
 
+		//times for call recycle().
+		std::size_t call_time = 0u;
+
 
 		inline bool _key_node_compare(const key_type& lhs, const base_ptr& rhs) const
 		{
@@ -288,7 +290,7 @@ namespace RSY_TOOL::SkipList
 			std::size_t level = 1u;
 			while (get_random() == 0)
 				level++;
-			std::cout << "Level: " << level << std::endl;
+			//std::cout << "Level: " << level << std::endl;
 			return level;
 		}
 
@@ -357,26 +359,91 @@ namespace RSY_TOOL::SkipList
 
 		/*
 		 * erase the row that start with head_it,
+		 * the row would never be the bottom level.
 		 */
 		void erase_row(head_type head_it)
 		{
-
-			// TODO
-
+			base_ptr cur_node = head_it->first->right;
+			base_ptr up_head = head_it->first->up; // might be nullptr
+			base_ptr down_head = head_it->first->down; // must not be nullptr
+			down_head->up = up_head;
+			if (up_head != nullptr) up_head->down = down_head;
+			base_ptr temp = head_it->first;
+			_heads.erase(head_it);
+			erase_nil(temp);
+			base_ptr up_node; // might be nullptr
+			base_ptr down_node; // must not be nullptr
+			while (cur_node != nullptr)
+			{
+				up_node = cur_node->up;
+				down_node = cur_node->down;
+				down_node->up = up_node;
+				if (up_node != nullptr) up_node->down = down_node;
+				temp = cur_node;
+				cur_node = cur_node->right;
+				erase_node<Key, Value>(temp);
+			}
 		}
 
 
 		/*
 		 * Recycle Strategy:
-		 *     ...
+		 *     compare the size of the consecutive row,
+		 *     if rate > `size_rate_tolerance`, erase the row,
+		 *     the order if either from bottom to up or from up to bottom.
+		 *         if up_size / down_size > size_rate_tolerance,
+		 *         then erase up_row.
 		 */
 		void recycle()
 		{
-			if (_heads.size() < 3) return;
-
-			// TODO
-
-		}
+			static bool up2bottom = true; // the order to examine the rate. 
+			constexpr static std::size_t min_level = 3;
+			if (call_time == recycle_times)
+			{
+				call_time = 0u;
+				if (_heads.size() < min_level) return;
+				if (up2bottom) // up -> bottom
+				{
+					up2bottom = false;
+					typename std::list<std::pair<base_ptr, std::size_t>>::reverse_iterator head_it = _heads.rbegin();
+					std::size_t up_size = head_it->second;
+					std::size_t down_size;
+					++head_it;
+					while (head_it != _heads.rend())
+					{
+						down_size = head_it->second;
+						double rate = static_cast<double>(double(1.0) * up_size / down_size);
+						if (rate > size_rate_tolerance)
+						{
+							erase_row(++head_type{ --(head_it.base()) }); // erase up_row
+							return;
+						}
+						up_size = down_size;
+						++head_it;
+					}
+				}
+				else // bottom -> up
+				{
+					up2bottom = true;
+					head_type head_it = _heads.begin();
+					std::size_t down_size = head_it->second;
+					std::size_t up_size;
+					++head_it;
+					while (head_it != _heads.end())
+					{
+						up_size = head_it->second;
+						double rate = static_cast<double>(double(1.0) * up_size / down_size);
+						if (rate > size_rate_tolerance)
+						{
+							erase_row(head_it);
+							return;
+						}
+						down_size = up_size;
+						++head_it;
+					}
+				}
+			}
+		}// end void recycle();
 
 
 #undef RETURN_ERASE_SUCCESS 

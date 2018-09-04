@@ -67,10 +67,10 @@ namespace RSY_TOOL::SkipList
 			typename Key_t,
 			typename Value_t,
 			std::enable_if_t<
-			std::is_convertible_v<Key, Key_t> &&
-			std::is_convertible_v<Value, Value_t>
+			std::is_convertible_v<Key, std::decay_t<Key_t>> &&
+			std::is_convertible_v<Value, std::decay_t<Value_t>>
 			>* = nullptr
-		> std::size_t insert(Key_t&& key, Value_t value)
+		> std::size_t insert(Key_t&& key, Value_t&& value)
 		{
 			return _pImpl->insert(std::forward<Key_t>(key),
 				std::forward<Value_t>(value), insert_type::insert);
@@ -84,10 +84,10 @@ namespace RSY_TOOL::SkipList
 			typename Key_t,
 			typename Value_t,
 			std::enable_if_t<
-			std::is_convertible_v<Key, Key_t> &&
-			std::is_convertible_v<Value, Value_t>
+			std::is_convertible_v<Key, std::decay_t<Key_t>> &&
+			std::is_convertible_v<Value, std::decay_t<Value_t>>
 			>* = nullptr
-		> std::size_t insert_or_assign(Key_t&& key, Value_t value)
+		> std::size_t insert_or_assign(Key_t&& key, Value_t&& value)
 		{
 			return _pImpl->insert(std::forward<Key_t>(key),
 				std::forward<Value_t>(value), insert_type::insert_or_assign);
@@ -103,12 +103,27 @@ namespace RSY_TOOL::SkipList
 		}
 
 
+		void swap(SkipList& other)
+		{
+			_pImpl.swap(other._pImpl);
+		}
+
+
 	private:
 
 		std::unique_ptr<SkipListImpl<Key, Value>> _pImpl;
 
 	};//end template class SkipList
 
+}
+
+namespace std
+{
+	template<typename Key, typename Value>
+	void swap(RSY_TOOL::SkipList::SkipList<Key, Value>& lhs, RSY_TOOL::SkipList::SkipList<Key, Value>& rhs)
+	{
+		lhs.swap(rhs);
+	}
 }
 
 #endif // !_SKIPLIST_HPP

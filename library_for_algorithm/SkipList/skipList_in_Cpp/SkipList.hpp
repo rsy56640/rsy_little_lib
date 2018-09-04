@@ -40,7 +40,21 @@ namespace RSY_TOOL::SkipList
 		/*
 		 * Exception: if no such key, throw std::out_of_range
 		 */
-		value_type& operator[](const key_type& key)
+		value_type& at(const key_type& key)
+		{
+			return _pImpl->at(key);
+		}
+		const value_type& at(const key_type& key) const
+		{
+			return _pImpl->at(key);
+		}
+
+
+		/*
+		 * if the key does not exist, insert the key.
+		 * the ctor of Value is required.
+		 */
+		typename SkipListImpl<Key, Value>::ValueProxy operator[](const key_type& key)
 		{
 			return _pImpl->operator[](key);
 		}

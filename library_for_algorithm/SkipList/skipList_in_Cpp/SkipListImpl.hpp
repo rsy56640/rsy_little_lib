@@ -34,6 +34,46 @@ namespace RSY_TOOL::SkipList
 		constexpr static std::size_t recycle_times = 6;
 
 
+		/*
+		 * Class ValueProxy is used for operator[] to write,
+		 * since `S[key]=value` or `S[k1]=S[k2]` leads to the change of one line.
+		 */
+		template<typename, typename> friend class SkipList;
+		class ValueProxy
+		{
+		public:
+			ValueProxy(base_ptr below_node) :_below_node(below_node) {}
+			ValueProxy(const ValueProxy&) = delete;
+
+			/*
+			 * for writing
+			 */
+			ValueProxy& operator=(const ValueProxy& other)
+			{
+				change_from_below_up(_below_node,
+					static_cast<node_ptr>(other._below_node)->_value);
+				return *this;
+			}
+			ValueProxy& operator=(const value_type& value)
+			{
+				change_from_below_up(_below_node, value);
+				return *this;
+			}
+
+			/*
+			 * for reading
+			 */
+			operator value_type() const
+			{
+				return static_cast<node_ptr>(_below_node)->_value;
+			}
+
+		private:
+			base_ptr _below_node;
+
+		};//end class ValueProxy
+
+
 	public:
 
 		SkipListImpl(Key_Compare key_compare)
@@ -62,7 +102,7 @@ namespace RSY_TOOL::SkipList
 		/*
 		 * Exception: if no such key, throw `std::out_of_range`.
 		 */
-		value_type& operator[](const key_type& key)
+		const value_type& at(const key_type& key) const
 		{
 			base_ptr prev = find(key);
 			if (prev->right == nullptr)
@@ -70,6 +110,23 @@ namespace RSY_TOOL::SkipList
 			if (!_key_node_compare(key, prev->right))
 				return static_cast<node_ptr>(prev->right)->_value;
 			throw std::out_of_range{ "no such key" };
+		}
+		value_type& at(const key_type& key)
+		{
+			return const_cast<value_type&>(static_cast<const SkipListImpl*>(this)->at(key));
+		}
+
+
+		/*
+		 * if the key does not exist, insert the key.
+		 * the ctor of Value is required.
+		 */
+		ValueProxy operator[](const key_type& key)
+		{
+			base_ptr prev = find(key);
+			if (prev->right == nullptr || _key_node_compare(key, prev->right))
+				insert(key, Value{}, insert_type::insert); // now prev->right = key.
+			return ValueProxy{ prev->right };
 		}
 
 
@@ -88,12 +145,13 @@ namespace RSY_TOOL::SkipList
 			base_ptr prev = find(key);
 			if (prev->right != nullptr && !_key_node_compare(key, prev->right)) { // key collides
 				if (type == insert_type::insert_or_assign) {
-
-					// TODO 
-
-#define 
-
-					static_cast<node_ptr>(prev->right)->_value = std::forward<Value_t>(value);
+					const Value_t& _value = value;
+					base_ptr cur_node = prev->right;
+					while (cur_node != nullptr)
+					{
+						static_cast<node_ptr>(cur_node)->_value = _value;
+						cur_node = cur_node->up;
+					}
 					RETURN_INSERT_SUCCESS
 				}
 				else RETURN_INSERT_FAIL
@@ -132,7 +190,10 @@ namespace RSY_TOOL::SkipList
 					++head_it;
 				}
 				while (cur_level < level) // new node's level is above the table.
+				{
 					below_node = add_row_and_insert(new_node, below_node);
+					cur_level++;
+				}
 				erase_node<Key, Value>(const_cast<base_ptr>(new_node));
 				RETURN_INSERT_SUCCESS
 			}
@@ -203,7 +264,7 @@ namespace RSY_TOOL::SkipList
 		Key_Compare _key_compare;
 
 
-		inline bool _key_node_compare(const key_type& lhs, const base_ptr& rhs)
+		inline bool _key_node_compare(const key_type& lhs, const base_ptr& rhs) const
 		{
 			return _key_compare(lhs, static_cast<node_ptr>(rhs)->_key);
 		}
@@ -212,7 +273,7 @@ namespace RSY_TOOL::SkipList
 		/*
 		 * get random integer uniformly from [Left, Right].
 		 */
-		std::size_t get_random()
+		static std::size_t get_random()
 		{
 			std::default_random_engine re{ std::random_device{}() };
 			return std::uniform_int_distribution<std::size_t>{0, 1}(re);
@@ -222,11 +283,12 @@ namespace RSY_TOOL::SkipList
 		/*
 		 * get the random level for the new node.
 		 */
-		std::size_t get_level()
+		static std::size_t get_level()
 		{
 			std::size_t level = 1u;
 			while (get_random() == 0)
 				level++;
+			std::cout << "Level: " << level << std::endl;
 			return level;
 		}
 
@@ -234,7 +296,7 @@ namespace RSY_TOOL::SkipList
 		/*
 		 * return the maximum-key node that is less than key at the bottom level.
 		 */
-		base_ptr find(const key_type& key)
+		base_ptr find(const key_type& key) const
 		{
 			base_ptr cur = _heads.back().first;
 			cur = find_in_row(cur, key);
@@ -252,13 +314,27 @@ namespace RSY_TOOL::SkipList
 		 * at the specific level indicated by head.
 		 * (head might not be the first but promise head.key < key or head is nil)
 		 */
-		base_ptr find_in_row(base_ptr head, const key_type& key)
+		base_ptr find_in_row(base_ptr head, const key_type& key) const
 		{
 			base_ptr cur = head;
 			while (cur->right != nullptr
 				&& _key_compare(static_cast<node_ptr>(cur->right)->_key, key))
 				cur = cur->right;
 			return cur;
+		}
+
+
+		/*
+		 * below_node is at the bottom level,
+		 * change the value of the line that below_node indicates.
+		 */
+		static void change_from_below_up(base_ptr below_node, const value_type& value)
+		{
+			while (below_node != nullptr)
+			{
+				static_cast<node_ptr>(below_node)->_value = value;
+				below_node = below_node->up;
+			}
 		}
 
 
@@ -274,7 +350,7 @@ namespace RSY_TOOL::SkipList
 			_heads.back().first->up = new_head; new_head->down = _heads.back().first;
 			new_head->right = cur_node; cur_node->left = new_head;
 			cur_node->down = below_node; below_node->up = cur_node;
-			_heads.push_back(std::make_pair(new_head, 2u));
+			_heads.push_back(std::make_pair(new_head, 1u));
 			return cur_node;
 		}
 

@@ -29,7 +29,7 @@ namespace RSY_TOOL::SkipList
 			std::is_convertible_v<Value, Value_t>
 			>* = nullptr
 		> explicit SkipListNode(Key_t&& key, Value_t&& value)
-			: _key(std::forward<Key>(key)), _value(std::forward<Value>(value)) {}
+			: _key(std::forward<Key_t>(key)), _value(std::forward<Value_t>(value)) {}
 		SkipListNode(const SkipListNode& other)
 			: _key(other._key), _value(other._value) {}
 		SkipListNode& operator=(const SkipListNode&) = delete;

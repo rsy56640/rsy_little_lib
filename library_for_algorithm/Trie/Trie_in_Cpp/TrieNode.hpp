@@ -34,9 +34,9 @@ namespace RSY_TOOL::Trie
 			}
 		}
 
-		void addKey(const Key& key, node_ptr new_node)
+		node_ptr addKey(const Key& key, node_ptr new_node)
 		{
-			next.insert(std::make_pair(key, new_node));
+			return next.insert(std::make_pair(key, new_node)).first->second;
 		}
 
 	};

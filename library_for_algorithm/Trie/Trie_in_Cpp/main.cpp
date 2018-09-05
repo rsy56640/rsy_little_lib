@@ -4,6 +4,7 @@
 #include <string>
 using namespace std;
 
+
 void test()
 {
 	using namespace RSY_TOOL::Trie;
@@ -11,6 +12,7 @@ void test()
 
 
 }
+
 
 int main()
 {

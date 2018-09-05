@@ -1,6 +1,8 @@
 #ifndef _TRIEIMPL_HPP
 #define _TRIEIMPL_HPP
 #include "TrieType.hpp"
+#include <iterator>
+#include <stack>
 
 namespace RSY_TOOL::Trie
 {
@@ -9,7 +11,6 @@ namespace RSY_TOOL::Trie
 	{
 		using node_ptr = typename TrieType<Key>::node_ptr;
 		using key_type = typename TrieType<Key>::key_type;
-
 
 	public:
 
@@ -31,10 +32,12 @@ namespace RSY_TOOL::Trie
 		template<
 			typename _InIt,
 			std::enable_if_t<
+			std::is_convertible_v<std::forward_iterator_tag,
+			typename std::iterator_traits<_InIt>::iterator_category> &&
 			std::is_convertible_v<Key,
 			std::decay_t<decltype(std::declval<_InIt>().operator*())>>
 			>* = nullptr
-			> bool find(_InIt first, _InIt last)
+			> bool find(_InIt first, _InIt last) const
 		{
 			node_ptr root = _root;
 			node_ptr next;
@@ -45,7 +48,8 @@ namespace RSY_TOOL::Trie
 				root = next;
 				++first;
 			}
-			return true;
+			if (root->_isKey)return true;
+			return false;
 		}
 
 
@@ -55,6 +59,8 @@ namespace RSY_TOOL::Trie
 		template<
 			typename _InIt,
 			std::enable_if_t<
+			std::is_convertible_v<std::forward_iterator_tag,
+			typename std::iterator_traits<_InIt>::iterator_category> &&
 			std::is_convertible_v<Key,
 			std::decay_t<decltype(std::declval<_InIt>().operator*())>>
 			>* = nullptr
@@ -62,11 +68,28 @@ namespace RSY_TOOL::Trie
 		{
 			node_ptr root = _root;
 			node_ptr next;
+			bool not_match = false;
 			while (first != last)
 			{
-
-
+				if (!not_match)
+				{
+					next = root.find(*first);
+					if (next == nullptr) // make new node
+					{
+						not_match = true;
+						next = make_node<Key>(*first);
+						root = root.addKey(*first, next);
+					}
+					else root = next;
+				}
+				else // make new node
+				{
+					next = make_node<Key>(*first);
+					root = root.addKey(*first, new_node);
+				}
+				++first;
 			}
+			root->_isKey = true;
 		}
 
 
@@ -76,13 +99,15 @@ namespace RSY_TOOL::Trie
 		template<
 			typename _InIt,
 			std::enable_if_t<
+			std::is_convertible_v<std::forward_iterator_tag,
+			typename std::iterator_traits<_InIt>::iterator_category> &&
 			std::is_convertible_v<Key,
 			std::decay_t<decltype(std::declval<_InIt>().operator*())>>
 			>* = nullptr
 			> bool erase(_InIt first, _InIt last)
 		{
 
-
+			// TODO
 
 		}
 
@@ -96,16 +121,23 @@ namespace RSY_TOOL::Trie
 		~TrieImpl()
 		{
 			if (_root == nullptr) return;
-
-			// TODO
-
+			std::stack<node_ptr> stk;
+			stk.push(_root);
+			while (!stk.empty())
+			{
+				node_ptr node = stk.top(); stk.pop();
+				for (auto it : node->next)
+					stk.push(it.second);
+				erase_node(node);
+			}
 		}
+
 
 	private:
 
 		node_ptr _root;
 
-	};//end class Trie
+	};//end class TrieImpl
 
 
 }//end namespace RSY_TOOL::Trie

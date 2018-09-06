@@ -18,6 +18,10 @@ void test()
 		trie.insert(str.begin(), str.end());
 		s.insert(str);
 	}
+	/*
+	 * Notice that string literal is different from std::string,
+	 * since and std::end(c) implies different char*.
+	 */
 	if (trie.find("asd"s) != (s.find("asd") != s.end())) OK = false;
 	trie.erase("asdss"s);
 	s.erase("asdss");
@@ -38,14 +42,6 @@ void test()
 
 int main()
 {
-	using _InIt = string::iterator;
-	using Key = char;
-	constexpr auto b = std::is_convertible_v<
-		typename std::iterator_traits<_InIt>::iterator_category,
-		std::forward_iterator_tag> &&
-		std::is_convertible_v<
-		std::decay_t<RSY_TOOL::Trie::_InIt_Element_t<_InIt>>,
-		Key>;
 	test();
 	system("pause");
 	return 0;

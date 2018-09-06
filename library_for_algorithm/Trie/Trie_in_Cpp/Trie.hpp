@@ -28,6 +28,12 @@ namespace RSY_TOOL::Trie
 			_pImpl->find(first, last);
 		}
 
+		template<typename C>
+		bool find(C&& c)
+		{
+			return find(std::begin(C), std::end(C));
+		}
+
 		/*
 		 * Parameter: [first, last) represents the forwardable stream.
 		 */
@@ -37,6 +43,12 @@ namespace RSY_TOOL::Trie
 			_pImpl->insert(first, last);
 		}
 
+		template<typename C>
+		void insert(C&& c)
+		{
+			return insert(std::begin(C), std::end(C));
+		}
+
 		/*
 		 * Parameter: [first, last) represents the forwardable stream.
 		 */
@@ -44,6 +56,12 @@ namespace RSY_TOOL::Trie
 		bool erase(_InIt first, _InIt last)
 		{
 			_pImpl->erase(first, last);
+		}
+
+		template<typename C>
+		bool erase(C&& c)
+		{
+			return erase(std::begin(C), std::end(C));
 		}
 
 

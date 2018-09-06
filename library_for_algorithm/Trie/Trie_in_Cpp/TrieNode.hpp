@@ -17,7 +17,8 @@ namespace RSY_TOOL::Trie
 		template<
 			typename Key_t,
 			std::enable_if_t<
-			std::is_convertible_v<Key, std::decay_t<Key_t>>>
+			std::is_convertible_v<std::decay_t<Key_t>, Key>
+			>* = nullptr
 		> explicit TrieNode(Key_t&& key) : _key(std::forward<Key_t>(key)) {}
 		explicit TrieNode() :_key(std::nullopt) {}
 		TrieNode(const TrieNode&) = delete;
@@ -44,7 +45,7 @@ namespace RSY_TOOL::Trie
 
 	template<typename Key, typename Key_t> decltype(auto) make_node(Key_t&& key)
 	{
-		return new TrieNode<Key>{ std::forward<Key_t>(key) };
+		return new TrieNode<Key>(std::forward<Key_t>(key));
 	}
 
 	template<typename Key> decltype(auto) make_root()

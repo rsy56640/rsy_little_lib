@@ -138,8 +138,8 @@ namespace RSY_TOOL::Trie
 				root = root->find(*first);
 				if (root == nullptr) return false; // case 1.
 				stk.push(root);
-				if (root->_isKey) lastKey = root;
 				++first;
+				if (root->_isKey && first != last) lastKey = root;
 			}
 			if (!root->_isKey) return false; // case 1.
 			if (!root->next.empty()) // has longer key
@@ -152,6 +152,7 @@ namespace RSY_TOOL::Trie
 				while (stk.top() != lastKey)
 				{
 					root = stk.top(); stk.pop();
+					stk.top()->next.erase(root->_key.value());
 					erase_node(root);
 				}
 				return true;

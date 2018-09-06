@@ -3,6 +3,7 @@
 #include <optional>
 #include <type_traits>
 #include <unordered_map>
+#include <stdexcept>
 
 namespace RSY_TOOL::Trie
 {
@@ -10,7 +11,7 @@ namespace RSY_TOOL::Trie
 	template<typename Key> struct TrieNode
 	{
 		using node_ptr = typename TrieNode<Key>*;
-		using key_type = std::optional<Key>;
+		using key_type = std::optional<const Key>;
 		key_type _key;
 		bool _isKey = false;
 		std::unordered_map<Key, node_ptr> next;
@@ -26,13 +27,9 @@ namespace RSY_TOOL::Trie
 
 		node_ptr find(const Key& key)
 		{
-			try {
-				return next.at(key);
-			}
-			catch (std::out_of_range&)
-			{
-				return nullptr;
-			}
+			auto it = next.find(key);
+			if (it != next.end()) return it->second;
+			return nullptr;
 		}
 
 		node_ptr addKey(const Key& key, node_ptr new_node)

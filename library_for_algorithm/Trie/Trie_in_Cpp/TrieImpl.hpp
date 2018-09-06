@@ -7,6 +7,21 @@
 namespace RSY_TOOL::Trie
 {
 
+	/*
+	 * template helper to get the element type that _InIt points to.
+	 * _InIt might be 1. T*
+	 *                2. iterator
+	 */
+	template<bool B, typename _InIt>
+	struct my_enable_if { using type = decltype(std::declval<_InIt>().operator*()); };
+	template<typename _InIt>
+	struct my_enable_if<true, _InIt> { using type = std::remove_pointer_t<_InIt>; };
+	template< bool B, typename _InIt>
+	using my_enable_if_t = typename my_enable_if<B, _InIt>::type;
+	template<typename _InIt>
+	using _InIt_Element_t = my_enable_if_t<std::is_pointer_v<_InIt>, _InIt>;
+
+
 	template<typename Key> class TrieImpl :public TrieType<Key>
 	{
 		using node_ptr = typename TrieType<Key>::node_ptr;
@@ -36,7 +51,7 @@ namespace RSY_TOOL::Trie
 			typename std::iterator_traits<_InIt>::iterator_category,
 			std::forward_iterator_tag> &&
 			std::is_convertible_v<
-			std::decay_t<decltype(std::declval<_InIt>().operator*())>,
+			std::decay_t<_InIt_Element_t<_InIt>>,
 			Key>
 			>* = nullptr
 		> bool find(_InIt first, _InIt last) const
@@ -45,7 +60,7 @@ namespace RSY_TOOL::Trie
 			node_ptr next;
 			while (first != last)
 			{
-				next = root.find(*first);
+				next = root->find(*first);
 				if (next == nullptr) return false;
 				root = next;
 				++first;
@@ -64,7 +79,7 @@ namespace RSY_TOOL::Trie
 			typename std::iterator_traits<_InIt>::iterator_category,
 			std::forward_iterator_tag> &&
 			std::is_convertible_v<
-			std::decay_t<decltype(std::declval<_InIt>().operator*())>,
+			std::decay_t<_InIt_Element_t<_InIt>>,
 			Key>
 			>* = nullptr
 		> void insert(_InIt first, _InIt last)
@@ -110,7 +125,7 @@ namespace RSY_TOOL::Trie
 			typename std::iterator_traits<_InIt>::iterator_category,
 			std::forward_iterator_tag> &&
 			std::is_convertible_v<
-			std::decay_t<decltype(std::declval<_InIt>().operator*())>,
+			std::decay_t<_InIt_Element_t<_InIt>>,
 			Key>
 			>* = nullptr
 		> bool erase(_InIt first, _InIt last)
@@ -120,7 +135,7 @@ namespace RSY_TOOL::Trie
 			std::stack<node_ptr> stk; // _root must not be put into stack.
 			while (first != last)
 			{
-				root = root.find(*first);
+				root = root->find(*first);
 				if (root == nullptr) return false; // case 1.
 				stk.push(root);
 				if (root->_isKey) lastKey = root;

@@ -25,13 +25,13 @@ namespace RSY_TOOL::Trie
 		template<typename _InIt>
 		bool find(_InIt first, _InIt last) const
 		{
-			_pImpl->find(first, last);
+			return _pImpl->find(first, last);
 		}
 
 		template<typename C>
-		bool find(C&& c)
+		bool find(C&& container) const
 		{
-			return find(std::begin(C), std::end(C));
+			return find(std::begin(container), std::end(container));
 		}
 
 		/*
@@ -44,9 +44,9 @@ namespace RSY_TOOL::Trie
 		}
 
 		template<typename C>
-		void insert(C&& c)
+		void insert(C&& container)
 		{
-			return insert(std::begin(C), std::end(C));
+			return insert(std::begin(container), std::end(container));
 		}
 
 		/*
@@ -55,13 +55,13 @@ namespace RSY_TOOL::Trie
 		template<typename _InIt>
 		bool erase(_InIt first, _InIt last)
 		{
-			_pImpl->erase(first, last);
+			return _pImpl->erase(first, last);
 		}
 
 		template<typename C>
-		bool erase(C&& c)
+		bool erase(C&& container)
 		{
-			return erase(std::begin(C), std::end(C));
+			return erase(std::begin(container), std::end(container));
 		}
 
 

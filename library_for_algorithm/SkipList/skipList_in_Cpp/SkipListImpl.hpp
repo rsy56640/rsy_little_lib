@@ -31,8 +31,8 @@ namespace RSY_TOOL::SkipList
 		/*
 		 * interval times between per call of recycle().
 		 */
-		constexpr static std::size_t recycle_times = 64;
-		constexpr static double size_rate_tolerance = 0.70;
+		constexpr static std::size_t recycle_times = 2000;
+		constexpr static double size_rate_tolerance = 0.72;
 
 
 		/*
@@ -138,8 +138,8 @@ namespace RSY_TOOL::SkipList
 			typename Key_t,
 			typename Value_t,
 			std::enable_if_t<
-			std::is_convertible_v<Key, std::decay_t<Key_t>> &&
-			std::is_convertible_v<Value, std::decay_t<Value_t>>
+			std::is_convertible_v<std::decay_t<Key_t>, Key> &&
+			std::is_convertible_v<std::decay_t<Value_t>, Value>
 			>* = nullptr
 		> std::size_t insert(Key_t&& key, Value_t&& value, insert_type type)
 		{

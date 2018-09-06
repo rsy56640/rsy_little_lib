@@ -67,8 +67,8 @@ namespace RSY_TOOL::SkipList
 			typename Key_t,
 			typename Value_t,
 			std::enable_if_t<
-			std::is_convertible_v<Key, std::decay_t<Key_t>> &&
-			std::is_convertible_v<Value, std::decay_t<Value_t>>
+			std::is_convertible_v<std::decay_t<Key_t>, Key> &&
+			std::is_convertible_v< std::decay_t<Value_t>, Value>
 			>* = nullptr
 		> std::size_t insert(Key_t&& key, Value_t&& value)
 		{

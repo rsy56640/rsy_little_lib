@@ -2,36 +2,260 @@
 -----
 
 只写一些重点，以及思考，还有对于 “面向对象设计模式” 的弊端和改进。   
-其实现在来看这些设计模式不过是为了填 OO 的坑罢了，之后会在文中详细解释。   
+其实现在来看这些设计模式不过是为了填传统 OO 的坑罢了，之后会在文中详细讨论。（在写这篇文章的时候，我还没有学习函数式，所以有些理解比较肤浅）   
 
 
-## 创建型模式
+推荐学习资料：
 
-
-
-
-
-
-
-
-
-## 结构型模式
-
-
-
-
-
-
-
-## 行为型模式
+- [Design Patterns Video Tutorial - Derek Banas on YouTube](https://www.youtube.com/playlist?list=PLF206E906175C7E07)
+- [图说设计模式](https://design-patterns.readthedocs.io/zh_CN/latest/index.html)
+- [Patterns](http://java-design-patterns.com/patterns/)
+- [Huston Design Patterns](http://www.vincehuston.org/dp/)
+- [面向对象编程的弊端是什么？ - 知乎](https://www.zhihu.com/question/20275578)
+- [如何正确地使用设计模式？ - 知乎](https://www.zhihu.com/question/23757906)
+- [Examples of GoF Design Patterns in Java's core libraries - Stack Overflow](https://stackoverflow.com/questions/1673841/examples-of-gof-design-patterns-in-javas-core-libraries)
+- [GoingNative 2013 Inheritance Is The Base Class of Evil - Channel9 - 继承是万恶之源](https://www.youtube.com/watch?v=-ss9XGsENPE)
+- [Functional Programming For The Rest of Us](http://www.defmacro.org/2006/06/19/fp.html)
+- [A catalogue of Rust design patterns](https://github.com/rust-unofficial/patterns)
+- [Design patterns implemented in Java](https://github.com/iluwatar/java-design-patterns)
+- [设计模式原则详解 - CSDN](https://blog.csdn.net/hguisu/article/details/7571617)
 
 
 
+&nbsp;
+&nbsp;
+# 创建型模式
+
+-----
+
+<a id="factory"></a>
+## Factory Pattern
+
+![](assets/Factory.png)
+
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="builder"></a>
+## Builder Pattern
+
+![](assets/Builder.png)
+
+
+
+&nbsp;
+&nbsp;
+<a id="prototype"></a>
+## Prototype Pattern
+
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="singleton"></a>
+## Singleton Pattern
+
+![](assets/Singleton.png)
+
+
+
+
+&nbsp;
+&nbsp;
+# 结构型模式
+
+-----
+
+<a id="adapter"></a>
+## Adapter Pattern
+
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="bridge"></a>
+## Bridge Pattern
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="composite"></a>
+## Composite Pattern
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="decorator"></a>
+## Decorator Pattern
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="facade"></a>
+## Facade Pattern
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="flyweight"></a>
+## Flyweight Pattern
+
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="proxy"></a>
+## Proxy Pattern
 
 
 
 
 
 
-### 策略模式
+&nbsp;
+&nbsp;
+# 行为型模式
+
+-----
+
+<a id="chain of responsibility"></a>
+## Chain of Responsibility Pattern
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="command"></a>
+## Command Pattern
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="interpreter"></a>
+## Interpreter Pattern
+
+
+
+&nbsp;
+&nbsp;
+<a id="iterator"></a>
+## Iterator Pattern
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="mediator"></a>
+## Mediator Pattern
+
+
+
+<a id="memento"></a>
+## Memento Pattern
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="observer"></a>
+## Observer Pattern
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="state"></a>
+## State Pattern
+
+
+
+[a](#strategy)
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="strategy"></a>
+## Strategy Pattern
+
+![](assets/Strategy.png)
+
+当然了，如果允许函数作为变量来用的话，我们就可以使用 [`std::function`](https://zh.cppreference.com/w/cpp/utility/functional/function) 之类的：
+
+    namespace Startegy
+    {
+    	using func_t = std::function<int(const std::string&, double)>;
+    	enum class strategy_t { I, II, III, IV };
+    	
+    	func_t get_func(strategy_t strategy)
+    	{
+    		static map<strategy_t, func_t> funcs =
+    		{
+    			std::make_pair(strategy_t::I,   [](const std::string&, double) {return 1; }),
+    			std::make_pair(strategy_t::II,  [](const std::string&, double) {return 2; }),
+    			std::make_pair(strategy_t::III, [](const std::string&, double) {return 3; }),
+    			std::make_pair(strategy_t::IV,  [](const std::string&, double) {return 4; }),
+    		};
+    		auto it = funcs.find(strategy);
+    		return it != funcs.end() ? it->second : funcs[Startegy::strategy_t::I];
+    	}
+    	
+    	class A {
+    	public:
+    		A(func_t func) :_func(func) {}
+    		void set_func(Startegy::strategy_t strategy) { _func = get_func(strategy); }
+    	private:
+    		func_t _func;
+    	};
+    	
+    }
+
+
+&nbsp;
+&nbsp;
+<a id="template method"></a>
+## Template Method Pattern
+
+`// ADL`
+
+
+
+
+&nbsp;
+&nbsp;
+<a id="visitor"></a>
+## Visitor Pattern
+
+
+
+
+
+
+
+
+
 

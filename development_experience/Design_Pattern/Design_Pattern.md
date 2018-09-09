@@ -52,7 +52,7 @@
 <a id="prototype"></a>
 ## Prototype Pattern
 
-
+![](assets/Prototype.png)
 
 
 
@@ -75,6 +75,9 @@
 <a id="adapter"></a>
 ## Adapter Pattern
 
+![](assets/Adapter.png)
+
+
 
 
 
@@ -84,6 +87,9 @@
 <a id="bridge"></a>
 ## Bridge Pattern
 
+![](assets/Bridge.png)
+
+
 
 
 
@@ -91,6 +97,9 @@
 &nbsp;
 <a id="composite"></a>
 ## Composite Pattern
+
+![](assets/Composite.png)
+
 
 
 
@@ -100,6 +109,9 @@
 <a id="decorator"></a>
 ## Decorator Pattern
 
+![](assets/Decorator.png)
+
+
 
 
 
@@ -108,6 +120,10 @@
 <a id="facade"></a>
 ## Facade Pattern
 
+![](assets/Facade.png)
+
+
+
 
 
 
@@ -115,6 +131,8 @@
 &nbsp;
 <a id="flyweight"></a>
 ## Flyweight Pattern
+
+![](assets/Flyweight.png)
 
 
 
@@ -125,7 +143,7 @@
 <a id="proxy"></a>
 ## Proxy Pattern
 
-
+![](assets/Proxy.png)
 
 
 
@@ -139,6 +157,8 @@
 <a id="chain of responsibility"></a>
 ## Chain of Responsibility Pattern
 
+![](assets/Chain of Responsibility.png)
+
 
 
 
@@ -147,7 +167,7 @@
 <a id="command"></a>
 ## Command Pattern
 
-
+![](assets/Command.png)
 
 
 &nbsp;
@@ -155,12 +175,18 @@
 <a id="interpreter"></a>
 ## Interpreter Pattern
 
+![](assets/Interpreter.png)
+
+
 
 
 &nbsp;
 &nbsp;
 <a id="iterator"></a>
 ## Iterator Pattern
+
+![](assets/Iterator.png)
+
 
 
 
@@ -170,10 +196,16 @@
 <a id="mediator"></a>
 ## Mediator Pattern
 
+![](assets/Mediator.png)
+
+
 
 
 <a id="memento"></a>
 ## Memento Pattern
+
+![](assets/Memento.png)
+
 
 
 
@@ -183,6 +215,9 @@
 <a id="observer"></a>
 ## Observer Pattern
 
+![](assets/Observer.png)
+
+
 
 
 
@@ -190,6 +225,9 @@
 &nbsp;
 <a id="state"></a>
 ## State Pattern
+
+![](assets/State.png)
+
 
 
 
@@ -251,6 +289,9 @@
 <a id="template method"></a>
 ## Template Method Pattern
 
+![](assets/Template Method.png)
+
+
 `// ADL`
 
 
@@ -261,7 +302,7 @@
 <a id="visitor"></a>
 ## Visitor Pattern
 
-
+![](assets/Visitor.png)
 
 
 

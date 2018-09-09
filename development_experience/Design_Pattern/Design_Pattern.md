@@ -18,6 +18,7 @@
 - [Functional Programming For The Rest of Us](http://www.defmacro.org/2006/06/19/fp.html)
 - [A catalogue of Rust design patterns](https://github.com/rust-unofficial/patterns)
 - [Design patterns implemented in Java](https://github.com/iluwatar/java-design-patterns)
+- [A collection of design patterns/idioms in Python](https://github.com/faif/python-patterns)
 - [设计模式原则详解 - CSDN](https://blog.csdn.net/hguisu/article/details/7571617)
 
 
@@ -208,30 +209,40 @@
 
     namespace Startegy
     {
-    	using func_t = std::function<int(const std::string&, double)>;
+    	using foo_t = std::function<int(const std::string&, double)>;
     	enum class strategy_t { I, II, III, IV };
-    	
-    	func_t get_func(strategy_t strategy)
+    
+    	foo_t get_foo(strategy_t strategy)
     	{
-    		static map<strategy_t, func_t> funcs =
+    		static map<strategy_t, foo_t> foos =
     		{
     			std::make_pair(strategy_t::I,   [](const std::string&, double) {return 1; }),
     			std::make_pair(strategy_t::II,  [](const std::string&, double) {return 2; }),
     			std::make_pair(strategy_t::III, [](const std::string&, double) {return 3; }),
     			std::make_pair(strategy_t::IV,  [](const std::string&, double) {return 4; }),
     		};
-    		auto it = funcs.find(strategy);
-    		return it != funcs.end() ? it->second : funcs[Startegy::strategy_t::I];
+    		auto it = foos.find(strategy);
+    		return it != foos.end() ? it->second : foos[Startegy::strategy_t::I];
     	}
-    	
+    
     	class A {
     	public:
-    		A(func_t func) :_func(func) {}
-    		void set_func(Startegy::strategy_t strategy) { _func = get_func(strategy); }
+    		A(foo_t foo) :_foo(foo) {}
+    		A(Startegy::strategy_t strategy) :_foo(get_foo(strategy)) {}
+    
+    		void set_func(Startegy::strategy_t strategy) { _foo = get_foo(strategy); }
+    
+    		template<typename... Types> decltype(auto) foo(Types... args) { return _foo(args...); }
+    
     	private:
-    		func_t _func;
+    		foo_t _foo;
     	};
-    	
+    
+    	void test() {
+    		A a{ strategy_t::II };
+    		a.foo("hello"s, 3.14);
+    	}
+    
     }
 
 

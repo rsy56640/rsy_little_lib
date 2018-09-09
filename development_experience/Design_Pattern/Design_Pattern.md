@@ -22,9 +22,42 @@
 - [设计模式原则详解 - CSDN](https://blog.csdn.net/hguisu/article/details/7571617)
 
 
+&nbsp;     
+&nbsp;   
+&nbsp;   
+设计模式概览：
 
-&nbsp;
-&nbsp;
+- [创建型模式](#Creational)
+    - [Factory Pattern](#factory)
+    - [Builder Pattern](#builder)
+    - [Prototype Pattern](#prototype)
+    - [Singleton Pattern](#singleton)
+- [结构型模式](#Structural)
+    - [Adapter Pattern](#adapter)
+    - [Bridge Pattern](#bridge)
+    - [Composite Pattern](#composite)
+    - [Decorator Pattern](#decorator)
+    - [Facade Pattern](#facade)
+    - [Flyweight Pattern](#flyweight)
+    - [Proxy Pattern](#proxy)
+- [行为型模式](#Behavioral)
+    - [Chain of Responsibility Pattern](#chain_of_responsibility)
+    - [Command Pattern](#command)
+    - [Interpreter Pattern](#interpreter)
+    - [Iterator Pattern](#iterator)
+    - [Mediator Pattern](#mediator)
+    - [Memento Pattern](#memento)
+    - [Observer Pattern](#observer)
+    - [State Pattern](#state)
+    - [Strategy Pattern](#strategy)
+    - [Template Method Pattern](#template_method)
+    - [Visitor Pattern](#visitor)
+
+
+&nbsp;    
+&nbsp;    
+&nbsp;    
+<a id="Creational"></a>
 # 创建型模式
 
 -----
@@ -38,17 +71,64 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;     
+&nbsp;    
 <a id="builder"></a>
 ## Builder Pattern
 
 ![](assets/Builder.png)
 
+将用户从复杂对象的构建中剥离出来，允许用户定制扩展对象而不知晓对象的内部实现细节。   
+
+    namespace Builder
+    {
+    	class CarBuilder;
+    	using Car_ptr = std::shared_ptr<CarBuilder>;
+    
+    	enum class CarType { Tokyo, Mercedes, Volkswagen };
+    
+    	using type = int;
+    	using name = const string&;
+    	using parameter = const std::string&;
+    	using Car_Parameter = std::tuple<type, name, parameter>;
+    
+    	Car_Parameter type2parameter(CarType carType) {
+    		switch (carType)
+    		{
+    		case CarType::Tokyo:
+    			return std::make_tuple(25, "Tokyo", "2.5L");
+    		case CarType::Mercedes:
+    			return std::make_tuple(7, "Mercedes", "100W RMB");
+    		case CarType::Volkswagen:
+    			return std::make_tuple(66, "Volkswagen", "SUV");
+    		defualt:
+    			return std::make_tuple(0, "", "");
+    		}
+    	}
+    
+    	class CarBuilder {
+    	public:
+    		static Car_ptr get_Car(CarType carType) {
+    			Car_ptr cp{ std::shared_ptr<CarBuilder>(new CarBuilder(type2parameter(carType))) };
+    			return cp;
+    		}
+    
+    	private:
+    		CarBuilder(Car_Parameter car_parameter) :_car_parameter(car_parameter) {}
+    		CarBuilder(const CarBuilder&) = delete;
+    		CarBuilder& operator=(const CarBuilder&) = delete;
+    		Car_Parameter _car_parameter;
+    	};
+    
+    	void test() {
+    		Car_ptr cp = CarBuilder::get_Car(CarType::Mercedes);
+    		// do something...
+    	}
+    }
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="prototype"></a>
 ## Prototype Pattern
 
@@ -56,18 +136,47 @@
 
 
 
-&nbsp;
-&nbsp;
+
+
+&nbsp;    
+&nbsp;    
 <a id="singleton"></a>
 ## Singleton Pattern
 
 ![](assets/Singleton.png)
 
+类自身管理该类的唯一实例，并且易于被访问。   
+系统**只**需要一个实例对象，并且向用户提供全局访问点。   
+
+    namespace Singleton
+    {
+    	class S {
+    	public:
+    		using S_ptr = std::shared_ptr<S>;
+    		/*
+    		 * no need to lock or synchronize,
+    		 * please reference to 
+    		 * https://zh.cppreference.com/w/cpp/language/storage_duration#.E9.9D.99.E6.80.81.E5.B1.80.E9.83.A8.E5.8F.98.E9.87.8F
+    		 */
+    		static S_ptr get_S() {
+    			static S_ptr s_p{ std::shared_ptr<S>(new S()) };
+    			return s_p;
+    		}
+    
+    	private:
+    		S() = default;
+    		S(const S&) = delete;
+    		S& operator=(const S&) = delete;
+    		S(S&&) = delete;
+    		S& operator=(S&&) = delete;
+    	};
+    }
 
 
-
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
+&nbsp;    
+<a id="Structural"></a>
 # 结构型模式
 
 -----
@@ -82,8 +191,8 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="bridge"></a>
 ## Bridge Pattern
 
@@ -93,8 +202,8 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="composite"></a>
 ## Composite Pattern
 
@@ -104,8 +213,8 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="decorator"></a>
 ## Decorator Pattern
 
@@ -115,8 +224,8 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="facade"></a>
 ## Facade Pattern
 
@@ -127,8 +236,8 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="flyweight"></a>
 ## Flyweight Pattern
 
@@ -138,8 +247,8 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="proxy"></a>
 ## Proxy Pattern
 
@@ -148,13 +257,15 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
+&nbsp;    
+<a id="Behavioral"></a>
 # 行为型模式
 
 -----
 
-<a id="chain of responsibility"></a>
+<a id="chain_of_responsibility"></a>
 ## Chain of Responsibility Pattern
 
 ![](assets/Chain of Responsibility.png)
@@ -162,16 +273,16 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="command"></a>
 ## Command Pattern
 
 ![](assets/Command.png)
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="interpreter"></a>
 ## Interpreter Pattern
 
@@ -180,8 +291,8 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="iterator"></a>
 ## Iterator Pattern
 
@@ -191,8 +302,8 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="mediator"></a>
 ## Mediator Pattern
 
@@ -201,6 +312,9 @@
 
 
 
+
+&nbsp;    
+&nbsp;    
 <a id="memento"></a>
 ## Memento Pattern
 
@@ -210,8 +324,8 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="observer"></a>
 ## Observer Pattern
 
@@ -221,8 +335,8 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="state"></a>
 ## State Pattern
 
@@ -236,8 +350,8 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="strategy"></a>
 ## Strategy Pattern
 
@@ -284,12 +398,12 @@
     }
 
 
-&nbsp;
-&nbsp;
-<a id="template method"></a>
+&nbsp;    
+&nbsp;    
+<a id="template_method"></a>
 ## Template Method Pattern
 
-![](assets/Template Method.png)
+![](assets/Template_Method.png)
 
 
 `// ADL`
@@ -297,17 +411,12 @@
 
 
 
-&nbsp;
-&nbsp;
+&nbsp;    
+&nbsp;    
 <a id="visitor"></a>
 ## Visitor Pattern
 
 ![](assets/Visitor.png)
-
-
-
-
-
 
 
 

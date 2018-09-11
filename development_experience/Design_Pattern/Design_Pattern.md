@@ -268,7 +268,7 @@
 <a id="chain_of_responsibility"></a>
 ## Chain of Responsibility Pattern
 
-![](assets/Chain of Responsibility.png)
+![](assets/Chain_of_Responsibility.png)
 
 
 

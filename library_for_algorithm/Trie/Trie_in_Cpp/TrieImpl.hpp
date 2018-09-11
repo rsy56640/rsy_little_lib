@@ -31,17 +31,8 @@ namespace RSY_TOOL::Trie
 		 */
 		template<
 			typename _InIt,
-			std::enable_if_t<
-			std::is_convertible_v<
-			typename std::iterator_traits<_InIt>::iterator_category,
-			std::forward_iterator_tag> &&
-			std::is_convertible_v<
-			std::decay_t<
-			std::conditional_t<
-			std::is_pointer_v<_InIt>,
-			std::remove_pointer_t<_InIt>,
-			decltype(std::declval<_InIt>().operator*())>
-			>, Key>
+			std::enable_if_t<std::is_convertible_v<typename std::iterator_traits<_InIt>::iterator_category, std::forward_iterator_tag> &&
+			std::is_convertible_v<std::decay_t<std::conditional_t<std::is_pointer_v<_InIt>, std::remove_pointer_t<_InIt>, decltype(std::declval<_InIt>().operator*())>>, Key>
 			>* = nullptr
 		> bool find(_InIt first, _InIt last) const
 		{
@@ -63,17 +54,8 @@ namespace RSY_TOOL::Trie
 		 */
 		template<
 			typename _InIt,
-			std::enable_if_t<
-			std::is_convertible_v<
-			typename std::iterator_traits<_InIt>::iterator_category,
-			std::forward_iterator_tag> &&
-			std::is_convertible_v<
-			std::decay_t<
-			std::conditional_t<
-			std::is_pointer_v<_InIt>,
-			std::remove_pointer_t<_InIt>,
-			decltype(std::declval<_InIt>().operator*())>
-			>, Key>
+			std::enable_if_t<std::is_convertible_v<typename std::iterator_traits<_InIt>::iterator_category, std::forward_iterator_tag> &&
+			std::is_convertible_v<std::decay_t<std::conditional_t<std::is_pointer_v<_InIt>, std::remove_pointer_t<_InIt>, decltype(std::declval<_InIt>().operator*())>>, Key>
 			>* = nullptr
 		> void insert(_InIt first, _InIt last)
 		{
@@ -113,17 +95,8 @@ namespace RSY_TOOL::Trie
 		 */
 		template<
 			typename _InIt,
-			std::enable_if_t<
-			std::is_convertible_v<
-			typename std::iterator_traits<_InIt>::iterator_category,
-			std::forward_iterator_tag> &&
-			std::is_convertible_v<
-			std::decay_t<
-			std::conditional_t<
-			std::is_pointer_v<_InIt>,
-			std::remove_pointer_t<_InIt>,
-			decltype(std::declval<_InIt>().operator*())>
-			>, Key>
+			std::enable_if_t<std::is_convertible_v<typename std::iterator_traits<_InIt>::iterator_category, std::forward_iterator_tag> &&
+			std::is_convertible_v<std::decay_t<std::conditional_t<std::is_pointer_v<_InIt>, std::remove_pointer_t<_InIt>, decltype(std::declval<_InIt>().operator*())>>, Key>
 			>* = nullptr
 		> bool erase(_InIt first, _InIt last)
 		{

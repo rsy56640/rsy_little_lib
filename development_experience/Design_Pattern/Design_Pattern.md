@@ -134,8 +134,12 @@
 
 ![](assets/Prototype.png)
 
+考虑基于继承的协变如何进行 copy，传统手法是使用 virtual function dispatch，但其实虽然 subtyping polymorphism 增加了复用，但又引入了强耦合。我们更倾向于使用 parametric polymorphism，说白了就像类型擦除，现在越来越感觉正经设计就应该是 Trait (in Rust) 或者 Cnocepts (in C++) 那样的了。   
 
+之前看了这个讲座有点启发（不过还没看完）：   
+[CppCon 2017: Louis Dionne “Runtime Polymorphism: Back to the Basics”](https://www.youtube.com/watch?v=gVGtNFg4ay0)   
 
+[代码 - prototype pattern](https://github.com/rsy56640/rsy_little_lib/tree/master/development_experience/Design_Pattern/code/prototype.cpp)   
 
 
 &nbsp;    

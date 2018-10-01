@@ -1,9 +1,10 @@
 #include "hash_rsy.h"
 #include "rbtree_rsy.h"
+#include <stdlib.h>
 
 #define BIT_HASH_RSY 10
 #define MAXSIZE_HASH_RSY (1 << BIT_HASH_RSY)
-#define MOD_HASH_RSY 0x000003ff
+#define MOD_HASH_RSY 0x000003ff // equals to "MAXSIZE_HASH_RSY - 1"
 const int magic_num = 769;
 const int addition = 32;
 

@@ -1,13 +1,13 @@
+#include "customized_util.h"
 /*
  * you should first look at "customized_util.h"
  * then complete necessary data structure and functions.
 **/
+
 #pragma once
 #ifndef _HASH_RSY_H
 #define _HASH_RSY_H
-#include <stdio.h>
-#include <stdlib.h>
-#include "customized_util.h"
+
 typedef struct hash hash;
 
 /*

@@ -1,4 +1,6 @@
 #include "rbtree_rsy.h"
+#include <stdlib.h>
+
 #ifndef true
 #define true 1
 #endif // !true
@@ -601,6 +603,7 @@ struct rb_node* maximum(const struct rb_node* root)
 
 
 /********************    Implementation for header file    ********************/
+
 
 struct rb_tree* rb_get()
 {

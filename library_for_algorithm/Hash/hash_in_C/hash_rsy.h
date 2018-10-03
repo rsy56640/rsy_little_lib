@@ -1,8 +1,8 @@
-#include "customized_util.h"
 /*
  * you should first look at "customized_util.h"
  * then complete necessary data structure and functions.
 **/
+#include "customized_util.h"
 
 #pragma once
 #ifndef _HASH_RSY_H

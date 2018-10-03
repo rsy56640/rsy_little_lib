@@ -26,7 +26,7 @@ void free_V(struct V* v)
 	free(v);
 }
 
-int K2int(const struct K* key)
+size_t K2int(const struct K* key)
 {
 	return key->key * 99;
 }

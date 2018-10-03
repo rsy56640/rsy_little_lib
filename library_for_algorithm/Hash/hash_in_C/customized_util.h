@@ -1,5 +1,6 @@
 #ifndef _CUSTOMIZED_UTIL_H
 #define _CUSTOMIZED_UTIL_H
+#include <stdlib.h>
 /*
  * Users are able to customize their own data structure in Pair,
  * which means "struct K" and "struct V" should be defined by users.
@@ -19,7 +20,7 @@ void assign_V(struct V** src, const struct V** dest);          //TO BE DEFINED
 void free_K(struct K*);                                        //TO BE DEFINED
 void free_V(struct V*);                                        //TO BE DEFINED
 /**************************** for  Hash ****************************/
-int K2int(const struct K*);                                          //TO BE DEFINED
+size_t K2int(const struct K*);                                          //TO BE DEFINED
 /*******************************************************************/
 
 

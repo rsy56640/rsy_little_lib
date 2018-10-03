@@ -13,7 +13,7 @@ void free_K(struct K*);
 void free_V(struct V*);
 /**************************** for  Hash ****************************/
 struct hash;
-int K2int(const struct K*);
+size_t K2int(const struct K*);
 
 /*******************************************************************/
 

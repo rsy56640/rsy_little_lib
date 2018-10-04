@@ -23,7 +23,7 @@ void assign_V(struct V** src, const struct V** dest);          //TO BE DEFINED
 void free_K(struct K*);                                        //TO BE DEFINED
 void free_V(struct V*);                                        //TO BE DEFINED
 /**************************** for  Hash ****************************/
-size_t K2int(const struct K*);                                          //TO BE DEFINED
+size_t K2int(const struct K*);                                 //TO BE DEFINED
 /*******************************************************************/
 
 

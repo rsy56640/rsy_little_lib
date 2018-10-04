@@ -1,5 +1,10 @@
 #include "rbtree_rsy.h"
 #include <stdlib.h>
+#ifdef RSY_CONCURRENCY_MAP
+#include <pthread.h>
+#include <stdio.h>
+#endif // RSY_CONCURRENCY_MAP
+
 
 #ifndef true
 #define true 1
@@ -23,7 +28,40 @@ struct rb_tree
 	struct rb_node* rb_NIL;
 	struct rb_node* rb_root;
 	unsigned int node_count;
+#ifdef RSY_CONCURRENCY_MAP
+	pthread_mutex_t mutex_;
+#endif // RSY_CONCURRENCY_MAP
 };
+
+#ifdef RSY_CONCURRENCY_MAP
+rb_tree* lock_rbt(rb_tree* rbt_)
+{
+	if (pthread_mutex_lock(&rbt_->mutex_) != 0) {
+		fprintf(stderr, "lock rbt error!\n");
+		rb_delete(rbt_);
+		exit(0);
+	}
+	return rbt_;
+}
+
+#define obfuscated(name) (name##__LINE__)
+#define RAII_LOCK_RBT(rbt) __attribute__((__cleanup__(unlock_rbt)))rb_tree* obfuscated(rbt_) = lock_rbt((struct rb_tree*)rbt);
+
+void unlock_rbt(rb_tree** rbt_ptr_)
+{
+	if (pthread_mutex_unlock(&(*rbt_ptr_)->mutex_) != 0) {
+		fprintf(stderr, "unlock rbt error!\n");
+		rb_delete(*rbt_ptr_);
+		exit(0);
+	}
+}
+
+#endif // RSY_CONCURRENCY_MAP
+
+#ifndef RSY_CONCURRENCY_MAP
+#define RAII_LOCK_RBT(rbt) ;
+#endif // !RSY_CONCURRENCY_MAP
+
 
 struct rb_node_it
 {
@@ -98,6 +136,14 @@ void init(struct rb_tree* rbt)
 	rbt->rb_root = rbt->rb_NIL;
 	rb_set_black(rbt->rb_NIL);
 	rb_set_parent(rbt->rb_NIL, rbt->rb_root); //to implement iterator decrement.
+#ifdef RSY_CONCURRENCY_MAP
+	if (pthread_mutex_init(&rbt->mutex_, NULL) != 0)
+	{
+		rb_delete(rbt);
+		fprintf(stderr, "init mutex error!\n");
+		exit(0);
+	}
+#endif // RSY_CONCURRENCY_MAP
 }
 
 int isNIL(const struct rb_node* node)
@@ -608,27 +654,31 @@ struct rb_node* maximum(const struct rb_node* root)
 struct rb_tree* rb_get()
 {
 	struct rb_tree* rbt = malloc(sizeof(struct rb_tree));
-	init(rbt);
+	init(rbt); // the mutex has been initialized.
 	return rbt;
 }
 
 struct Pair rb_get_min(const struct rb_tree* rbt)
 {
+	RAII_LOCK_RBT(rbt);
 	return left_most(rbt)->pair;
 }
 
 struct Pair rb_get_max(const struct rb_tree* rbt)
 {
+	RAII_LOCK_RBT(rbt);
 	return right_most(rbt)->pair;
 }
 
 int rb_get_size(const struct rb_tree* rbt)
 {
+	RAII_LOCK_RBT(rbt);
 	return rbt->node_count;
 }
 
 struct rb_node_it* rb_begin(const struct rb_tree* rbt)
 {
+	RAII_LOCK_RBT(rbt);
 	struct rb_node_it* it = malloc(sizeof(struct rb_node_it));
 	it->node = left_most(rbt);
 	return it;
@@ -636,6 +686,7 @@ struct rb_node_it* rb_begin(const struct rb_tree* rbt)
 
 struct rb_node_it* rb_end(const struct rb_tree* rbt)
 {
+	RAII_LOCK_RBT(rbt);
 	struct rb_node_it* it = malloc(sizeof(struct rb_node_it));
 	it->node = rbt->rb_NIL;
 	return it;
@@ -643,6 +694,8 @@ struct rb_node_it* rb_end(const struct rb_tree* rbt)
 
 int rb_it_increment(const struct rb_tree* rbt, struct rb_node_it* node_it)
 {
+	// No Concurrency Promise
+
 	struct rb_node** node = &(node_it->node);
 	//if node is Pair.NIL
 	//NB: it is allowed that iterator is end(), which is Pair.NIL.
@@ -675,6 +728,8 @@ int rb_it_increment(const struct rb_tree* rbt, struct rb_node_it* node_it)
 
 int rb_it_decrement(const struct rb_tree* rbt, struct rb_node_it* node_it)
 {
+	// No Concurrency Promise
+
 	struct rb_node** node = &(node_it->node);
 	//if node is Pair.NIL
 	if (isNIL(*node))
@@ -726,6 +781,7 @@ int rb_insert(struct rb_tree* rbt, const struct Pair pair)
 {
 	if (NULL == rbt)
 		return 0;
+	RAII_LOCK_RBT(rbt);
 	return RB_Insert(rbt, pair, insert);
 }
 
@@ -733,11 +789,13 @@ int rb_insert_assign(struct rb_tree* rbt, const struct Pair pair)
 {
 	if (NULL == rbt)
 		return 0;
+	RAII_LOCK_RBT(rbt);
 	return RB_Insert(rbt, pair, insert_or_assign);
 }
 
 int rb_erase(struct rb_tree* rbt, const struct K* key)
 {
+	RAII_LOCK_RBT(rbt);
 	//RB_Pairree is empty
 	if (rbt->node_count == 0)return 0;
 	//find the node according to the property of BSPair
@@ -763,6 +821,7 @@ struct V* rb_find(const struct rb_tree* rbt, const struct K* key)
 {
 	if (NULL == rbt)
 		return NULL;
+	RAII_LOCK_RBT(rbt);
 	struct rb_node* node = doFind(rbt, key);
 	if (!isNIL(node))
 		return node->pair.value;
@@ -771,6 +830,7 @@ struct V* rb_find(const struct rb_tree* rbt, const struct K* key)
 
 void rb_delete(struct rb_tree* rbt)
 {
+	RAII_LOCK_RBT(rbt);
 	if (rbt == NULL)
 		return;
 	const int size = rbt->node_count;

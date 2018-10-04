@@ -5,6 +5,9 @@
  * Users are able to customize their own data structure in Pair,
  * which means "struct K" and "struct V" should be defined by users.
  * Also there are some functions left to be defined.
+ *
+ * About Concurrency: define macro `RSY_CONCURRENCY_MAP` to take advantage of concurrency.
+ *
 **/
 /*********************     user customized     *********************/
 struct K;                                                     //TO BE DEFINED

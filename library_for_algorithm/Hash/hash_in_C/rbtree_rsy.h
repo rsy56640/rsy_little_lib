@@ -1,6 +1,7 @@
 /*
  * you should first look at "customized_util.h"
  * then complete necessary data structure and functions.
+ * About Concurrency: define macro `RSY_CONCURRENCY_MAP` to take advantage of concurrency.
 **/
 #include "customized_util.h"
 

@@ -80,52 +80,53 @@
 
 将用户从复杂对象的构建中剥离出来，允许用户定制扩展对象而不知晓对象的内部实现细节。   
 
-    namespace Builder
-    {
-    	class CarBuilder;
-    	using Car_ptr = std::shared_ptr<CarBuilder>;
-    
-    	enum class CarType { Tokyo, Mercedes, Volkswagen };
-    
-    	using type = int;
-    	using name = const string&;
-    	using parameter = const std::string&;
-    	using Car_Parameter = std::tuple<type, name, parameter>;
-    
-    	Car_Parameter type2parameter(CarType carType) {
-    		switch (carType)
-    		{
-    		case CarType::Tokyo:
-    			return std::make_tuple(25, "Tokyo", "2.5L");
-    		case CarType::Mercedes:
-    			return std::make_tuple(7, "Mercedes", "100W RMB");
-    		case CarType::Volkswagen:
-    			return std::make_tuple(66, "Volkswagen", "SUV");
-    		defualt:
-    			return std::make_tuple(0, "", "");
-    		}
-    	}
-    
-    	class CarBuilder {
-    	public:
-    		static Car_ptr get_Car(CarType carType) {
-    			Car_ptr cp{ std::shared_ptr<CarBuilder>(new CarBuilder(type2parameter(carType))) };
-    			return cp;
-    		}
-    
-    	private:
-    		CarBuilder(Car_Parameter car_parameter) :_car_parameter(car_parameter) {}
-    		CarBuilder(const CarBuilder&) = delete;
-    		CarBuilder& operator=(const CarBuilder&) = delete;
-    		Car_Parameter _car_parameter;
-    	};
-    
-    	void test() {
-    		Car_ptr cp = CarBuilder::get_Car(CarType::Mercedes);
-    		// do something...
-    	}
-    }
+```c++
+namespace Builder
+{
+	class CarBuilder;
+	using Car_ptr = std::shared_ptr<CarBuilder>;
 
+	enum class CarType { Tokyo, Mercedes, Volkswagen };
+
+	using type = const int;
+	using name = const std::string;
+	using parameter = const std::string;
+	using Car_Parameter = std::tuple<type, name, parameter>;
+
+	Car_Parameter type2parameter(CarType carType) {
+		switch (carType)
+		{
+		case CarType::Tokyo:
+			return std::make_tuple(25, "Tokyo", "2.5L");
+		case CarType::Mercedes:
+			return std::make_tuple(7, "Mercedes", "100W RMB");
+		case CarType::Volkswagen:
+			return std::make_tuple(66, "Volkswagen", "SUV");
+		defualt:
+			return std::make_tuple(0, "", "");
+		}
+	}
+
+	class CarBuilder {
+	public:
+		static Car_ptr get_Car(CarType carType) {
+			Car_ptr cp{ std::shared_ptr<CarBuilder>(new CarBuilder(type2parameter(carType))) };
+			return cp;
+		}
+
+	private:
+		CarBuilder(Car_Parameter car_parameter) :_car_parameter(car_parameter) {}
+		CarBuilder(const CarBuilder&) = delete;
+		CarBuilder& operator=(const CarBuilder&) = delete;
+		Car_Parameter _car_parameter;
+	};
+
+	void test() {
+		Car_ptr cp = CarBuilder::get_Car(CarType::Mercedes);
+		// do something...
+	}
+}
+```
 
 &nbsp;    
 &nbsp;    
@@ -152,30 +153,31 @@
 类自身管理该类的唯一实例，并且易于被访问。   
 系统**只**需要一个实例对象，并且向用户提供全局访问点。   
 
-    namespace Singleton
-    {
-    	class S {
-    	public:
-    		using S_ptr = std::shared_ptr<S>;
-    		/*
-    		 * no need to lock or synchronize,
-    		 * please reference to 
-    		 * https://zh.cppreference.com/w/cpp/language/storage_duration#.E9.9D.99.E6.80.81.E5.B1.80.E9.83.A8.E5.8F.98.E9.87.8F
-    		 */
-    		static S_ptr get_S() {
-    			static S_ptr s_p{ std::shared_ptr<S>(new S()) };
-    			return s_p;
-    		}
-    
-    	private:
-    		S() = default;
-    		S(const S&) = delete;
-    		S& operator=(const S&) = delete;
-    		S(S&&) = delete;
-    		S& operator=(S&&) = delete;
-    	};
-    }
+```c++
+namespace Singleton
+{
+	class S {
+	public:
+		using S_ptr = std::shared_ptr<S>;
+		/*
+		 * no need to lock or synchronize,
+		 * please reference to
+		 * https://zh.cppreference.com/w/cpp/language/storage_duration#.E9.9D.99.E6.80.81.E5.B1.80.E9.83.A8.E5.8F.98.E9.87.8F
+		 */
+		static S_ptr get_S() {
+			static S_ptr s_p{ std::shared_ptr<S>(new S()) };
+			return s_p;
+		}
 
+	private:
+		S() = default;
+		S(const S&) = delete;
+		S& operator=(const S&) = delete;
+		S(S&&) = delete;
+		S& operator=(S&&) = delete;
+	};
+}
+```
 
 &nbsp;    
 &nbsp;    
@@ -363,43 +365,45 @@
 
 当然了，如果允许函数作为变量来用的话，我们就可以使用 [`std::function`](https://zh.cppreference.com/w/cpp/utility/functional/function) 之类的：
 
-    namespace Startegy
-    {
-    	using foo_t = std::function<int(const std::string&, double)>;
-    	enum class strategy_t { I, II, III, IV };
-    
-    	foo_t get_foo(strategy_t strategy)
-    	{
-    		static map<strategy_t, foo_t> foos =
-    		{
-    			std::make_pair(strategy_t::I,   [](const std::string&, double) {return 1; }),
-    			std::make_pair(strategy_t::II,  [](const std::string&, double) {return 2; }),
-    			std::make_pair(strategy_t::III, [](const std::string&, double) {return 3; }),
-    			std::make_pair(strategy_t::IV,  [](const std::string&, double) {return 4; }),
-    		};
-    		auto it = foos.find(strategy);
-    		return it != foos.end() ? it->second : foos[Startegy::strategy_t::I];
-    	}
-    
-    	class A {
-    	public:
-    		A(foo_t foo) :_foo(foo) {}
-    		A(Startegy::strategy_t strategy) :_foo(get_foo(strategy)) {}
-    
-    		void set_func(Startegy::strategy_t strategy) { _foo = get_foo(strategy); }
-    
-    		template<typename... Types> decltype(auto) foo(Types... args) { return _foo(args...); }
-    
-    	private:
-    		foo_t _foo;
-    	};
-    
-    	void test() {
-    		A a{ strategy_t::II };
-    		a.foo("hello"s, 3.14);
-    	}
-    
-    }
+```c++
+namespace Startegy
+{
+	using foo_t = std::function<int(const std::string&, double)>;
+	enum class strategy_t { I, II, III, IV };
+
+	foo_t get_foo(strategy_t strategy)
+	{
+		static std::map<strategy_t, foo_t> foos =
+		{
+			std::make_pair(strategy_t::I,   [](const std::string&, double) {return 1; }),
+			std::make_pair(strategy_t::II,  [](const std::string&, double) {return 2; }),
+			std::make_pair(strategy_t::III, [](const std::string&, double) {return 3; }),
+			std::make_pair(strategy_t::IV,  [](const std::string&, double) {return 4; }),
+		};
+		auto it = foos.find(strategy);
+		return it != foos.end() ? it->second : foos[Startegy::strategy_t::I];
+	}
+
+	class A {
+	public:
+		A(foo_t foo) :_foo(foo) {}
+		A(Startegy::strategy_t strategy) :_foo(get_foo(strategy)) {}
+
+		void set_func(Startegy::strategy_t strategy) { _foo = get_foo(strategy); }
+
+		template<typename... Types> decltype(auto) foo(Types... args) { return _foo(args...); }
+
+	private:
+		foo_t _foo;
+	};
+	using namespace std::string_literals;
+	void test() {
+		A a{ strategy_t::II };
+		a.foo("hello"s, 3.14);
+	}
+
+}
+```
 
 
 &nbsp;    
